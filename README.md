@@ -165,6 +165,25 @@ l'UI dans tous ses états, selon le contenu soumis :
 | moins de 15 caractères                           | INDETERMINE                              | AUCUNE                    |
 | autre texte                                      | rotation déterministe sur les 4 verdicts | —                         |
 
+## App mobile (Expo)
+
+```bash
+# Démarrer l'API (terminal 1) puis le bundler Expo (terminal 2) :
+npm run dev --workspace @vigie/api
+npm run start --workspace @vigie/mobile
+# Scannez le QR code avec Expo Go (Android/iOS) sur le même réseau Wi-Fi.
+```
+
+- L'app détecte automatiquement l'adresse de l'API en développement (même
+  machine que le bundler, port 3000). Pour un autre backend :
+  `apps/mobile/.env` → `EXPO_PUBLIC_API_URL` (voir
+  [apps/mobile/.env.example](apps/mobile/.env.example)).
+- Écrans Phase 3 : Accueil → « Vérifier un message » (saisie/coller) →
+  attente avec messages rotatifs → verdict §4.2 ; onglet Historique
+  (100 % local, plafonné à 200 entrées, purge totale).
+- Tests : `npm run test --workspace @vigie/mobile` (Jest + React Native
+  Testing Library — rendu des 4 verdicts, navigation, store, client API).
+
 ## Variables d'environnement
 
 Voir [.env.example](./.env.example) — copiez-le en `.env` et complétez.
