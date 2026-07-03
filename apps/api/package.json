@@ -1,0 +1,14 @@
+{
+  "name": "@vigie/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Backend Hono de Vigie",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@vigie/shared": "*"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@vigie/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Types et schémas partagés entre l'API et l'app mobile Vigie",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  }
+}
