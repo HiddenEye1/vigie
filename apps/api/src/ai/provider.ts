@@ -1,13 +1,18 @@
-import type { ScamCategory, VerdictLevel } from '@vigie/shared';
+import type { ImageMimeType, ScamCategory, VerdictLevel } from '@vigie/shared';
 
-/**
- * Entrée d'analyse normalisée. Phase 1 : texte uniquement.
- * (Phase 2 ajoutera l'image et l'URL avec son analyse technique §8.3.)
- */
-export interface AnalyzeInput {
-  readonly kind: 'text';
-  readonly content: string;
+import type { UrlSignals } from '../url/url-analyzer.js';
+
+/** Image transmise au modèle vision — jamais écrite sur disque, jamais stockée (§8.1). */
+export interface ImagePayload {
+  readonly mediaType: ImageMimeType;
+  readonly base64: string;
 }
+
+/** Entrée d'analyse normalisée : texte collé, URL (avec signaux §8.3) ou capture d'écran. */
+export type AnalyzeInput =
+  | { readonly kind: 'text'; readonly content: string }
+  | { readonly kind: 'url'; readonly content: string; readonly urlSignals: UrlSignals }
+  | { readonly kind: 'image'; readonly image: ImagePayload };
 
 /** Verdict brut produit par un fournisseur d'IA, avant post-traitement serveur. */
 export interface AIVerdict {

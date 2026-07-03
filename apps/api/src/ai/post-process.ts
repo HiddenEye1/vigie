@@ -18,7 +18,7 @@ export function finalizeVerdict(raw: AIVerdict, input: AnalyzeInput): AIVerdict 
     result = { ...result, verdict: 'INDETERMINE' };
   }
 
-  const injectionSignals = detectInjectionSignals(input.content);
+  const injectionSignals = detectInjectionSignals(textualContent(input));
   if (
     injectionSignals.length > 0 &&
     (result.verdict === 'PLUTOT_SUR' || result.verdict === 'INDETERMINE')
@@ -32,4 +32,25 @@ export function finalizeVerdict(raw: AIVerdict, input: AnalyzeInput): AIVerdict 
   }
 
   return result;
+}
+
+/**
+ * Texte contrôlable par un attaquant, à passer au détecteur d'injection.
+ * Pour une URL, le titre et la description extraits de la page sont aussi
+ * des données hostiles potentielles. Pour une image, le texte n'est connu
+ * que du modèle vision (règle 9 du prompt système).
+ */
+function textualContent(input: AnalyzeInput): string {
+  switch (input.kind) {
+    case 'text':
+      return input.content;
+    case 'url':
+      return [
+        input.content,
+        input.urlSignals.pageTitle ?? '',
+        input.urlSignals.metaDescription ?? '',
+      ].join('\n');
+    case 'image':
+      return '';
+  }
 }

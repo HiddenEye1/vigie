@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import type { UrlSignals } from '../url/url-analyzer.js';
 import { MockProvider } from './mock-provider.js';
 import type { AIVerdict } from './provider.js';
 import { aiVerdictSchema } from './verdict-schema.js';
@@ -8,6 +9,20 @@ const provider = new MockProvider({ delayMs: 0 });
 
 function analyze(content: string): Promise<AIVerdict> {
   return provider.analyze({ kind: 'text', content });
+}
+
+function signals(overrides: Partial<UrlSignals> = {}): UrlSignals {
+  return {
+    finalUrl: 'https://site.example/',
+    https: true,
+    redirects: 0,
+    domainAgeDays: 500,
+    isOfficialDomain: false,
+    pageTitle: null,
+    metaDescription: null,
+    fetchFailed: false,
+    ...overrides,
+  };
 }
 
 describe('MockProvider', () => {
@@ -60,6 +75,44 @@ describe('MockProvider', () => {
       seen.add(verdict.verdict);
     }
     expect(seen).toEqual(new Set(['ARNAQUE_PROBABLE', 'SUSPECT', 'PLUTOT_SUR', 'INDETERMINE']));
+  });
+
+  it('URL sur domaine officiel → PLUTOT_SUR', async () => {
+    const verdict = await provider.analyze({
+      kind: 'url',
+      content: 'https://www.ameli.fr/assure',
+      urlSignals: signals({ isOfficialDomain: true }),
+    });
+    expect(verdict.verdict).toBe('PLUTOT_SUR');
+  });
+
+  it('URL sur domaine très récent → ARNAQUE_PROBABLE', async () => {
+    const verdict = await provider.analyze({
+      kind: 'url',
+      content: 'https://site-tout-neuf.example/',
+      urlSignals: signals({ domainAgeDays: 3 }),
+    });
+    expect(verdict.verdict).toBe('ARNAQUE_PROBABLE');
+    expect(verdict.category).toBe('FAUX_SITE_ECOMMERCE');
+  });
+
+  it('URL sans HTTPS → SUSPECT', async () => {
+    const verdict = await provider.analyze({
+      kind: 'url',
+      content: 'http://site-quelconque.example/',
+      urlSignals: signals({ https: false }),
+    });
+    expect(verdict.verdict).toBe('SUSPECT');
+  });
+
+  it('image : verdict déterministe et conforme au schéma', async () => {
+    const input = {
+      kind: 'image',
+      image: { mediaType: 'image/png', base64: 'aGVsbG8gd29ybGQ=' },
+    } as const;
+    const [first, second] = await Promise.all([provider.analyze(input), provider.analyze(input)]);
+    expect(first).toEqual(second);
+    expect(aiVerdictSchema.safeParse(first).success).toBe(true);
   });
 
   it('produit toujours des verdicts conformes au schéma du modèle', async () => {

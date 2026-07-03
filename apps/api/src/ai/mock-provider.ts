@@ -1,8 +1,17 @@
-import { MOCK_ROTATION, MOCK_RULES } from './mock-fixtures.js';
+import {
+  MOCK_ROTATION,
+  MOCK_RULES,
+  MOCK_URL_NO_HTTPS,
+  MOCK_URL_OFFICIAL,
+  MOCK_URL_YOUNG_DOMAIN,
+} from './mock-fixtures.js';
 import type { AIProvider, AIVerdict, AnalyzeInput } from './provider.js';
 
 /** Sous ce nombre de caractères, le mock répond INDETERMINE (contenu trop court). */
 const SHORT_CONTENT_THRESHOLD = 15;
+
+/** En dessous de cet âge (jours), un domaine est considéré « jetable » par le mock. */
+const YOUNG_DOMAIN_DAYS = 30;
 
 export interface MockProviderOptions {
   /** Latence simulée pour tester l'écran d'attente de l'app (0 dans les tests). */
@@ -24,25 +33,58 @@ export class MockProvider implements AIProvider {
     if (this.delayMs > 0) {
       await new Promise((resolve) => setTimeout(resolve, this.delayMs));
     }
+    switch (input.kind) {
+      case 'text':
+        return this.analyzeText(input.content);
+      case 'url':
+        return this.analyzeUrl(input.content, input.urlSignals);
+      case 'image':
+        // Pas d'OCR côté mock : rotation déterministe sur la taille de l'image.
+        return rotationVerdict(input.image.base64);
+    }
+  }
 
-    const content = input.content.trim();
+  private analyzeText(rawContent: string): AIVerdict {
+    const content = rawContent.trim();
     if (content.length < SHORT_CONTENT_THRESHOLD) {
       return MOCK_ROTATION[3]; // INDETERMINE
     }
-
     for (const rule of MOCK_RULES) {
       if (rule.pattern.test(content)) {
         return rule.verdict;
       }
     }
-
-    // Rotation déterministe : même contenu → même verdict, et les 4 états
-    // de l'UI sont atteignables en variant le texte soumis.
-    let hash = 0;
-    for (let i = 0; i < content.length; i += 1) {
-      hash = (hash * 31 + content.charCodeAt(i)) >>> 0;
-    }
-    const index = (hash % MOCK_ROTATION.length) as 0 | 1 | 2 | 3;
-    return MOCK_ROTATION[index];
+    return rotationVerdict(content);
   }
+
+  private analyzeUrl(
+    url: string,
+    signals: { https: boolean; domainAgeDays: number | null; isOfficialDomain: boolean },
+  ): AIVerdict {
+    if (signals.isOfficialDomain) {
+      return MOCK_URL_OFFICIAL;
+    }
+    if (signals.domainAgeDays !== null && signals.domainAgeDays < YOUNG_DOMAIN_DAYS) {
+      return MOCK_URL_YOUNG_DOMAIN;
+    }
+    if (!signals.https) {
+      return MOCK_URL_NO_HTTPS;
+    }
+    for (const rule of MOCK_RULES) {
+      if (rule.pattern.test(url)) {
+        return rule.verdict;
+      }
+    }
+    return rotationVerdict(url);
+  }
+}
+
+/** Rotation déterministe : même contenu → même verdict, 4 états atteignables. */
+function rotationVerdict(seed: string): AIVerdict {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  const index = (hash % MOCK_ROTATION.length) as 0 | 1 | 2 | 3;
+  return MOCK_ROTATION[index];
 }

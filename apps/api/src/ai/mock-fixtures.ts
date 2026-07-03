@@ -144,6 +144,52 @@ export const MOCK_RULES: readonly MockRule[] = [
   },
 ];
 
+/** Fixtures dédiées à l'analyse d'URL (mode mock). */
+export const MOCK_URL_OFFICIAL: AIVerdict = {
+  verdict: 'PLUTOT_SUR',
+  confidence: 0.85,
+  category: 'AUCUNE',
+  summary: 'Ce lien pointe vers un site officiel connu.',
+  reasons: [
+    'Le domaine figure dans la liste des sites officiels français.',
+    'La connexion est chiffrée (HTTPS).',
+  ],
+  actions: [
+    'Vérifiez toujours que l’adresse affichée dans votre navigateur est bien la même.',
+    'En cas de doute sur un paiement, contactez directement votre banque.',
+  ],
+};
+
+export const MOCK_URL_YOUNG_DOMAIN: AIVerdict = {
+  verdict: 'ARNAQUE_PROBABLE',
+  confidence: 0.9,
+  category: 'FAUX_SITE_ECOMMERCE',
+  summary: 'Ce site a été créé très récemment, ce qui est typique des faux sites.',
+  reasons: [
+    'Le domaine a été enregistré il y a moins d’un mois.',
+    'Les escrocs créent des sites jetables qui disparaissent en quelques semaines.',
+  ],
+  actions: [
+    'N’achetez rien et ne saisissez aucune coordonnée bancaire sur ce site.',
+    'Signalez l’adresse sur cybermalveillance.gouv.fr.',
+  ],
+};
+
+export const MOCK_URL_NO_HTTPS: AIVerdict = {
+  verdict: 'SUSPECT',
+  confidence: 0.7,
+  category: 'AUTRE',
+  summary: 'Ce site n’utilise pas de connexion sécurisée : soyez prudent.',
+  reasons: [
+    'La connexion n’est pas chiffrée (pas de HTTPS).',
+    'Aucun site sérieux ne demande des informations personnelles sans connexion sécurisée.',
+  ],
+  actions: [
+    'Ne saisissez aucune information personnelle ou bancaire sur ce site.',
+    'Cherchez le site officiel de l’organisme via votre moteur de recherche.',
+  ],
+};
+
 /**
  * Verdicts de rotation (contenu sans mot-clé reconnu) : l'index est choisi de
  * façon déterministe à partir du contenu, pour couvrir les 4 états de l'UI.

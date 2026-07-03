@@ -2,7 +2,13 @@ import Anthropic from '@anthropic-ai/sdk';
 
 import type { AIProvider, AIVerdict, AnalyzeInput } from './provider.js';
 import { AIUnavailableError } from './provider.js';
-import { buildUserMessage, RETRY_NUDGE, SYSTEM_PROMPT } from './system-prompt.js';
+import {
+  buildUserMessage,
+  describeUrlSignals,
+  IMAGE_USER_MESSAGE,
+  RETRY_NUDGE,
+  SYSTEM_PROMPT,
+} from './system-prompt.js';
 import { INDETERMINE_FALLBACK, parseAIVerdict } from './verdict-schema.js';
 
 /** Signature minimale injectable pour les tests (l'appel SDK est mocké). */
@@ -38,7 +44,7 @@ export class AnthropicProvider implements AIProvider {
 
   async analyze(input: AnalyzeInput): Promise<AIVerdict> {
     const messages: Anthropic.MessageParam[] = [
-      { role: 'user', content: buildUserMessage(input.kind, input.content) },
+      { role: 'user', content: buildInitialContent(input) },
     ];
 
     for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -67,5 +73,30 @@ export class AnthropicProvider implements AIProvider {
     }
 
     return INDETERMINE_FALLBACK;
+  }
+}
+
+/**
+ * Construit le contenu du premier message selon le type d'entrée.
+ * L'image est transmise en bloc vision, traitée en mémoire uniquement (§8.1).
+ */
+function buildInitialContent(input: AnalyzeInput): string | Anthropic.ContentBlockParam[] {
+  switch (input.kind) {
+    case 'text':
+      return buildUserMessage('text', input.content);
+    case 'url':
+      return buildUserMessage('url', input.content, describeUrlSignals(input.urlSignals));
+    case 'image':
+      return [
+        {
+          type: 'image',
+          source: {
+            type: 'base64',
+            media_type: input.image.mediaType,
+            data: input.image.base64,
+          },
+        },
+        { type: 'text', text: IMAGE_USER_MESSAGE },
+      ];
   }
 }

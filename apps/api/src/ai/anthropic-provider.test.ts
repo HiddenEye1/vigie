@@ -123,6 +123,48 @@ describe('AnthropicProvider', () => {
     expect(createMessage).toHaveBeenCalledTimes(2);
   });
 
+  it('URL : le contexte technique §8.3 est transmis au modèle', async () => {
+    const createMessage = vi
+      .fn<CreateMessageFn>()
+      .mockResolvedValue(fakeResponse(VALID_MODEL_JSON));
+    await makeProvider(createMessage).analyze({
+      kind: 'url',
+      content: 'https://arnaque.example/',
+      urlSignals: {
+        finalUrl: 'https://arnaque.example/final',
+        https: true,
+        redirects: 2,
+        domainAgeDays: 12,
+        isOfficialDomain: false,
+        pageTitle: 'Gagnez un iPhone',
+        metaDescription: null,
+        fetchFailed: false,
+      },
+    });
+    const rawContent = firstCallParams(createMessage).messages[0]?.content;
+    expect(typeof rawContent).toBe('string');
+    const content = rawContent as string;
+    expect(content).toContain('https://arnaque.example/final');
+    expect(content).toContain('Redirections suivies : 2');
+    expect(content).toContain('12 jours');
+    expect(content).toContain('Gagnez un iPhone');
+  });
+
+  it('image : transmise en bloc vision base64, jamais en texte', async () => {
+    const createMessage = vi
+      .fn<CreateMessageFn>()
+      .mockResolvedValue(fakeResponse(VALID_MODEL_JSON));
+    await makeProvider(createMessage).analyze({
+      kind: 'image',
+      image: { mediaType: 'image/png', base64: 'QUJDRA==' },
+    });
+    const content = firstCallParams(createMessage).messages[0]?.content;
+    expect(Array.isArray(content)).toBe(true);
+    const blocks = content as { type: string }[];
+    expect(blocks[0]?.type).toBe('image');
+    expect(blocks[1]?.type).toBe('text');
+  });
+
   it('lève AIUnavailableError quand l’API échoue', async () => {
     const createMessage = vi.fn<CreateMessageFn>().mockRejectedValue(new Error('overloaded'));
     await expect(makeProvider(createMessage).analyze(INPUT)).rejects.toBeInstanceOf(
