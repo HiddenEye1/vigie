@@ -1,0 +1,20 @@
+{
+  "id": "ameli-impots",
+  "title": "Les faux messages Ameli et impôts",
+  "icon": "business",
+  "categories": ["PHISHING_ADMINISTRATION"],
+  "what": "Des escrocs imitent l'Assurance Maladie (Ameli), les impôts ou la CAF. Ils annoncent un remboursement à percevoir, une nouvelle carte Vitale à commander ou un trop-perçu à régulariser. Le lien mène vers un faux site officiel qui vole vos identifiants, vos coordonnées bancaires, ou les deux.",
+  "signs": [
+    "On vous promet un remboursement inattendu : les administrations ne préviennent pas par SMS avec un lien.",
+    "On vous menace d'une majoration ou d'une suspension de droits si vous ne répondez pas vite.",
+    "L'adresse du site ne se termine pas par ameli.fr ou impots.gouv.fr.",
+    "On vous demande votre RIB ou votre carte bancaire pour « recevoir » de l'argent : recevoir un virement ne nécessite jamais votre carte."
+  ],
+  "actions": [
+    "Ne cliquez pas sur le lien du message.",
+    "Connectez-vous directement à votre compte en tapant vous-même ameli.fr ou impots.gouv.fr.",
+    "Signalez le message sur signal-spam.fr et transférez les SMS au 33700.",
+    "En cas de doute, appelez le 3646 (Ameli) ou votre centre des impôts."
+  ],
+  "example": "« Ameli : votre nouvelle carte Vitale est disponible. Commandez-la sous 48 h : ameli-carte.info ». Le faux site demandait le numéro de sécurité sociale, puis la carte bancaire pour « 0,99 € de frais d'envoi »."
+}

@@ -1,0 +1,20 @@
+{
+  "id": "fraude-president-proche",
+  "title": "Le faux proche en détresse (et la voix truquée)",
+  "icon": "people",
+  "categories": [],
+  "what": "Vous recevez un message — parfois un appel — d'un « proche » en difficulté : « Maman, j'ai cassé mon téléphone, c'est mon nouveau numéro. J'ai un paiement urgent à faire, tu peux m'aider ? ». Les escrocs peuvent aujourd'hui imiter une voix à partir de quelques secondes d'enregistrement grâce à l'intelligence artificielle. La même mécanique vise les entreprises : un faux « président » ordonne un virement urgent et confidentiel à la comptabilité.",
+  "signs": [
+    "Un nouveau numéro inconnu se présente comme votre enfant ou petit-enfant.",
+    "La demande d'argent est urgente et il est impossible de rappeler la personne « pour l'instant ».",
+    "On insiste pour que cela reste secret ou que vous fassiez vite, sans en parler autour de vous.",
+    "Au téléphone, la voix ressemble à celle du proche mais la conversation est courte, pressée, étrange."
+  ],
+  "actions": [
+    "Raccrochez ou ne répondez pas tout de suite, puis rappelez votre proche sur son numéro habituel.",
+    "Posez une question dont seul le vrai proche connaît la réponse (un souvenir précis, un surnom).",
+    "Convenez en famille d'un mot de passe à demander en cas d'urgence.",
+    "Ne faites jamais de virement dans la précipitation, même pour un petit montant."
+  ],
+  "example": "« Papa, c'est moi, nouveau numéro. Mon téléphone est cassé, je dois payer une facture avant 18 h, tu peux faire un virement de 480 € ? Je te rembourse ce week-end. » Le père a rappelé le vrai numéro de sa fille : elle était au travail, son téléphone fonctionnait parfaitement."
+}

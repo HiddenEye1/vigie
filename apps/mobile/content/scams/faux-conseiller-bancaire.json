@@ -1,0 +1,20 @@
+{
+  "id": "faux-conseiller-bancaire",
+  "title": "Le faux conseiller bancaire",
+  "icon": "card",
+  "categories": ["FAUX_CONSEILLER_BANCAIRE"],
+  "what": "Un escroc vous appelle en se faisant passer pour le service anti-fraude de votre banque. Il connaît souvent votre nom, parfois votre numéro de carte, et affiche même le vrai numéro de votre banque sur votre téléphone. Il prétend que des paiements suspects sont en cours et qu'il faut agir immédiatement pour « sécuriser » votre compte.",
+  "signs": [
+    "On vous presse d'agir tout de suite, sous peine de perdre votre argent.",
+    "On vous demande vos codes secrets, un code reçu par SMS, ou de valider une opération dans votre application bancaire.",
+    "On vous propose de transférer votre argent vers un « compte sécurisé ».",
+    "L'appel semble venir du vrai numéro de la banque : ce numéro peut être imité."
+  ],
+  "actions": [
+    "Raccrochez, même si l'interlocuteur semble sérieux et bien informé.",
+    "Rappelez vous-même votre banque au numéro inscrit au dos de votre carte bancaire.",
+    "Ne communiquez jamais un code secret ou un code SMS, même à un « conseiller ».",
+    "Si vous avez validé quelque chose, appelez immédiatement votre banque puis faites opposition."
+  ],
+  "example": "« Bonjour Madame R., service fraude de votre banque. Trois paiements viennent d'être tentés avec votre carte en Espagne. Pour les bloquer, validez la demande que je viens de vous envoyer dans votre application. » Madame R. a validé : c'était en réalité un virement de 2 400 € vers le compte de l'escroc."
+}

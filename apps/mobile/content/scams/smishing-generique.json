@@ -1,0 +1,20 @@
+{
+  "id": "smishing-generique",
+  "title": "Les SMS frauduleux en général (smishing)",
+  "icon": "chatbox",
+  "categories": ["SMISHING_AUTRE"],
+  "what": "Le « smishing » (hameçonnage par SMS) est le canal préféré des escrocs : banque, colis, administration, mutuelle, péage, abonnement… Le principe est toujours le même : un message court, un prétexte crédible, un sentiment d'urgence et un lien à cliquer. Le lien mène vers un faux site qui récupère vos identifiants ou votre carte bancaire.",
+  "signs": [
+    "Le message crée l'urgence : « dernier rappel », « sous 24 h », « votre compte sera suspendu ».",
+    "Il contient un lien raccourci ou une adresse qui ne correspond pas à l'organisme prétendu.",
+    "Le numéro d'expéditeur est un mobile ordinaire (06/07) ou un numéro étranger pour un organisme officiel.",
+    "Le message vous est adressé sans votre nom, ou avec des tournures inhabituelles."
+  ],
+  "actions": [
+    "Ne cliquez pas sur le lien : dans le doute, faites-le analyser par Vigie.",
+    "Transférez le SMS au 33700 (service gratuit de signalement) puis supprimez-le.",
+    "Si le message prétend venir d'un organisme, contactez-le par son site ou son numéro officiels.",
+    "Ne rappelez jamais un numéro surtaxé indiqué dans un SMS."
+  ],
+  "example": "« Votre forfait mobile est suspendu suite à un incident de paiement. Régularisez sous 24 h : operateur-clients.info ». L'opérateur, contacté au numéro officiel, a confirmé qu'aucun incident n'existait : le prélèvement était bien passé."
+}

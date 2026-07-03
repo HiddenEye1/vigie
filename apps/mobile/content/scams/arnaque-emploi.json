@@ -1,0 +1,20 @@
+{
+  "id": "arnaque-emploi",
+  "title": "Les fausses offres d'emploi",
+  "icon": "briefcase",
+  "categories": ["ARNAQUE_EMPLOI"],
+  "what": "Une offre d'emploi trop belle arrive par SMS, WhatsApp ou e-mail : travail à domicile, quelques heures par jour, très bien payé. Les variantes sont nombreuses : « liker » des vidéos contre rémunération, tâches en ligne à prépayer, faux contrat qui sert à récupérer vos documents d'identité et votre RIB, ou chèque à encaisser « pour tester votre banque » qui se révèle volé.",
+  "signs": [
+    "On vous recrute sans entretien ni CV, souvent via WhatsApp ou Telegram.",
+    "La rémunération promise est très élevée pour des tâches simples.",
+    "On vous demande de payer d'abord : caution, formation, matériel, frais de dossier.",
+    "On vous demande très vite votre RIB, votre carte d'identité ou de recevoir de l'argent sur votre compte pour le transférer (cela ferait de vous une « mule » bancaire, ce qui est un délit)."
+  ],
+  "actions": [
+    "Ne payez jamais pour obtenir un emploi : un vrai employeur ne demande pas d'argent.",
+    "N'envoyez pas vos documents d'identité avant d'avoir vérifié l'entreprise (registre du commerce, site officiel, numéro SIREN).",
+    "N'acceptez jamais de recevoir puis transférer de l'argent, même contre commission.",
+    "Signalez le message au 33700 et l'offre à la plateforme qui la diffuse."
+  ],
+  "example": "« Bonjour, notre agence recrute pour du travail à domicile : 150 à 400 € par jour pour liker des vidéos. » Après quelques micro-gains versés pour mettre en confiance, il fallait « débloquer le niveau supérieur » en versant 300 €, puis 900 €. Les gains affichés n'ont jamais pu être retirés."
+}

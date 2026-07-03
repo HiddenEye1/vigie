@@ -1,0 +1,20 @@
+{
+  "id": "faux-support-technique",
+  "title": "Le faux support technique",
+  "icon": "desktop",
+  "categories": ["FAUX_SUPPORT_TECHNIQUE"],
+  "what": "En naviguant sur Internet, une fenêtre alarmante apparaît : « Votre ordinateur est infecté ! Appelez immédiatement le support Microsoft ». Parfois une voix ou une alarme sonore accompagne le message. Au téléphone, un faux technicien vous fait installer un logiciel de prise de contrôle à distance, puis vous facture une « réparation » inutile ou vide votre compte bancaire.",
+  "signs": [
+    "Microsoft, Apple ou Google ne vous contactent jamais spontanément pour un virus.",
+    "La fenêtre bloque l'écran, affiche un compte à rebours ou fait retentir une alarme.",
+    "On vous demande d'installer un logiciel comme AnyDesk ou TeamViewer.",
+    "On vous réclame un paiement par carte, virement ou cartes cadeaux pour « réparer »."
+  ],
+  "actions": [
+    "N'appelez pas le numéro affiché et n'installez aucun logiciel demandé par téléphone.",
+    "Fermez le navigateur (ou redémarrez l'appareil si l'écran est bloqué) : l'alerte disparaîtra.",
+    "Si quelqu'un a pris la main sur votre appareil, éteignez-le, changez vos mots de passe et prévenez votre banque.",
+    "Faites vérifier l'appareil par un professionnel de confiance, et consultez cybermalveillance.gouv.fr."
+  ],
+  "example": "« ALERTE MICROSOFT : 5 virus détectés. N'éteignez pas votre PC. Appelez le 01 87 XX XX XX. » Au téléphone, le « technicien » a fait installer un logiciel de contrôle à distance, affiché de faux écrans de virus, puis facturé 299 € — avant de tenter un virement depuis le compte en banque resté ouvert."
+}

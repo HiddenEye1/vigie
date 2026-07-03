@@ -1,0 +1,21 @@
+{
+  "id": "faux-placements",
+  "title": "Les faux placements et fausses cryptomonnaies",
+  "icon": "trending-up",
+  "categories": ["INVESTISSEMENT_FRAUDULEUX"],
+  "what": "On vous propose un placement au rendement exceptionnel et « garanti » : livret à 8 %, cryptomonnaie miracle, parking d'aéroport, vin, or… Un faux conseiller très disponible vous accompagne, un faux site affiche vos gains qui grimpent. Le jour où vous voulez récupérer votre argent, on vous réclame des « frais » supplémentaires, puis tout disparaît. C'est l'arnaque la plus coûteuse en France.",
+  "signs": [
+    "Un rendement élevé présenté comme garanti et sans risque : cela n'existe pas.",
+    "On vous presse d'investir vite pour profiter d'une « occasion unique ».",
+    "Le « conseiller » vous appelle très souvent et devient insistant, voire amical.",
+    "Pour retirer vos gains, il faut d'abord payer des frais ou des impôts imprévus.",
+    "La société n'apparaît pas sur les registres officiels ou figure sur la liste noire de l'AMF."
+  ],
+  "actions": [
+    "Ne versez jamais d'argent sous la pression, même pour de petits montants au début.",
+    "Vérifiez la société sur la liste noire de l'AMF : amf-france.org, rubrique « Espace épargnants ».",
+    "Parlez-en à votre banquier ou à un proche avant tout virement.",
+    "Si vous avez versé de l'argent, cessez immédiatement, conservez toutes les preuves et déposez plainte."
+  ],
+  "example": "« Avec notre livret crypto, 500 € deviennent 4 000 € en six mois, capital garanti. » Après un premier versement de 500 €, le faux site affichait +38 %. Encouragée, la victime a versé 15 000 €. Au moment de retirer : « 2 900 € de frais de déblocage » — puis plus aucune réponse."
+}

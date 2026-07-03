@@ -1,0 +1,20 @@
+{
+  "id": "fraude-cpf",
+  "title": "La fraude au compte formation (CPF)",
+  "icon": "school",
+  "categories": ["FRAUDE_CPF_AIDES"],
+  "what": "On vous appelle ou on vous écrit pour vous inciter à « utiliser vos droits CPF avant qu'ils n'expirent ». L'objectif : vous faire donner vos identifiants ou vous inscrire à une formation fantôme, pour vider votre compte formation. Depuis 2022, tout démarchage commercial pour le CPF est interdit par la loi : chaque sollicitation est donc une arnaque.",
+  "signs": [
+    "Tout appel, SMS ou e-mail au sujet du CPF est illégal : il n'y a pas d'exception.",
+    "On prétend que vos droits vont expirer : c'est faux, ils restent disponibles.",
+    "On vous demande votre numéro de sécurité sociale ou vos identifiants FranceConnect.",
+    "On vous propose un cadeau (tablette, téléphone) en échange de votre inscription."
+  ],
+  "actions": [
+    "Raccrochez ou supprimez le message sans répondre.",
+    "Ne communiquez jamais vos identifiants Mon Compte Formation ou FranceConnect.",
+    "Consultez vos droits uniquement sur moncompteformation.gouv.fr.",
+    "Signalez le démarchage sur signal.conso.gouv.fr et les SMS au 33700."
+  ],
+  "example": "« Bonjour, votre solde CPF de 1 800 € expire vendredi. Pour ne pas le perdre, donnez-moi le code reçu par SMS et je bloque une formation pour vous. » Le code a permis à l'escroc d'inscrire la victime à une formation inexistante facturée 1 800 €."
+}

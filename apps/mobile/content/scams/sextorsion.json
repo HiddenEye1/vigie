@@ -1,0 +1,20 @@
+{
+  "id": "sextorsion",
+  "title": "Le chantage à la webcam (sextorsion)",
+  "icon": "eye-off",
+  "categories": ["CHANTAGE_SEXTORSION"],
+  "what": "Vous recevez un e-mail affirmant que votre ordinateur a été piraté et que des images intimes de vous ont été enregistrées via votre webcam. L'expéditeur menace de les envoyer à vos contacts si vous ne payez pas, souvent en bitcoins. Dans l'immense majorité des cas, c'est du bluff total : il n'y a ni piratage ni images. Le message est envoyé à des millions d'adresses au hasard.",
+  "signs": [
+    "Le message est impersonnel et pourrait s'adresser à n'importe qui.",
+    "Pour paraître crédible, il affiche parfois un de vos anciens mots de passe, récupéré dans une fuite de données ancienne.",
+    "Le paiement est exigé en cryptomonnaie, sous 24 ou 48 heures.",
+    "Le français est approximatif ou traduit automatiquement."
+  ],
+  "actions": [
+    "Ne payez jamais et ne répondez pas : répondre confirme que votre adresse est active.",
+    "Si un mot de passe affiché est encore utilisé quelque part, changez-le immédiatement.",
+    "Supprimez le message et signalez-le sur signal-spam.fr.",
+    "Si de vraies images intimes sont en jeu (chantage après un échange réel), ne payez pas non plus : déposez plainte et consultez cybermalveillance.gouv.fr."
+  ],
+  "example": "« J'ai piraté ta webcam, j'ai une vidéo de toi. Preuve : ton mot de passe est 'martine1958'. Envoie 950 € en bitcoin sous 48 h ou j'envoie tout à tes contacts. » Le mot de passe provenait d'une fuite de données de 2016 ; il n'y avait aucune vidéo. Message supprimé, mot de passe changé, aucune suite."
+}

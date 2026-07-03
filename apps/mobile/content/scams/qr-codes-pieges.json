@@ -1,0 +1,20 @@
+{
+  "id": "qr-codes-pieges",
+  "title": "Les QR codes piégés",
+  "icon": "qr-code",
+  "categories": [],
+  "what": "Un QR code mène vers un site sans que vous puissiez lire l'adresse avant de scanner. Les escrocs en profitent : faux QR codes collés sur les horodateurs et bornes de recharge, ajoutés sur de faux avis de passage dans votre boîte aux lettres, ou insérés dans des e-mails pour contourner les filtres de sécurité. Le site ouvert imite un service connu et récupère votre carte bancaire.",
+  "signs": [
+    "Le QR code est un autocollant posé par-dessus l'original (bords visibles, alignement étrange).",
+    "Un avis de passage sans logo précis vous invite à scanner pour « reprogrammer une livraison ».",
+    "Après le scan, l'adresse du site ne correspond pas à l'organisme attendu.",
+    "Le site demande immédiatement un paiement ou vos coordonnées bancaires."
+  ],
+  "actions": [
+    "Avant de payer, regardez l'adresse affichée par votre téléphone après le scan : au moindre doute, fermez la page.",
+    "Pour le stationnement ou la recharge, utilisez l'application officielle plutôt que le QR code affiché.",
+    "Ne saisissez jamais votre carte bancaire sur un site ouvert par un QR code non vérifié.",
+    "Vous pouvez copier le lien et le faire analyser par Vigie avant de l'ouvrir."
+  ],
+  "example": "Sur un horodateur, un autocollant « Payez votre stationnement par QR code » recouvrait l'écran. Le site imitait PayByPhone et demandait la carte bancaire : 2 € débités pour le « stationnement »… puis 1 450 € d'achats frauduleux dans la semaine."
+}

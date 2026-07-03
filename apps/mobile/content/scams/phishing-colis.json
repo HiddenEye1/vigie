@@ -1,0 +1,20 @@
+{
+  "id": "phishing-colis",
+  "title": "Le faux avis de colis",
+  "icon": "cube",
+  "categories": ["PHISHING_COLIS"],
+  "what": "Vous recevez un SMS ou un e-mail prétendant venir de Chronopost, Colissimo, Mondial Relay ou de la douane : un colis serait en attente et il faudrait payer une petite somme (souvent 1 à 3 €) pour le recevoir. Le lien mène vers un faux site qui copie celui du transporteur et récupère votre numéro de carte bancaire.",
+  "signs": [
+    "On vous réclame des « frais de livraison » ou des « frais de douane » par SMS : les vrais transporteurs ne font jamais cela.",
+    "Le message arrive alors que vous n'attendez pas de colis, ou sans numéro de suivi précis.",
+    "L'adresse du lien ne se termine pas par le vrai nom du transporteur (par exemple chronopost.fr).",
+    "Le paiement demandé est très faible : c'est votre numéro de carte qui intéresse l'escroc, pas les 2 €."
+  ],
+  "actions": [
+    "Ne cliquez pas sur le lien et ne payez rien.",
+    "Transférez le SMS au 33700, le service officiel de signalement.",
+    "Si vous attendez vraiment un colis, tapez vous-même l'adresse du site du transporteur et saisissez votre numéro de suivi.",
+    "Si vous avez saisi votre carte, faites opposition immédiatement au numéro au dos de votre carte."
+  ],
+  "example": "« Chronopost : votre colis n° 7F2K est en attente. Des frais de 1,95 € restent dus : chrono-livraison-fr.com ». Le site imitait parfaitement Chronopost ; la carte saisie a ensuite été débitée de 780 € en trois fois."
+}

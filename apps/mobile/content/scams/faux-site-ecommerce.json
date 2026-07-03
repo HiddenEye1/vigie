@@ -1,0 +1,21 @@
+{
+  "id": "faux-site-ecommerce",
+  "title": "Les faux sites de vente en ligne",
+  "icon": "cart",
+  "categories": ["FAUX_SITE_ECOMMERCE"],
+  "what": "Des boutiques en ligne entières sont créées de toutes pièces pour encaisser des paiements sans jamais rien livrer, ou pour voler des numéros de carte. Elles copient parfois de grandes marques et se font connaître par des publicités sur les réseaux sociaux avec des prix incroyablement bas.",
+  "signs": [
+    "Des remises énormes (-70 %, -80 %) sur des produits de marque très demandés.",
+    "Le site a été créé très récemment et n'a aucun historique ni avis fiable.",
+    "Pas de mentions légales, pas d'adresse physique, pas de numéro de téléphone joignable.",
+    "Le paiement en plusieurs fois ou par carte est le seul moyen proposé, sans PayPal ni options connues.",
+    "Des fautes d'orthographe et des photos de mauvaise qualité."
+  ],
+  "actions": [
+    "Cherchez le nom du site suivi du mot « avis » avant tout achat.",
+    "Vérifiez les mentions légales et l'ancienneté du site : Vigie peut analyser le lien pour vous.",
+    "Privilégiez les sites connus et le paiement avec confirmation bancaire.",
+    "Si vous avez payé, faites opposition et signalez le site sur internet-signalement.gouv.fr."
+  ],
+  "example": "Une publicité proposait des chaussures de grande marque à -75 % sur un site au nom presque identique à l'officiel. Commande payée 45 €, jamais livrée ; le site a disparu trois semaines plus tard, avec les coordonnées bancaires de centaines de clients."
+}

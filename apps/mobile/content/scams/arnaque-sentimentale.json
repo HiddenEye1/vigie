@@ -1,0 +1,21 @@
+{
+  "id": "arnaque-sentimentale",
+  "title": "L'arnaque sentimentale",
+  "icon": "heart",
+  "categories": ["ARNAQUE_SENTIMENTALE"],
+  "what": "Une personne rencontrée en ligne (site de rencontre, réseau social, jeu) construit une relation à distance sur des semaines ou des mois. Photos séduisantes, messages quotidiens, projets d'avenir… puis surviennent les problèmes d'argent : un accident, des frais de douane, un billet d'avion pour enfin se rencontrer. La personne n'existe pas : les photos sont volées, parfois générées par intelligence artificielle.",
+  "signs": [
+    "La personne évite systématiquement les appels vidéo ou les rencontres, avec toujours une bonne excuse.",
+    "Elle se dit souvent à l'étranger : militaire, ingénieur sur une plateforme, médecin en mission.",
+    "La relation devient très intense très vite, avec des déclarations d'amour précoces.",
+    "Tôt ou tard, une demande d'argent arrive, souvent présentée comme un prêt urgent et remboursé bientôt.",
+    "Elle demande la discrétion : « n'en parle à personne, ils ne comprendraient pas »."
+  ],
+  "actions": [
+    "N'envoyez jamais d'argent à une personne que vous n'avez jamais rencontrée physiquement.",
+    "Faites une recherche d'image inversée sur ses photos (images.google.com) : elles sont souvent volées.",
+    "Parlez de la relation à un proche de confiance : un regard extérieur repère vite l'arnaque.",
+    "Si vous avez déjà envoyé de l'argent, cessez tout envoi, conservez les échanges et déposez plainte."
+  ],
+  "example": "« Chirurgien déployé au Yémen », il a échangé chaque jour pendant quatre mois avec une veuve de 62 ans. Un jour, son « matériel médical » aurait été bloqué à la douane : 3 800 € demandés « remboursés à mon retour le mois prochain ». Trois autres demandes ont suivi, pour un total de 11 000 €."
+}

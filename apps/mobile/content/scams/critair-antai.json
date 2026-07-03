@@ -1,0 +1,20 @@
+{
+  "id": "critair-antai",
+  "title": "Les fausses amendes et vignettes Crit'Air",
+  "icon": "car",
+  "categories": ["PHISHING_ADMINISTRATION"],
+  "what": "Vous recevez un SMS annonçant une amende impayée (ANTAI) ou vous invitant à commander votre vignette Crit'Air. Le ton est menaçant : majoration imminente, poursuite, suspension. Le lien mène vers un faux site de paiement qui copie les sites officiels de l'État.",
+  "signs": [
+    "L'ANTAI n'envoie jamais de SMS pour une première notification d'amende : elle arrive par courrier.",
+    "On vous menace d'une majoration dans les 24 ou 48 heures pour vous faire payer sans réfléchir.",
+    "L'adresse du lien ne se termine pas par antai.gouv.fr ou certificat-air.gouv.fr.",
+    "La vignette Crit'Air coûte moins de 5 € : un site qui demande plus est frauduleux."
+  ],
+  "actions": [
+    "Ne cliquez pas et ne payez rien depuis le lien reçu.",
+    "Vérifiez une éventuelle amende uniquement sur antai.gouv.fr, en tapant l'adresse vous-même.",
+    "Commandez la vignette Crit'Air uniquement sur certificat-air.gouv.fr.",
+    "Transférez le SMS au 33700 pour le signaler."
+  ],
+  "example": "« ANTAI : dernier rappel avant majoration. Votre amende de 35 € passera à 375 € ce soir. Payez ici : antai-paiement.net ». Le site imitait le logo de la République française ; 35 € payés, puis la carte a été réutilisée pour d'autres achats."
+}

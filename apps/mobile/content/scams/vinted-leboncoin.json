@@ -1,0 +1,20 @@
+{
+  "id": "vinted-leboncoin",
+  "title": "Les arnaques Vinted et Leboncoin",
+  "icon": "pricetags",
+  "categories": ["ARNAQUE_PETITES_ANNONCES"],
+  "what": "Sur les sites de petites annonces, des escrocs se font passer pour des acheteurs ou des vendeurs. Le grand classique : un « acheteur » très intéressé vous envoie un lien de « paiement sécurisé » ou de « livraison » qui imite la plateforme, pour récupérer votre carte bancaire. Autre variante : un vendeur exige un paiement hors de la plateforme puis disparaît.",
+  "signs": [
+    "On vous pousse à continuer la discussion sur WhatsApp ou par e-mail, hors de la messagerie officielle.",
+    "On vous envoie un lien de paiement ou de livraison reçu par SMS ou e-mail : les vraies plateformes n'en envoient pas ainsi.",
+    "Un acheteur accepte votre prix immédiatement, sans négocier ni poser de question.",
+    "Un vendeur exige un virement, des coupons PCS ou un mandat cash avant l'envoi."
+  ],
+  "actions": [
+    "Restez toujours dans la messagerie et le système de paiement officiels de la plateforme.",
+    "Ne saisissez jamais votre carte bancaire sur un lien reçu par SMS ou e-mail.",
+    "Refusez tout paiement par coupon, recharge ou virement à un inconnu.",
+    "Signalez le profil à la plateforme pour protéger les autres utilisateurs."
+  ],
+  "example": "« Bonjour, je prends votre canapé. J'ai payé via le transporteur partenaire, cliquez ici pour recevoir les 250 € : vinted-livraison.com ». Le faux site demandait le numéro de carte « pour recevoir le virement » : la carte a été débitée, pas créditée."
+}
