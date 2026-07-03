@@ -65,16 +65,61 @@ npm run check
 
 ## Backend — API
 
-Routes disponibles (Phase 1) :
+Routes disponibles (Phases 1–2) :
 
 - `GET /v1/health` — healthcheck.
-- `POST /v1/analyze` — analyse d'un texte collé (`{ kind: "text", content, device_id }`).
-  Réponse : verdict structuré (niveau de risque, catégorie, explication, actions).
-  Erreurs : `400` (entrée invalide), `429` (limite de requêtes), `503` (IA indisponible) —
-  toutes avec un message en français réutilisable tel quel dans l'app.
+- `POST /v1/analyze` — analyse d'un contenu suspect. Trois formes :
+  - texte : JSON `{ kind: "text", content, device_id }` ;
+  - lien : JSON `{ kind: "url", content, device_id }` — le backend suit les
+    redirections (max 5), extrait titre/description (20 Ko max), calcule l'âge
+    du domaine (RDAP, mis en cache) et vérifie la liste locale
+    [official-domains.json](apps/api/src/data/official-domains.json) ;
+  - capture d'écran : `multipart/form-data` avec `kind=image`, `device_id` et
+    `image` (JPEG/PNG/WebP, 8 Mo max, type vérifié par nombres magiques —
+    l'image est traitée en mémoire et jamais stockée).
+    Erreurs : `400` (entrée invalide ou URL bloquée), `413` (image trop lourde),
+    `429` (limite de requêtes), `503` (IA indisponible) — messages en français
+    réutilisables tels quels dans l'app.
+- `POST /v1/waitlist` — `{ email, device_id }` → `201` (validation stricte,
+  dédoublonnage silencieux, date de consentement enregistrée).
+- `POST /v1/event` — `{ name: "share_verdict", device_id }` → `204`.
 
 Rate limiting : 10 analyses/heure et 30/jour par `device_id` **et** par IP
 (configurable via `RATE_LIMIT_PER_HOUR` / `RATE_LIMIT_PER_DAY`).
+
+### Sécurité anti-SSRF (analyse d'URL)
+
+Toute URL soumise passe par [ssrf.ts](apps/api/src/security/ssrf.ts) :
+
+- schémas `http(s)` et ports web uniquement, identifiants embarqués refusés ;
+- IP privées, réservées, lien-local (métadonnées cloud), CGNAT, multicast,
+  IPv6 ULA/mappées/NAT64 et `localhost` refusées — y compris à **chaque saut
+  de redirection** ;
+- le contrôle est ré-appliqué au moment de la connexion via un résolveur DNS
+  personnalisé (dispatcher undici), ce qui neutralise le DNS rebinding ;
+- lecture plafonnée à 20 Ko, contenu jamais exécuté, délai total 5 s.
+
+### Base de données
+
+PostgreSQL via Drizzle, utilisée **uniquement** pour : waitlist, télémétrie
+anonyme (`request_id`, `device_id`, `kind`, verdict, catégorie, latence — jamais
+de contenu), cache d'âge de domaine. Migrations SQL dans
+[apps/api/migrations](apps/api/migrations), appliquées automatiquement au
+démarrage. Sans base joignable, l'analyse fonctionne quand même (waitlist et
+événements répondent 503).
+
+> **Windows sans Docker** : PostgreSQL 16 peut être installé nativement
+> (`winget install PostgreSQL.PostgreSQL.16`), puis créez le rôle et la base :
+> `CREATE ROLE vigie LOGIN PASSWORD 'vigie_local_dev'; CREATE DATABASE vigie OWNER vigie;`
+
+### Image Docker de production
+
+```bash
+docker build -f apps/api/Dockerfile -t vigie-api .
+docker run --env-file .env -p 3000:3000 vigie-api
+```
+
+Multi-stage, exécution non-root, healthcheck intégré, bundle esbuild.
 
 ### Moteur d'analyse : l'interface `AIProvider`
 
