@@ -1,10 +1,18 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import * as Sharing from 'expo-sharing';
 import type { ReactElement } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { captureRef } from 'react-native-view-shot';
 
 import { PrimaryButton } from '../../components/primary-button';
+import { ShareCard } from '../../components/share-card';
 import { VerdictContent } from '../../components/verdict-content';
-import { colors, fontSize, spacing } from '../../lib/theme';
+import { sendShareEvent } from '../../lib/api';
+import { getDeviceId } from '../../lib/device-id';
+import { guideForCategory } from '../../lib/scam-guides';
+import { colors, fontSize, MIN_TOUCH_TARGET, radius, spacing } from '../../lib/theme';
 import { selectEntryById, useHistory } from '../../store/history';
 
 /** Écran de verdict (§4.2) — relit l'entrée depuis l'historique local. */
@@ -12,6 +20,9 @@ export default function VerdictScreen(): ReactElement {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const entry = useHistory(selectEntryById(id));
+  const shareCardRef = useRef<View>(null);
+  const [renderShareCard, setRenderShareCard] = useState(false);
+  const [sharing, setSharing] = useState(false);
 
   if (!entry) {
     return (
@@ -29,18 +40,81 @@ export default function VerdictScreen(): ReactElement {
     );
   }
 
+  const guide = guideForCategory(entry.category);
+  const finalUrl = entry.fullResult.url_analysis?.final_url;
+
+  const shareVerdict = async (): Promise<void> => {
+    setSharing(true);
+    setRenderShareCard(true);
+    try {
+      // Laisse un cycle de rendu à la carte hors écran avant la capture.
+      await new Promise((resolve) => setTimeout(resolve, 150));
+      const uri = await captureRef(shareCardRef, { format: 'png', quality: 1 });
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(uri, {
+          mimeType: 'image/png',
+          dialogTitle: 'Partager ce verdict',
+        });
+        // Télémétrie anonyme (§12), sans bloquer l'utilisateur.
+        void getDeviceId().then((deviceId) => sendShareEvent(deviceId));
+      }
+    } catch {
+      // Partage annulé ou impossible : rien à faire, l'écran reste inchangé.
+    } finally {
+      setRenderShareCard(false);
+      setSharing(false);
+    }
+  };
+
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
       <VerdictContent result={entry.fullResult} />
+
+      {finalUrl ? (
+        <Text style={styles.urlInfo} numberOfLines={2}>
+          Adresse vérifiée : {finalUrl}
+        </Text>
+      ) : null}
+
+      {guide ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Lire la fiche conseil : ${guide.title}`}
+          onPress={() => {
+            router.push(`/fiche/${guide.id}`);
+          }}
+          style={({ pressed }) => [styles.guideLink, pressed && styles.guideLinkPressed]}
+        >
+          <Ionicons name="book" size={22} color={colors.accent} />
+          <Text style={styles.guideLinkText}>En savoir plus : {guide.title}</Text>
+          <Ionicons name="chevron-forward" size={20} color={colors.accent} />
+        </Pressable>
+      ) : null}
+
       <View style={styles.actions}>
+        <PrimaryButton
+          label={sharing ? 'Préparation du partage…' : 'Partager ce verdict'}
+          icon="share-social"
+          disabled={sharing}
+          onPress={() => {
+            void shareVerdict();
+          }}
+        />
         <PrimaryButton
           label="Nouvelle vérification"
           icon="add-circle"
+          variant="secondary"
           onPress={() => {
             router.dismissTo('/');
           }}
         />
       </View>
+
+      {renderShareCard ? (
+        <View style={styles.offscreen} pointerEvents="none">
+          <ShareCard ref={shareCardRef} result={entry.fullResult} />
+        </View>
+      ) : null}
     </ScrollView>
   );
 }
@@ -54,8 +128,39 @@ const styles = StyleSheet.create({
     padding: spacing.l,
     paddingBottom: spacing.xl,
   },
+  urlInfo: {
+    fontSize: fontSize.small,
+    color: colors.textSecondary,
+    marginTop: spacing.m,
+  },
+  guideLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.s,
+    marginTop: spacing.l,
+    backgroundColor: colors.surface,
+    borderRadius: radius.m,
+    padding: spacing.m,
+    minHeight: MIN_TOUCH_TARGET,
+  },
+  guideLinkPressed: {
+    backgroundColor: colors.card,
+  },
+  guideLinkText: {
+    flex: 1,
+    fontSize: fontSize.body,
+    fontWeight: '600',
+    color: colors.accent,
+    lineHeight: 24,
+  },
   actions: {
     marginTop: spacing.l,
+    gap: spacing.m,
+  },
+  offscreen: {
+    position: 'absolute',
+    left: -1000,
+    top: 0,
   },
   missing: {
     flex: 1,

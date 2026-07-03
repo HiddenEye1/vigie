@@ -33,6 +33,22 @@ export default function TabsLayout(): ReactElement {
           tabBarIcon: ({ color, size }) => <Ionicons name="time" size={size} color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="conseils"
+        options={{
+          title: 'Conseils',
+          tabBarAccessibilityLabel: 'Fiches conseils sur les arnaques',
+          tabBarIcon: ({ color, size }) => <Ionicons name="book" size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="parametres"
+        options={{
+          title: 'Réglages',
+          tabBarAccessibilityLabel: 'Paramètres de l’application',
+          tabBarIcon: ({ color, size }) => <Ionicons name="settings" size={size} color={color} />,
+        }}
+      />
     </Tabs>
   );
 }
