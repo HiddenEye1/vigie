@@ -1,5 +1,5 @@
 import * as Clipboard from 'expo-clipboard';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -17,8 +17,10 @@ type ScreenState = { step: 'editing' } | { step: 'loading' } | { step: 'error'; 
 /** Saisie / collage du message suspect, écran d'attente, puis verdict. */
 export default function VerifyTextScreen(): ReactElement {
   const router = useRouter();
+  // Texte éventuellement reçu via la feuille de partage du système (F10).
+  const { partage } = useLocalSearchParams<{ partage?: string }>();
   const addToHistory = useHistory((state) => state.add);
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(partage ?? '');
   const [state, setState] = useState<ScreenState>({ step: 'editing' });
 
   const pasteFromClipboard = async (): Promise<void> => {

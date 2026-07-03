@@ -1,5 +1,12 @@
 import { fireEvent, renderRouter } from 'expo-router/testing-library';
 
+import { markOnboardingSeen } from '../lib/onboarding';
+
+beforeAll(async () => {
+  // L'onboarding (F9) ne doit pas intercepter les tests de navigation.
+  await markOnboardingSeen();
+});
+
 /**
  * §13 : navigation de base — accueil → écran de saisie.
  * L'état du routeur persistant entre les tests d'un même fichier, le
