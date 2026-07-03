@@ -178,11 +178,21 @@ npm run start --workspace @vigie/mobile
   machine que le bundler, port 3000). Pour un autre backend :
   `apps/mobile/.env` → `EXPO_PUBLIC_API_URL` (voir
   [apps/mobile/.env.example](apps/mobile/.env.example)).
-- Écrans Phase 3 : Accueil → « Vérifier un message » (saisie/coller) →
-  attente avec messages rotatifs → verdict §4.2 ; onglet Historique
-  (100 % local, plafonné à 200 entrées, purge totale).
+- Écrans : onboarding (3 écrans, une seule fois), Accueil avec les
+  3 vérifications (message / capture d'écran / lien), attente avec messages
+  rotatifs, verdict §4.2 avec carte de partage (F7) et lien vers la fiche
+  conseil ; onglets Historique (local, 200 entrées max, purge), Conseils
+  (15 fiches rédigées, consultables hors ligne) et Réglages (waitlist
+  « Bouclier famille », suppression des données, politique de
+  confidentialité, version).
+- Capture d'écran : sélecteur système (aucune permission globale), image
+  recadrée à 1600 px max et compressée en JPEG 80 % avant envoi (§8.1).
+- **Partage entrant (F10)** : nécessite un _development build_
+  (`expo-share-intent` n'existe pas dans Expo Go) — le chargement est
+  défensif, l'app fonctionne normalement sans lui.
 - Tests : `npm run test --workspace @vigie/mobile` (Jest + React Native
-  Testing Library — rendu des 4 verdicts, navigation, store, client API).
+  Testing Library — 4 verdicts, navigation, onboarding, fiches, carte de
+  partage, store, client API).
 
 ## Variables d'environnement
 
