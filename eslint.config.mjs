@@ -10,7 +10,8 @@ export default tseslint.config(
       '**/build/**',
       '**/coverage/**',
       '**/.expo/**',
-      'apps/mobile/**',
+      'apps/mobile/expo-env.d.ts',
+      'apps/mobile/assets/**',
     ],
   },
   js.configs.recommended,
@@ -35,6 +36,11 @@ export default tseslint.config(
   {
     files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
     ...tseslint.configs.disableTypeChecked,
+    rules: {
+      ...tseslint.configs.disableTypeChecked.rules,
+      // Les fichiers de setup Jest (CommonJS) utilisent require() par nature.
+      '@typescript-eslint/no-require-imports': 'off',
+    },
   },
   prettier,
 );
