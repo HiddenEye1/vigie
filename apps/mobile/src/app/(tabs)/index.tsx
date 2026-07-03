@@ -32,6 +32,22 @@ export default function HomeScreen(): ReactElement {
               router.push('/verifier-texte');
             }}
           />
+          <PrimaryButton
+            label="Vérifier une capture d’écran"
+            icon="images"
+            variant="secondary"
+            onPress={() => {
+              router.push('/verifier-capture');
+            }}
+          />
+          <PrimaryButton
+            label="Vérifier un lien"
+            icon="link"
+            variant="secondary"
+            onPress={() => {
+              router.push('/verifier-lien');
+            }}
+          />
         </View>
 
         <View style={styles.reassurance}>
