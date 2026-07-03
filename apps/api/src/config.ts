@@ -16,6 +16,10 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().min(1).default('http://localhost:8081'),
   /** true uniquement derrière un proxy de confiance (Fly.io/Railway) : lit X-Forwarded-For. */
   TRUST_PROXY: booleanEnv.default(false),
+  /** Optionnelle en dev : sans base, l'analyse fonctionne, waitlist/événements → 503. */
+  DATABASE_URL: z.string().optional(),
+  /** Dossier des migrations SQL, relatif au répertoire de lancement. */
+  MIGRATIONS_DIR: z.string().min(1).default('migrations'),
 });
 
 export type AppConfig = z.infer<typeof envSchema>;
