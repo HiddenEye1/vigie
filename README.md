@@ -52,15 +52,73 @@ npm run check
 
 ## Commandes utiles
 
-| Commande               | Effet                                                     |
-| :--------------------- | :-------------------------------------------------------- |
-| `npm run check`        | Lint + typecheck + tests sur tout le monorepo             |
-| `npm run lint`         | ESLint seul                                               |
-| `npm run typecheck`    | `tsc --noEmit` dans chaque workspace                      |
-| `npm run test`         | Tests (Vitest) dans chaque workspace                      |
-| `npm run format`       | Formatage Prettier                                        |
-| `docker compose up -d` | Démarre PostgreSQL local                                  |
-| `docker compose down`  | Arrête PostgreSQL (les données persistent dans le volume) |
+| Commande                             | Effet                                                     |
+| :----------------------------------- | :-------------------------------------------------------- |
+| `npm run check`                      | Lint + typecheck + tests sur tout le monorepo             |
+| `npm run lint`                       | ESLint seul                                               |
+| `npm run typecheck`                  | `tsc --noEmit` dans chaque workspace                      |
+| `npm run test`                       | Tests (Vitest) dans chaque workspace                      |
+| `npm run format`                     | Formatage Prettier                                        |
+| `npm run dev --workspace @vigie/api` | Démarre l'API en développement (rechargement auto)        |
+| `docker compose up -d`               | Démarre PostgreSQL local                                  |
+| `docker compose down`                | Arrête PostgreSQL (les données persistent dans le volume) |
+
+## Backend — API
+
+Routes disponibles (Phase 1) :
+
+- `GET /v1/health` — healthcheck.
+- `POST /v1/analyze` — analyse d'un texte collé (`{ kind: "text", content, device_id }`).
+  Réponse : verdict structuré (niveau de risque, catégorie, explication, actions).
+  Erreurs : `400` (entrée invalide), `429` (limite de requêtes), `503` (IA indisponible) —
+  toutes avec un message en français réutilisable tel quel dans l'app.
+
+Rate limiting : 10 analyses/heure et 30/jour par `device_id` **et** par IP
+(configurable via `RATE_LIMIT_PER_HOUR` / `RATE_LIMIT_PER_DAY`).
+
+### Moteur d'analyse : l'interface `AIProvider`
+
+L'appel au modèle est encapsulé derrière une interface unique
+([provider.ts](apps/api/src/ai/provider.ts)) :
+
+```ts
+interface AIProvider {
+  analyze(input: AnalyzeInput): Promise<AIVerdict>;
+}
+```
+
+Deux implémentations, choisies par la variable d'environnement `MOCK_AI` :
+
+- **`MockProvider`** (`MOCK_AI=true`, défaut en dev) — aucun appel réseau, aucune clé requise.
+- **`AnthropicProvider`** (`MOCK_AI=false`) — appel réel à l'API Anthropic
+  (`claude-sonnet-4-6`), sortie JSON stricte validée par Zod, 1 retry en cas de
+  JSON invalide, sinon repli `INDETERMINE`. Testé avec appel mocké.
+
+Brancher un autre fournisseur pour le calibrage = écrire une classe qui implémente
+`AIProvider`, sans toucher au reste du code.
+
+Les garde-fous s'appliquent **côté serveur, quel que soit le fournisseur** :
+
+- `confidence < 0.5` → verdict dégradé en `INDETERMINE` (§4.2) ;
+- injection de prompt détectée dans le contenu analysé → le verdict ne peut
+  jamais être `PLUTOT_SUR` (suite de tests dédiée, §13).
+
+### Mode mock (`MOCK_AI=true`)
+
+Le `MockProvider` renvoie des verdicts réalistes et **déterministes** pour tester
+l'UI dans tous ses états, selon le contenu soumis :
+
+| Contenu contenant…                               | Verdict                                  | Catégorie                 |
+| :----------------------------------------------- | :--------------------------------------- | :------------------------ |
+| « colis », « Chronopost », « livraison »…        | ARNAQUE_PROBABLE                         | PHISHING_COLIS            |
+| « banque », « conseiller », « compte bloqué »…   | ARNAQUE_PROBABLE                         | FAUX_CONSEILLER_BANCAIRE  |
+| « impôts », « amende », « Ameli », « ANTAI »…    | SUSPECT                                  | PHISHING_ADMINISTRATION   |
+| « crypto », « placement », « livret »…           | ARNAQUE_PROBABLE                         | INVESTISSEMENT_FRAUDULEUX |
+| « Vinted », « Leboncoin »…                       | SUSPECT                                  | ARNAQUE_PETITES_ANNONCES  |
+| « CPF », « compte formation »…                   | ARNAQUE_PROBABLE                         | FRAUDE_CPF_AIDES          |
+| « Microsoft », « virus », « support technique »… | ARNAQUE_PROBABLE                         | FAUX_SUPPORT_TECHNIQUE    |
+| moins de 15 caractères                           | INDETERMINE                              | AUCUNE                    |
+| autre texte                                      | rotation déterministe sur les 4 verdicts | —                         |
 
 ## Variables d'environnement
 
