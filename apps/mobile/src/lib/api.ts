@@ -1,0 +1,112 @@
+import type { AnalyzeResponse } from '@vigie/shared';
+import { analyzeResponseSchema, apiErrorSchema } from '@vigie/shared';
+import Constants from 'expo-constants';
+
+/** Catégories d'échec réseau, pour adapter l'écran d'erreur. */
+export type ApiFailureKind =
+  'network' | 'rate_limited' | 'service_unavailable' | 'invalid_request' | 'unknown';
+
+/** Messages de repli (l'API renvoie déjà ses messages en français : prioritaires). */
+const FALLBACK_MESSAGES: Record<ApiFailureKind, string> = {
+  network: 'Connexion impossible. Vérifiez votre accès à Internet, puis réessayez.',
+  rate_limited:
+    'Vous avez atteint le nombre maximal de vérifications pour le moment. Merci de réessayer un peu plus tard.',
+  service_unavailable:
+    'Le service d’analyse est momentanément indisponible. Merci de réessayer dans quelques instants.',
+  invalid_request:
+    'Votre demande n’a pas pu être traitée. Vérifiez le contenu envoyé, puis réessayez.',
+  unknown: 'Une erreur inattendue est survenue. Merci de réessayer.',
+};
+
+/** Échec d'appel API : `userMessage` est toujours affichable tel quel. */
+export class ApiFailure extends Error {
+  constructor(
+    readonly kind: ApiFailureKind,
+    readonly userMessage: string,
+  ) {
+    super(userMessage);
+    this.name = 'ApiFailure';
+  }
+}
+
+/**
+ * URL de base de l'API :
+ * 1. EXPO_PUBLIC_API_URL si définie (apps/mobile/.env) ;
+ * 2. en dev, l'IP de la machine qui sert le bundler (le téléphone en Expo Go
+ *    ne peut pas joindre « localhost ») ;
+ * 3. localhost en dernier recours.
+ */
+export function apiBaseUrl(): string {
+  // Le typage Expo de process.env est `any` : on le referme immédiatement.
+  const env = process.env as Record<string, string | undefined>;
+  const fromEnv = env.EXPO_PUBLIC_API_URL;
+  if (fromEnv) {
+    return fromEnv.replace(/\/+$/, '');
+  }
+  const hostUri = Constants.expoConfig?.hostUri;
+  const host = hostUri?.split(':')[0];
+  if (host) {
+    return `http://${host}:3000`;
+  }
+  return 'http://localhost:3000';
+}
+
+const TIMEOUT_MS = 30_000;
+
+/**
+ * Analyse d'un texte collé (F1). Lève ApiFailure avec un message français
+ * prêt à afficher pour TOUT échec : réseau, 429, 503, réponse malformée.
+ */
+export async function analyzeText(
+  content: string,
+  deviceId: string,
+  fetchFn: typeof fetch = fetch,
+): Promise<AnalyzeResponse> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => {
+    controller.abort();
+  }, TIMEOUT_MS);
+
+  let response: Response;
+  try {
+    response = await fetchFn(`${apiBaseUrl()}/v1/analyze`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ kind: 'text', content, device_id: deviceId }),
+      signal: controller.signal,
+    });
+  } catch {
+    throw new ApiFailure('network', FALLBACK_MESSAGES.network);
+  } finally {
+    clearTimeout(timer);
+  }
+
+  if (!response.ok) {
+    throw await failureFromResponse(response);
+  }
+
+  const body: unknown = await response.json().catch(() => null);
+  const parsed = analyzeResponseSchema.safeParse(body);
+  if (!parsed.success) {
+    // La réponse serveur ne respecte pas le contrat : on n'affiche jamais
+    // un verdict douteux.
+    throw new ApiFailure('unknown', FALLBACK_MESSAGES.unknown);
+  }
+  return parsed.data;
+}
+
+async function failureFromResponse(response: Response): Promise<ApiFailure> {
+  const kind: ApiFailureKind =
+    response.status === 429
+      ? 'rate_limited'
+      : response.status === 503
+        ? 'service_unavailable'
+        : response.status === 400 || response.status === 413
+          ? 'invalid_request'
+          : 'unknown';
+
+  const body: unknown = await response.json().catch(() => null);
+  const parsed = apiErrorSchema.safeParse(body);
+  const message = parsed.success ? parsed.data.error.message : FALLBACK_MESSAGES[kind];
+  return new ApiFailure(kind, message);
+}
