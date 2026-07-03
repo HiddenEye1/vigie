@@ -1,0 +1,8 @@
+node_modules/
+dist/
+build/
+coverage/
+.expo/
+package-lock.json
+# Source de vérité — ne jamais reformater
+cahier-des-charges-vigie-v1.md

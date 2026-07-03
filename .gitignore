@@ -1,0 +1,27 @@
+# Dépendances
+node_modules/
+
+# Builds
+dist/
+build/
+coverage/
+
+# Environnement — jamais de secrets commités
+.env
+.env.*
+!.env.example
+
+# Expo / React Native
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Outils locaux
+.claude/
+*.log
+.DS_Store
+Thumbs.db
