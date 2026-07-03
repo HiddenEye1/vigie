@@ -53,38 +53,72 @@ export function apiBaseUrl(): string {
 
 const TIMEOUT_MS = 30_000;
 
-/**
- * Analyse d'un texte collé (F1). Lève ApiFailure avec un message français
- * prêt à afficher pour TOUT échec : réseau, 429, 503, réponse malformée.
- */
-export async function analyzeText(
+/** Image compressée prête à l'envoi (flux F2). */
+export interface ImageUpload {
+  readonly uri: string;
+  readonly mimeType: string;
+}
+
+/** Analyse d'un texte collé (F1). */
+export function analyzeText(
   content: string,
   deviceId: string,
   fetchFn: typeof fetch = fetch,
 ): Promise<AnalyzeResponse> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => {
-    controller.abort();
-  }, TIMEOUT_MS);
-
-  let response: Response;
-  try {
-    response = await fetchFn(`${apiBaseUrl()}/v1/analyze`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
+  return postAnalyze(
+    {
       body: JSON.stringify({ kind: 'text', content, device_id: deviceId }),
-      signal: controller.signal,
-    });
-  } catch {
-    throw new ApiFailure('network', FALLBACK_MESSAGES.network);
-  } finally {
-    clearTimeout(timer);
-  }
+      headers: { 'content-type': 'application/json' },
+    },
+    fetchFn,
+  );
+}
 
+/** Analyse d'un lien (F3). */
+export function analyzeUrl(
+  content: string,
+  deviceId: string,
+  fetchFn: typeof fetch = fetch,
+): Promise<AnalyzeResponse> {
+  return postAnalyze(
+    {
+      body: JSON.stringify({ kind: 'url', content, device_id: deviceId }),
+      headers: { 'content-type': 'application/json' },
+    },
+    fetchFn,
+  );
+}
+
+/** Analyse d'une capture d'écran (F2) — envoi multipart, jamais stockée (§8.1). */
+export function analyzeImage(
+  image: ImageUpload,
+  deviceId: string,
+  fetchFn: typeof fetch = fetch,
+): Promise<AnalyzeResponse> {
+  const form = new FormData();
+  form.append('kind', 'image');
+  form.append('device_id', deviceId);
+  // Objet fichier React Native { uri, name, type } — typé Blob côté DOM.
+  form.append('image', {
+    uri: image.uri,
+    name: 'capture.jpg',
+    type: image.mimeType,
+  } as unknown as Blob);
+  return postAnalyze({ body: form }, fetchFn);
+}
+
+async function postAnalyze(
+  init: { body: BodyInit; headers?: Record<string, string> },
+  fetchFn: typeof fetch,
+): Promise<AnalyzeResponse> {
+  const response = await requestOrNetworkFailure(
+    `${apiBaseUrl()}/v1/analyze`,
+    { method: 'POST', ...init },
+    fetchFn,
+  );
   if (!response.ok) {
     throw await failureFromResponse(response);
   }
-
   const body: unknown = await response.json().catch(() => null);
   const parsed = analyzeResponseSchema.safeParse(body);
   if (!parsed.success) {
@@ -93,6 +127,63 @@ export async function analyzeText(
     throw new ApiFailure('unknown', FALLBACK_MESSAGES.unknown);
   }
   return parsed.data;
+}
+
+/** Inscription à la waitlist « Bouclier famille » (F8). */
+export async function joinWaitlist(
+  email: string,
+  deviceId: string,
+  fetchFn: typeof fetch = fetch,
+): Promise<void> {
+  const response = await requestOrNetworkFailure(
+    `${apiBaseUrl()}/v1/waitlist`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ email, device_id: deviceId }),
+    },
+    fetchFn,
+  );
+  if (!response.ok) {
+    throw await failureFromResponse(response);
+  }
+}
+
+/**
+ * Événement produit anonyme (§12) — best-effort : un échec ne doit jamais
+ * perturber l'utilisateur, il est silencieusement ignoré.
+ */
+export async function sendShareEvent(
+  deviceId: string,
+  fetchFn: typeof fetch = fetch,
+): Promise<void> {
+  try {
+    await fetchFn(`${apiBaseUrl()}/v1/event`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name: 'share_verdict', device_id: deviceId }),
+    });
+  } catch {
+    // silencieux volontairement
+  }
+}
+
+async function requestOrNetworkFailure(
+  url: string,
+  init: RequestInit,
+  fetchFn: typeof fetch,
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => {
+    controller.abort();
+  }, TIMEOUT_MS);
+  try {
+    return await fetchFn(url, { ...init, signal: controller.signal });
+  } catch {
+    throw new ApiFailure('network', FALLBACK_MESSAGES.network);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function failureFromResponse(response: Response): Promise<ApiFailure> {
