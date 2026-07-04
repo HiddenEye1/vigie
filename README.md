@@ -194,6 +194,26 @@ npm run start --workspace @vigie/mobile
   Testing Library — 4 verdicts, navigation, onboarding, fiches, carte de
   partage, store, client API).
 
+## Évaluation du moteur (`npm run eval`)
+
+Jeu de 20 exemples réels anonymisés dans [fixtures/samples](fixtures/samples)
+(12 arnaques variées, 5 messages légitimes, 3 ambigus). Le script envoie tout
+à l'API et affiche la matrice attendu / obtenu.
+
+```bash
+# Terminal 1 : l'API avec des limites élargies (20 requêtes d'affilée)
+RATE_LIMIT_PER_HOUR=100 RATE_LIMIT_PER_DAY=200 npm run dev -w @vigie/api
+# Terminal 2 :
+npm run eval                # ou : npm run eval -- --api http://hote:3000
+```
+
+**Critère §13 : aucune arnaque du jeu ne doit être classée `PLUTOT_SUR`**
+(les faux positifs sur les messages légitimes sont tolérés en v1). Le critère
+est bloquant (code de sortie 1) en mode IA réel ; en mode mock le résultat est
+indicatif — le script lit le mode via `GET /v1/health`.
+
+La politique de confidentialité (§9.5) est servie par l'API : `GET /privacy`.
+
 ## Variables d'environnement
 
 Voir [.env.example](./.env.example) — copiez-le en `.env` et complétez.
