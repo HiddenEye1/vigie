@@ -24,6 +24,7 @@ import type { AppConfig } from './config.js';
 import { DatabaseUnavailableError } from './db/repositories.js';
 import type { Repositories } from './db/repositories.js';
 import { API_MESSAGES } from './messages.js';
+import { PRIVACY_POLICY_HTML } from './privacy.js';
 import type { RateLimiter } from './middleware/rate-limiter.js';
 import { sniffImageMimeType } from './security/image-validation.js';
 import { BlockedUrlError } from './security/ssrf.js';
@@ -71,7 +72,17 @@ export function createApp({
   app.use(secureHeaders());
   app.use(cors({ origin: config.CORS_ORIGIN }));
 
-  app.get('/v1/health', (c) => c.json({ status: 'ok', service: 'vigie-api' }));
+  app.get('/v1/health', (c) =>
+    c.json({
+      status: 'ok',
+      service: 'vigie-api',
+      // Permet au script d'évaluation de savoir si les verdicts sont réels.
+      ai_mode: config.MOCK_AI ? 'mock' : 'anthropic',
+    }),
+  );
+
+  // Politique de confidentialité (§9.5) — page statique en français clair.
+  app.get('/privacy', (c) => c.html(PRIVACY_POLICY_HTML));
 
   app.post(
     '/v1/analyze',

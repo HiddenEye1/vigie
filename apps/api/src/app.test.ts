@@ -124,11 +124,24 @@ async function postImage(
 const flushMicrotasks = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
 
 describe('GET /v1/health', () => {
-  it('répond 200', async () => {
+  it('répond 200 avec le mode IA', async () => {
     const { app } = makeApp();
     const res = await app.request('/v1/health');
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ status: 'ok', service: 'vigie-api' });
+    expect(await res.json()).toEqual({ status: 'ok', service: 'vigie-api', ai_mode: 'mock' });
+  });
+});
+
+describe('GET /privacy', () => {
+  it('sert la politique de confidentialité en HTML français', async () => {
+    const { app } = makeApp();
+    const res = await app.request('/privacy');
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toContain('text/html');
+    const html = await res.text();
+    expect(html).toContain('Politique de confidentialité');
+    expect(html).toContain('RGPD');
+    expect(html).toContain('jamais enregistré');
   });
 });
 
