@@ -125,6 +125,41 @@ export const MOCK_RULES: readonly MockRule[] = [
     },
   },
   {
+    pattern: /travail à domicile|recrutement|liker des vidéos|offre d'emploi|salaire attractif/i,
+    verdict: {
+      verdict: 'ARNAQUE_PROBABLE',
+      confidence: 0.87,
+      category: 'ARNAQUE_EMPLOI',
+      summary: 'Cette offre d’emploi trop belle ressemble aux fausses offres envoyées en masse.',
+      reasons: [
+        'Un vrai employeur ne recrute pas par SMS ou WhatsApp sans entretien.',
+        'La rémunération promise est très élevée pour des tâches très simples.',
+      ],
+      actions: [
+        'Ne payez jamais pour obtenir un emploi et n’envoyez pas vos papiers d’identité.',
+        'Signalez le message au 33700.',
+      ],
+    },
+  },
+  {
+    pattern: /mon amour|ma ch[eé]rie|frais de douane.*(te|vous) rembours|militaire en mission/i,
+    verdict: {
+      verdict: 'ARNAQUE_PROBABLE',
+      confidence: 0.86,
+      category: 'ARNAQUE_SENTIMENTALE',
+      summary:
+        'Ce message ressemble à une arnaque sentimentale : une relation à distance qui finit par demander de l’argent.',
+      reasons: [
+        'Une personne jamais rencontrée physiquement demande de l’argent.',
+        'Le scénario (mission à l’étranger, frais imprévus, remboursement promis) est un grand classique.',
+      ],
+      actions: [
+        'N’envoyez jamais d’argent à une personne rencontrée uniquement en ligne.',
+        'Parlez-en à un proche de confiance avant toute décision.',
+      ],
+    },
+  },
+  {
     pattern: /microsoft|apple|virus|ordinateur (est )?infect[eé]|support technique/i,
     verdict: {
       verdict: 'ARNAQUE_PROBABLE',
