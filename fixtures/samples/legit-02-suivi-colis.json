@@ -1,0 +1,7 @@
+{
+  "id": "legit-02-suivi-colis",
+  "label": "Vrai suivi de colis (sans paiement demandé)",
+  "kind": "text",
+  "expected": "legitimate",
+  "content": "La Poste : votre colis n° 6A0123456789 a été déposé dans votre point relais Tabac de la Mairie. Vous pouvez le retirer sous 8 jours ouvrés muni d'une pièce d'identité."
+}

@@ -1,0 +1,7 @@
+{
+  "id": "scam-07-vinted",
+  "label": "Faux paiement Vinted (lien hors plateforme)",
+  "kind": "text",
+  "expected": "scam",
+  "content": "Bonjour ! Je prends votre manteau sur Vinted. J'ai déjà payé via le service de livraison partenaire. Pour recevoir les 45 €, confirmez vos coordonnées ici : vinted-transaction-secure.com/recevoir. Répondez vite, l'agent de livraison attend votre confirmation."
+}

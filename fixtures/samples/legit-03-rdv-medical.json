@@ -1,0 +1,7 @@
+{
+  "id": "legit-03-rdv-medical",
+  "label": "Rappel de rendez-vous médical",
+  "kind": "text",
+  "expected": "legitimate",
+  "content": "Rappel : vous avez rendez-vous avec le Dr Lambert le mardi 8 juillet à 14 h 30, cabinet au 12 rue des Lilas. En cas d'empêchement, merci de prévenir au moins 24 h à l'avance au 02 40 XX XX XX."
+}

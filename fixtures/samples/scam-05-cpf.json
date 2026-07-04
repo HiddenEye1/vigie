@@ -1,0 +1,7 @@
+{
+  "id": "scam-05-cpf",
+  "label": "Démarchage CPF (illégal donc frauduleux)",
+  "kind": "text",
+  "expected": "scam",
+  "content": "Bonjour, votre solde CPF de 1 750 € arrive à expiration vendredi. Pour ne pas perdre vos droits formation, confirmez votre inscription aujourd'hui en me communiquant le code reçu par SMS. Une tablette offerte pour toute inscription avant 18 h."
+}

@@ -1,0 +1,7 @@
+{
+  "id": "scam-03-antai",
+  "label": "Fausse amende ANTAI avec menace de majoration",
+  "kind": "text",
+  "expected": "scam",
+  "content": "ANTAI-INFO : dernier rappel avant poursuite. Votre amende forfaitaire de 35 € n'a pas été réglée. Sans paiement avant ce soir minuit, elle sera majorée à 375 € et transmise au Trésor Public : antai-regularisation.net"
+}

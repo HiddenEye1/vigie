@@ -1,0 +1,7 @@
+{
+  "id": "ambigu-01-edf",
+  "label": "Notification EDF plausible mais invérifiable",
+  "kind": "text",
+  "expected": "ambiguous",
+  "content": "EDF : votre facture du mois de juin est disponible dans votre espace client. Montant : 87,42 €. Le prélèvement interviendra le 15 juillet."
+}

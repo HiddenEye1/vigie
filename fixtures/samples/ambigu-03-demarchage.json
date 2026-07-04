@@ -1,0 +1,7 @@
+{
+  "id": "ambigu-03-demarchage",
+  "label": "Démarchage assurance courtois (véracité inconnue)",
+  "kind": "text",
+  "expected": "ambiguous",
+  "content": "Bonjour, je suis bien chez Monsieur Martin ? Sophie du cabinet Assur+Conseil. Je me permets de vous contacter au sujet du renouvellement de votre contrat de mutuelle santé. Auriez-vous quelques minutes cette semaine pour en parler ?"
+}

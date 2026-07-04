@@ -1,0 +1,7 @@
+{
+  "id": "scam-01-colis",
+  "label": "Faux avis de colis Chronopost",
+  "kind": "text",
+  "expected": "scam",
+  "content": "CHRONOPOST : votre colis n° 8842K est en attente à notre dépôt. Des frais de livraison de 1,95 € restent dus. Régularisez sous 24 h pour éviter le retour à l'expéditeur : https://chrono-suivi-fr.com/8842K"
+}

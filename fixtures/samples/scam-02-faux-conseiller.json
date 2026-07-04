@@ -1,0 +1,7 @@
+{
+  "id": "scam-02-faux-conseiller",
+  "label": "Faux conseiller bancaire (validation d'opération)",
+  "kind": "text",
+  "expected": "scam",
+  "content": "Bonjour Mme Rolland, service anti-fraude de votre banque. Trois paiements suspects viennent d'être tentés avec votre carte bancaire en Espagne. Pour les bloquer immédiatement, validez la demande que je viens de vous envoyer dans votre application, ou communiquez-moi le code reçu par SMS. C'est urgent, votre compte sera bloqué dans 10 minutes."
+}

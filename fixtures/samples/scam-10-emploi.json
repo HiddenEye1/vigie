@@ -1,0 +1,7 @@
+{
+  "id": "scam-10-emploi",
+  "label": "Fausse offre d'emploi WhatsApp",
+  "kind": "text",
+  "expected": "scam",
+  "content": "Bonjour ! Notre agence RH recrute pour du travail à domicile : 150 à 400 € par jour simplement pour liker des vidéos et noter des produits. Aucune expérience requise, salaire attractif payé chaque soir. Répondez OK sur WhatsApp au +44 7911 XX XX XX pour commencer aujourd'hui."
+}

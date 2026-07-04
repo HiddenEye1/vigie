@@ -1,0 +1,7 @@
+{
+  "id": "scam-04-ameli",
+  "label": "Faux message Ameli (nouvelle carte Vitale)",
+  "kind": "text",
+  "expected": "scam",
+  "content": "Ameli : votre nouvelle carte Vitale est disponible. Afin de recevoir votre carte mise à jour, veuillez compléter le formulaire et régler les frais d'envoi (0,99 €) sous 48 h : ameli-assurance-carte.info"
+}

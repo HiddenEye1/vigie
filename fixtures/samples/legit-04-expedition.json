@@ -1,0 +1,7 @@
+{
+  "id": "legit-04-expedition",
+  "label": "Confirmation d'expédition d'une commande",
+  "kind": "text",
+  "expected": "legitimate",
+  "content": "Votre commande n° 405-9876543 a été expédiée. Livraison prévue jeudi. Vous pouvez suivre votre commande depuis votre compte, rubrique « Mes commandes ». Aucune action n'est requise de votre part."
+}

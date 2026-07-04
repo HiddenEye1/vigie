@@ -1,0 +1,7 @@
+{
+  "id": "legit-01-code-bancaire",
+  "label": "Vraie notification bancaire (code de validation)",
+  "kind": "text",
+  "expected": "legitimate",
+  "content": "Votre code de validation est 245 871. Il expire dans 10 minutes. Ne le communiquez jamais, y compris à un conseiller. Si vous n'êtes pas à l'origine de cette demande, appelez le numéro au dos de votre carte."
+}
