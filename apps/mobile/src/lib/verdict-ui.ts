@@ -1,35 +1,56 @@
 import type { ScamCategory, VerdictLevel } from '@vigie/shared';
 
-import { colors } from './theme';
+import { palette } from './theme';
 
-/** Libellés §4.2 — jamais de pourcentage de confiance affiché. */
-export const VERDICT_UI: Record<
-  VerdictLevel,
-  {
-    label: string;
-    color: string;
-    icon: 'alert-circle' | 'warning' | 'shield-checkmark' | 'help-circle';
-  }
-> = {
+/**
+ * Les « feux » du phare (§4.2) : chaque verdict est un feu.
+ * - `fill` / `onFill` : pastille circulaire (le feu lui-même) ;
+ * - `halo` : teinte du halo lumineux derrière la pastille ;
+ * - `text` : déclinaison AA pour du texte posé sur brume/écume ;
+ * - jamais de pourcentage de confiance affiché.
+ */
+export interface VerdictUi {
+  readonly label: string;
+  readonly fill: string;
+  readonly onFill: string;
+  readonly halo: string;
+  readonly text: string;
+  readonly icon: 'warning' | 'help' | 'checkmark' | 'remove';
+}
+
+export const VERDICT_UI: Record<VerdictLevel, VerdictUi> = {
   ARNAQUE_PROBABLE: {
     label: 'Arnaque très probable',
-    color: colors.verdictDanger,
-    icon: 'alert-circle',
+    fill: palette.feuRouge,
+    onFill: palette.ecume,
+    halo: palette.feuRouge,
+    text: palette.texteFeuRouge,
+    icon: 'warning',
   },
   SUSPECT: {
     label: 'Méfiance, plusieurs signaux d’alerte',
-    color: colors.verdictWarning,
-    icon: 'warning',
+    fill: palette.feuAmbre,
+    // L'ambre est trop clair pour du blanc : l'icône passe en encre marine (AA).
+    onFill: palette.encreMarine,
+    halo: palette.feuAmbre,
+    text: palette.texteFeuAmbre,
+    icon: 'help',
   },
   PLUTOT_SUR: {
     label: 'Aucun signal d’arnaque détecté',
-    color: colors.verdictSafe,
-    icon: 'shield-checkmark',
+    fill: palette.feuVert,
+    onFill: palette.ecume,
+    halo: palette.feuVert,
+    text: palette.texteFeuVert,
+    icon: 'checkmark',
   },
   INDETERMINE: {
     label: 'Impossible de me prononcer',
-    color: colors.verdictUnknown,
-    icon: 'help-circle',
+    fill: palette.feuGris,
+    onFill: palette.encreMarine,
+    halo: palette.feuGris,
+    text: palette.texteFeuGris,
+    icon: 'remove',
   },
 };
 
