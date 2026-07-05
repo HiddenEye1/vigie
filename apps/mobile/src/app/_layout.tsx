@@ -1,15 +1,44 @@
+import {
+  BricolageGrotesque_600SemiBold,
+  BricolageGrotesque_700Bold,
+} from '@expo-google-fonts/bricolage-grotesque';
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  useFonts,
+} from '@expo-google-fonts/inter';
 import { Stack, useRouter } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import type { ReactElement } from 'react';
 import { useEffect } from 'react';
 
 import { hasSeenOnboarding } from '../lib/onboarding';
 import { useIncomingShare } from '../lib/share-intent';
-import { colors, fontSize } from '../lib/theme';
+import { colors, fonts, fontSize } from '../lib/theme';
 
-export default function RootLayout(): ReactElement {
+// Le splash reste affiché tant que les polices du phare ne sont pas prêtes.
+void SplashScreen.preventAutoHideAsync().catch(() => undefined);
+
+export default function RootLayout(): ReactElement | null {
   const router = useRouter();
   const { hasShareIntent, shareIntent, resetShareIntent } = useIncomingShare();
+  const [fontsLoaded] = useFonts({
+    BricolageGrotesque_600SemiBold,
+    BricolageGrotesque_700Bold,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      void SplashScreen.hideAsync().catch(() => undefined);
+    }
+  }, [fontsLoaded]);
 
   // Onboarding affiché une seule fois (F9).
   useEffect(() => {
@@ -39,6 +68,10 @@ export default function RootLayout(): ReactElement {
     resetShareIntent();
   }, [hasShareIntent, shareIntent, resetShareIntent, router]);
 
+  if (!fontsLoaded) {
+    return null; // le splash reste visible pendant le chargement des polices
+  }
+
   return (
     <>
       <StatusBar style="dark" />
@@ -49,7 +82,7 @@ export default function RootLayout(): ReactElement {
           headerTitleStyle: {
             color: colors.textPrimary,
             fontSize: fontSize.subtitle,
-            fontWeight: '700',
+            fontFamily: fonts.displaySemiBold,
           },
           headerBackButtonDisplayMode: 'minimal',
           contentStyle: { backgroundColor: colors.background },

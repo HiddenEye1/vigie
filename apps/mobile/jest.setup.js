@@ -4,6 +4,10 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 
+// Mocks officiels de Reanimated et Worklets (pas de runtime natif sous Jest).
+jest.mock('react-native-worklets', () => require('react-native-worklets/lib/module/mock'));
+jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
+
 // Le runtime « winter » d'Expo installe des globals PARESSEUX (fetch,
 // __ExpoImportMetaRegistry…) dont le `require` différé est refusé par
 // Jest 30 (`isInsideTestCode`) s'il se déclenche entre deux phases.

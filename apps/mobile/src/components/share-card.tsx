@@ -6,6 +6,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { CATEGORY_LABELS, VERDICT_UI } from '../lib/verdict-ui';
 import { colors, fontSize, radius, spacing } from '../lib/theme';
+import { LighthouseLogo } from './lighthouse-logo';
 
 interface ShareCardProps {
   readonly result: AnalyzeResponse;
@@ -24,15 +25,13 @@ export const ShareCard = forwardRef<View, ShareCardProps>(function ShareCard(
   return (
     <View ref={ref} collapsable={false} style={styles.card}>
       <View style={styles.header}>
-        <View style={styles.logoCircle}>
-          <Ionicons name="shield-checkmark" size={22} color={colors.onAccent} />
-        </View>
+        <LighthouseLogo size={34} />
         <Text style={styles.appName}>Vigie</Text>
       </View>
 
-      <View style={[styles.badge, { backgroundColor: ui.color }]}>
-        <Ionicons name={ui.icon} size={30} color={colors.onAccent} />
-        <Text style={styles.badgeLabel}>{ui.label}</Text>
+      <View style={[styles.badge, { backgroundColor: ui.fill }]}>
+        <Ionicons name={ui.icon} size={30} color={ui.onFill} />
+        <Text style={[styles.badgeLabel, { color: ui.onFill }]}>{ui.label}</Text>
       </View>
 
       {result.category !== 'AUCUNE' ? (

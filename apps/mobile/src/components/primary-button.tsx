@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
-import { colors, fontSize, MIN_TOUCH_TARGET, radius, spacing } from '../lib/theme';
+import { MIN_TOUCH_TARGET, palette, radius, spacing, type } from '../lib/theme';
 
 interface PrimaryButtonProps {
   readonly label: string;
@@ -12,7 +12,10 @@ interface PrimaryButtonProps {
   readonly disabled?: boolean;
 }
 
-/** Bouton principal : gros, contrasté, cible tactile ≥ 44 pt, label d'accessibilité. */
+/**
+ * Bouton Vigie : encre-marine (l'interactif du phare), cible ≥ 48 pt,
+ * micro-feedback sobre à la pression (scale 0.98).
+ */
 export function PrimaryButton({
   label,
   onPress,
@@ -32,14 +35,15 @@ export function PrimaryButton({
         styles.base,
         isPrimary ? styles.primary : styles.secondary,
         pressed && (isPrimary ? styles.primaryPressed : styles.secondaryPressed),
+        pressed && styles.pressedScale,
         disabled && styles.disabled,
       ]}
     >
       {icon ? (
         <Ionicons
           name={icon}
-          size={24}
-          color={isPrimary ? colors.onAccent : colors.accent}
+          size={22}
+          color={isPrimary ? palette.ecume : palette.encreMarine}
           style={styles.icon}
         />
       ) : null}
@@ -61,34 +65,36 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primary: {
-    backgroundColor: colors.accent,
+    backgroundColor: palette.encreMarine,
   },
   primaryPressed: {
-    backgroundColor: colors.accentPressed,
+    backgroundColor: palette.encreMarinePressee,
   },
   secondary: {
-    backgroundColor: colors.background,
-    borderWidth: 2,
-    borderColor: colors.accent,
+    backgroundColor: palette.ecume,
+    borderWidth: 1.5,
+    borderColor: palette.encreMarine,
   },
   secondaryPressed: {
-    backgroundColor: colors.surface,
+    backgroundColor: palette.surfaceLegere,
+  },
+  pressedScale: {
+    transform: [{ scale: 0.98 }],
   },
   disabled: {
-    opacity: 0.5,
+    opacity: 0.45,
   },
   icon: {
     marginRight: spacing.s,
   },
   label: {
-    fontSize: fontSize.button,
-    fontWeight: '600',
+    ...type.button,
     textAlign: 'center',
   },
   labelPrimary: {
-    color: colors.onAccent,
+    color: palette.ecume,
   },
   labelSecondary: {
-    color: colors.accent,
+    color: palette.encreMarine,
   },
 });

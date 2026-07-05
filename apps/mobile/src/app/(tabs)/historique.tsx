@@ -98,13 +98,13 @@ function HistoryRow({
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
     >
-      <View style={[styles.dot, { backgroundColor: ui.color }]} />
+      <View style={[styles.dot, { backgroundColor: ui.fill }]} />
       <View style={styles.rowContent}>
         <Text style={styles.rowDate}>{dateFormatter.format(new Date(entry.date))}</Text>
         <Text style={styles.rowExcerpt} numberOfLines={2}>
           {entry.excerpt}
         </Text>
-        <Text style={[styles.rowVerdict, { color: ui.color }]}>{ui.label}</Text>
+        <Text style={[styles.rowVerdict, { color: ui.text }]}>{ui.label}</Text>
       </View>
       <Ionicons name="chevron-forward" size={22} color={colors.border} />
     </Pressable>
