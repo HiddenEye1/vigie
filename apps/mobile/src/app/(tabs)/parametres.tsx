@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { PrimaryButton } from '../../components/primary-button';
 import { apiBaseUrl, ApiFailure, joinWaitlist } from '../../lib/api';
 import { getDeviceId } from '../../lib/device-id';
-import { cardShadow, colors, fonts, palette, radius, spacing, type } from '../../lib/theme';
+import { colors, fonts, palette, radius, spacing, type } from '../../lib/theme';
 import { useHistory } from '../../store/history';
 
 type WaitlistState =
@@ -64,9 +64,9 @@ export default function SettingsScreen(): ReactElement {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Paramètres</Text>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+        <Text style={styles.title}>Réglages</Text>
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Bouclier famille — bientôt</Text>
@@ -148,19 +148,21 @@ export default function SettingsScreen(): ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.nuit,
   },
   container: {
     padding: spacing.l,
     gap: spacing.l,
+    paddingTop: spacing.m,
     paddingBottom: spacing.xl,
   },
   title: {
     ...type.screenTitle,
   },
   card: {
-    ...cardShadow,
-    backgroundColor: palette.ecume,
+    backgroundColor: palette.ardoise,
+    borderWidth: 1,
+    borderColor: palette.bordureDouce,
     borderRadius: radius.l,
     padding: spacing.l,
     gap: spacing.m,
@@ -170,7 +172,7 @@ const styles = StyleSheet.create({
   },
   cardText: {
     ...type.body,
-    color: palette.texteSecondaire,
+    color: palette.texteDoux,
   },
   input: {
     minHeight: 56,
@@ -179,7 +181,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.m,
     paddingHorizontal: spacing.l,
     ...type.body,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.ardoiseHaute,
   },
   successText: {
     ...type.body,
@@ -192,6 +194,7 @@ const styles = StyleSheet.create({
   },
   version: {
     ...type.label,
+    color: palette.texteMuet,
     textAlign: 'center',
   },
 });
