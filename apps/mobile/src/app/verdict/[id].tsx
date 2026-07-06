@@ -85,9 +85,9 @@ export default function VerdictScreen(): ReactElement {
           }}
           style={({ pressed }) => [styles.guideLink, pressed && styles.guideLinkPressed]}
         >
-          <Ionicons name="book-outline" size={22} color={palette.encreMarine} />
+          <Ionicons name="book-outline" size={22} color={palette.laiton} />
           <Text style={styles.guideLinkText}>En savoir plus : {guide.title}</Text>
-          <Ionicons name="chevron-forward" size={20} color={palette.encreMarine} />
+          <Ionicons name="chevron-forward" size={20} color={palette.texteDoux} />
         </Pressable>
       ) : null}
 
@@ -122,7 +122,7 @@ export default function VerdictScreen(): ReactElement {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.nuit,
   },
   container: {
     padding: spacing.l,
@@ -130,6 +130,7 @@ const styles = StyleSheet.create({
   },
   urlInfo: {
     ...type.label,
+    color: palette.texteMuet,
     marginTop: spacing.m,
     textAlign: 'center',
   },
@@ -138,13 +139,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.s,
     marginTop: spacing.xl,
-    backgroundColor: palette.surfaceLegere,
+    backgroundColor: palette.ardoise,
+    borderWidth: 1,
+    borderColor: palette.bordureDouce,
     borderRadius: radius.m,
     padding: spacing.l,
     minHeight: MIN_TOUCH_TARGET,
   },
   guideLinkPressed: {
-    backgroundColor: palette.bordure,
+    backgroundColor: palette.ardoiseElevee,
   },
   guideLinkText: {
     flex: 1,
@@ -162,7 +165,7 @@ const styles = StyleSheet.create({
   },
   missing: {
     flex: 1,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.nuit,
     alignItems: 'stretch',
     justifyContent: 'center',
     padding: spacing.xl,
@@ -170,7 +173,7 @@ const styles = StyleSheet.create({
   },
   missingText: {
     ...type.body,
-    color: palette.texteSecondaire,
+    color: palette.texteDoux,
     textAlign: 'center',
   },
 });

@@ -3,7 +3,7 @@ import type { ReactElement } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInDown, ReduceMotion } from 'react-native-reanimated';
 
-import { cardShadow, palette, radius, spacing, type } from '../lib/theme';
+import { fonts, palette, radius, spacing, type } from '../lib/theme';
 import { CATEGORY_LABELS, VERDICT_DISCLAIMER, VERDICT_UI } from '../lib/verdict-ui';
 import { VerdictBeacon } from './verdict-beacon';
 
@@ -22,29 +22,34 @@ function cascade(index: number): ReturnType<typeof FadeInDown.duration> {
 /**
  * Contenu du verdict, dans l'ordre imposé par le §4.2 :
  * feu du phare → phrase-résumé → « Pourquoi » → « Que faire maintenant »
- * → catégorie → mention obligatoire. Jamais de pourcentage de confiance.
+ * → catégorie → mention obligatoire. Hiérarchie descendante, pas des cartes
+ * de poids égal. Jamais de pourcentage de confiance.
  */
 export function VerdictContent({ result }: VerdictContentProps): ReactElement {
   const ui = VERDICT_UI[result.verdict];
   return (
     <View>
       <VerdictBeacon verdict={result.verdict} />
+
       <Animated.View entering={cascade(0)}>
         <Text style={[styles.verdictLabel, { color: ui.text }]}>{ui.label}</Text>
         <Text style={styles.summary}>{result.summary}</Text>
       </Animated.View>
 
-      <Animated.View entering={cascade(1)} style={styles.card}>
-        <Text style={styles.sectionTitle}>Pourquoi ?</Text>
+      <Animated.View entering={cascade(1)} style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <View style={[styles.sectionTick, { backgroundColor: ui.fill }]} />
+          <Text style={styles.sectionTitle}>Pourquoi ?</Text>
+        </View>
         {result.reasons.map((reason, index) => (
           <View key={index} style={styles.reasonRow}>
-            <View style={styles.reasonDot} />
+            <View style={[styles.reasonDot, { backgroundColor: ui.fill }]} />
             <Text style={styles.itemText}>{reason}</Text>
           </View>
         ))}
       </Animated.View>
 
-      <Animated.View entering={cascade(2)} style={styles.card}>
+      <Animated.View entering={cascade(2)} style={styles.actionCard}>
         <Text style={styles.sectionTitle}>Que faire maintenant ?</Text>
         {result.actions.map((action, index) => (
           <View key={index} style={styles.actionRow}>
@@ -71,22 +76,30 @@ export function VerdictContent({ result }: VerdictContentProps): ReactElement {
 const styles = StyleSheet.create({
   verdictLabel: {
     ...type.verdict,
+    fontSize: 24,
     textAlign: 'center',
-    marginTop: spacing.s,
+    marginTop: spacing.m,
   },
   summary: {
     ...type.body,
+    color: palette.texteDoux,
     textAlign: 'center',
-    marginTop: spacing.m,
-    paddingHorizontal: spacing.s,
+    marginTop: spacing.s,
+    paddingHorizontal: spacing.m,
   },
-  card: {
-    ...cardShadow,
-    backgroundColor: palette.ecume,
-    borderRadius: radius.l,
-    padding: spacing.l,
+  section: {
     marginTop: spacing.xl,
     gap: spacing.m,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.s,
+  },
+  sectionTick: {
+    width: 4,
+    height: 18,
+    borderRadius: 2,
   },
   sectionTitle: {
     ...type.sectionTitle,
@@ -100,8 +113,16 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: palette.encreMarine,
     marginTop: 10,
+  },
+  actionCard: {
+    marginTop: spacing.xl,
+    gap: spacing.m,
+    backgroundColor: palette.ardoise,
+    borderWidth: 1,
+    borderColor: palette.bordureDouce,
+    borderRadius: radius.l,
+    padding: spacing.l,
   },
   actionRow: {
     flexDirection: 'row',
@@ -112,15 +133,18 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: palette.encreMarine,
+    borderWidth: 1.4,
+    borderColor: palette.laiton,
+    backgroundColor: palette.laitonPale,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 1,
   },
   actionNumberText: {
-    ...type.label,
-    color: palette.ecume,
+    fontFamily: fonts.textBold,
+    fontSize: 14,
     lineHeight: 18,
+    color: palette.laiton,
   },
   itemText: {
     ...type.body,
@@ -128,18 +152,19 @@ const styles = StyleSheet.create({
   },
   categoryBadge: {
     alignSelf: 'center',
-    backgroundColor: palette.surfaceLegere,
-    borderRadius: radius.s,
+    backgroundColor: palette.ardoiseElevee,
+    borderRadius: radius.pill,
     paddingHorizontal: spacing.l,
     paddingVertical: spacing.s,
     marginTop: spacing.xl,
   },
   categoryText: {
     ...type.label,
-    color: palette.encreMarine,
+    color: palette.texteDoux,
   },
   disclaimer: {
     ...type.bodySecondary,
+    color: palette.texteMuet,
     textAlign: 'center',
     marginTop: spacing.xl,
   },
