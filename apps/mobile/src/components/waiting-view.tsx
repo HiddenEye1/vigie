@@ -1,8 +1,18 @@
 import type { ReactElement } from 'react';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
+import Animated, {
+  Easing,
+  ReduceMotion,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
+import Svg, { Path } from 'react-native-svg';
 
-import { colors, fontSize, spacing } from '../lib/theme';
+import { palette, spacing, type } from '../lib/theme';
+import { LighthouseLogo } from './lighthouse-logo';
 
 /** Messages rotatifs rassurants pendant l'analyse (§10). */
 export const WAITING_MESSAGES = [
@@ -14,6 +24,40 @@ export const WAITING_MESSAGES = [
 ] as const;
 
 const ROTATION_MS = 2_500;
+const SWEEP_SIZE = 220;
+/** Laiton à ~10 % d'opacité pour le faisceau. */
+const BEAM_ALPHA = '1A';
+
+/** Le faisceau du phare : un cône de lumière laiton qui balaye lentement. */
+function LighthouseSweep(): ReactElement {
+  const angle = useSharedValue(0);
+
+  useEffect(() => {
+    angle.value = withRepeat(
+      withTiming(360, { duration: 7000, easing: Easing.linear, reduceMotion: ReduceMotion.System }),
+      -1,
+      false,
+      undefined,
+      ReduceMotion.System,
+    );
+  }, [angle]);
+
+  const sweepStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${String(angle.value)}deg` }],
+  }));
+
+  return (
+    <View style={styles.sweepContainer}>
+      <Animated.View style={[styles.sweep, sweepStyle]}>
+        <Svg width={SWEEP_SIZE} height={SWEEP_SIZE} viewBox="0 0 220 220">
+          {/* Cône d'environ 40°, pointe au centre, vers le haut. */}
+          <Path d="M110 110 L72 8 A110 110 0 0 1 148 8 Z" fill={`${palette.laiton}${BEAM_ALPHA}`} />
+        </Svg>
+      </Animated.View>
+      <LighthouseLogo size={84} />
+    </View>
+  );
+}
 
 export function WaitingView(): ReactElement {
   const [index, setIndex] = useState(0);
@@ -29,7 +73,7 @@ export function WaitingView(): ReactElement {
 
   return (
     <View style={styles.container} accessibilityLiveRegion="polite">
-      <ActivityIndicator size="large" color={colors.accent} />
+      <LighthouseSweep />
       <Text style={styles.title}>Analyse en cours</Text>
       <Text style={styles.message}>{WAITING_MESSAGES[index]}</Text>
       <Text style={styles.hint}>Cela prend quelques secondes.</Text>
@@ -40,23 +84,35 @@ export function WaitingView(): ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: palette.brume,
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing.xl,
     gap: spacing.m,
   },
+  sweepContainer: {
+    width: SWEEP_SIZE,
+    height: SWEEP_SIZE,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.s,
+  },
+  sweep: {
+    position: 'absolute',
+    width: SWEEP_SIZE,
+    height: SWEEP_SIZE,
+  },
   title: {
-    fontSize: fontSize.title,
-    fontWeight: '700',
-    color: colors.textPrimary,
+    ...type.screenTitle,
+    fontSize: 24,
+    lineHeight: 34,
   },
   message: {
-    fontSize: fontSize.body,
-    color: colors.textSecondary,
+    ...type.body,
+    color: palette.texteSecondaire,
     textAlign: 'center',
   },
   hint: {
-    fontSize: fontSize.small,
-    color: colors.textSecondary,
+    ...type.label,
   },
 });

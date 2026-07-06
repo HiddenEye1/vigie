@@ -1,23 +1,21 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import type { ReactElement } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { PrimaryButton } from '../../components/primary-button';
-import { colors, fontSize, radius, spacing } from '../../lib/theme';
+import { ActionCard } from '../../components/action-card';
+import { LighthouseLogo } from '../../components/lighthouse-logo';
+import { palette, spacing, type } from '../../lib/theme';
 
-/** Écran d'accueil : une seule action principale, en 2 taps maximum (§3). */
+/** Écran d'accueil : le phare veille, trois vérifications en 2 taps maximum (§3). */
 export default function HomeScreen(): ReactElement {
   const router = useRouter();
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
-          <View style={styles.logoCircle}>
-            <Ionicons name="shield-checkmark" size={40} color={colors.onAccent} />
-          </View>
+          <LighthouseLogo size={92} />
           <Text style={styles.title}>Vigie</Text>
           <Text style={styles.subtitle}>
             Un doute sur un message ? Vérifiez-le avant de cliquer.
@@ -25,37 +23,36 @@ export default function HomeScreen(): ReactElement {
         </View>
 
         <View style={styles.actions}>
-          <PrimaryButton
-            label="Vérifier un message"
-            icon="chatbox-ellipses"
+          <ActionCard
+            title="Vérifier un message"
+            subtitle="SMS, e-mail, annonce…"
+            icon="chatbox-ellipses-outline"
             onPress={() => {
               router.push('/verifier-texte');
             }}
           />
-          <PrimaryButton
-            label="Vérifier une capture d’écran"
-            icon="images"
-            variant="secondary"
+          <ActionCard
+            title="Vérifier une capture d’écran"
+            subtitle="Une photo de votre écran"
+            icon="images-outline"
             onPress={() => {
               router.push('/verifier-capture');
             }}
           />
-          <PrimaryButton
-            label="Vérifier un lien"
-            icon="link"
-            variant="secondary"
+          <ActionCard
+            title="Vérifier un lien"
+            subtitle="Une adresse de site web"
+            icon="link-outline"
             onPress={() => {
               router.push('/verifier-lien');
             }}
           />
         </View>
 
-        <View style={styles.reassurance}>
-          <Text style={styles.reassuranceText}>
-            Gratuit. Sans inscription. Vos messages ne sont pas conservés.
-          </Text>
-        </View>
-      </View>
+        <Text style={styles.reassurance}>
+          Gratuit. Sans inscription. Vos messages ne sont pas conservés.
+        </Text>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -63,51 +60,37 @@ export default function HomeScreen(): ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: palette.brume,
   },
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: spacing.l,
-    justifyContent: 'space-between',
+    paddingBottom: spacing.xl,
   },
   header: {
     alignItems: 'center',
     marginTop: spacing.xl,
-    gap: spacing.m,
-  },
-  logoCircle: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
-    backgroundColor: colors.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginBottom: spacing.xl,
+    gap: spacing.s,
   },
   title: {
+    ...type.screenTitle,
     fontSize: 34,
-    fontWeight: '800',
-    color: colors.textPrimary,
+    lineHeight: 46,
   },
   subtitle: {
-    fontSize: fontSize.subtitle,
-    color: colors.textSecondary,
+    ...type.body,
+    color: palette.texteSecondaire,
     textAlign: 'center',
-    lineHeight: 28,
-    paddingHorizontal: spacing.m,
+    paddingHorizontal: spacing.l,
   },
   actions: {
     gap: spacing.m,
   },
   reassurance: {
-    backgroundColor: colors.surface,
-    borderRadius: radius.m,
-    padding: spacing.m,
-    marginBottom: spacing.m,
-  },
-  reassuranceText: {
-    fontSize: fontSize.small,
-    color: colors.textSecondary,
+    ...type.label,
     textAlign: 'center',
-    lineHeight: 22,
+    marginTop: 'auto',
+    paddingTop: spacing.xl,
   },
 });
