@@ -53,6 +53,10 @@ export class AnthropicProvider implements AIProvider {
         response = await this.createMessage({
           model: this.model,
           max_tokens: 1024,
+          // Température basse : une app anti-arnaque doit être constante et
+          // rigoureuse, pas créative. Le même message doit donner le même
+          // verdict d'un appel à l'autre (reproductibilité > diversité).
+          temperature: 0.2,
           system: SYSTEM_PROMPT,
           messages,
         });
