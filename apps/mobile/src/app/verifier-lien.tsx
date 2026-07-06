@@ -6,13 +6,18 @@ import { Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-n
 
 import { ErrorView } from '../components/error-view';
 import { PrimaryButton } from '../components/primary-button';
+import { VerifyModeSwitcher } from '../components/verify-mode-switcher';
 import { WaitingView } from '../components/waiting-view';
+import type { ApiFailureKind } from '../lib/api';
 import { analyzeUrl, ApiFailure } from '../lib/api';
 import { getDeviceId } from '../lib/device-id';
 import { palette, radius, spacing, type } from '../lib/theme';
 import { useHistory } from '../store/history';
 
-type ScreenState = { step: 'editing' } | { step: 'loading' } | { step: 'error'; message: string };
+type ScreenState =
+  | { step: 'editing' }
+  | { step: 'loading' }
+  | { step: 'error'; message: string; kind: ApiFailureKind };
 
 /** Vérification d'un lien (F3) : saisie/collage → attente → verdict. */
 export default function VerifyUrlScreen(): ReactElement {
@@ -46,7 +51,8 @@ export default function VerifyUrlScreen(): ReactElement {
         error instanceof ApiFailure
           ? error.userMessage
           : 'Une erreur inattendue est survenue. Merci de réessayer.';
-      setState({ step: 'error', message });
+      const kind = error instanceof ApiFailure ? error.kind : 'unknown';
+      setState({ step: 'error', message, kind });
     }
   };
 
@@ -58,6 +64,7 @@ export default function VerifyUrlScreen(): ReactElement {
     return (
       <ErrorView
         message={state.message}
+        kind={state.kind}
         onRetry={() => {
           setState({ step: 'editing' });
         }}
@@ -72,6 +79,8 @@ export default function VerifyUrlScreen(): ReactElement {
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
     >
+      <VerifyModeSwitcher active="lien" />
+
       <Text style={styles.instructions}>
         Collez l’adresse du site qui vous semble douteuse. Vigie la vérifie sans jamais l’ouvrir sur
         votre téléphone.
@@ -82,7 +91,7 @@ export default function VerifyUrlScreen(): ReactElement {
         value={url}
         onChangeText={setUrl}
         placeholder="Exemple : chrono-livraison-fr.com"
-        placeholderTextColor={palette.texteSecondaire}
+        placeholderTextColor={palette.texteMuet}
         accessibilityLabel="Lien à vérifier"
         autoCapitalize="none"
         autoCorrect={false}
@@ -119,7 +128,7 @@ export default function VerifyUrlScreen(): ReactElement {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.nuit,
   },
   container: {
     padding: spacing.l,
@@ -130,18 +139,19 @@ const styles = StyleSheet.create({
   },
   input: {
     minHeight: 56,
-    borderWidth: 1.5,
-    borderColor: palette.bordure,
+    borderWidth: 1,
+    borderColor: palette.bordureDouce,
     borderRadius: radius.m,
     paddingHorizontal: spacing.l,
     ...type.body,
-    backgroundColor: palette.ecume,
+    backgroundColor: palette.ardoiseHaute,
   },
   buttons: {
     gap: spacing.m,
   },
   privacyNote: {
     ...type.label,
+    color: palette.texteMuet,
     textAlign: 'center',
   },
 });
