@@ -9,7 +9,7 @@ import { PrimaryButton } from '../components/primary-button';
 import { WaitingView } from '../components/waiting-view';
 import { analyzeUrl, ApiFailure } from '../lib/api';
 import { getDeviceId } from '../lib/device-id';
-import { colors, fontSize, radius, spacing } from '../lib/theme';
+import { palette, radius, spacing, type } from '../lib/theme';
 import { useHistory } from '../store/history';
 
 type ScreenState = { step: 'editing' } | { step: 'loading' } | { step: 'error'; message: string };
@@ -82,7 +82,7 @@ export default function VerifyUrlScreen(): ReactElement {
         value={url}
         onChangeText={setUrl}
         placeholder="Exemple : chrono-livraison-fr.com"
-        placeholderTextColor={colors.textSecondary}
+        placeholderTextColor={palette.texteSecondaire}
         accessibilityLabel="Lien à vérifier"
         autoCapitalize="none"
         autoCorrect={false}
@@ -119,34 +119,29 @@ export default function VerifyUrlScreen(): ReactElement {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: palette.brume,
   },
   container: {
     padding: spacing.l,
     gap: spacing.l,
   },
   instructions: {
-    fontSize: fontSize.body,
-    color: colors.textPrimary,
-    lineHeight: 26,
+    ...type.body,
   },
   input: {
     minHeight: 56,
-    borderWidth: 2,
-    borderColor: colors.border,
+    borderWidth: 1.5,
+    borderColor: palette.bordure,
     borderRadius: radius.m,
-    paddingHorizontal: spacing.m,
-    fontSize: fontSize.body,
-    color: colors.textPrimary,
-    backgroundColor: colors.card,
+    paddingHorizontal: spacing.l,
+    ...type.body,
+    backgroundColor: palette.ecume,
   },
   buttons: {
     gap: spacing.m,
   },
   privacyNote: {
-    fontSize: fontSize.small,
-    color: colors.textSecondary,
+    ...type.label,
     textAlign: 'center',
-    lineHeight: 22,
   },
 });

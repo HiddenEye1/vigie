@@ -5,30 +5,34 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { LighthouseLogo } from '../components/lighthouse-logo';
 import { PrimaryButton } from '../components/primary-button';
 import { markOnboardingSeen } from '../lib/onboarding';
-import { colors, fontSize, spacing } from '../lib/theme';
+import { palette, spacing, type } from '../lib/theme';
 
 interface Slide {
-  readonly icon: 'shield-checkmark' | 'chatbox-ellipses' | 'lock-closed';
+  readonly icon: 'lighthouse' | 'chatbox-ellipses-outline' | 'lock-closed-outline';
   readonly title: string;
   readonly text: string;
 }
 
-/** Onboarding en 3 écrans maximum (F9) : promesse → fonctionnement → confidentialité. */
+/**
+ * Onboarding en 3 écrans (F9) : promesse → fonctionnement → confidentialité.
+ * Le seul moment « storytelling » de l'app : le laiton a le droit de briller.
+ */
 const SLIDES: readonly [Slide, Slide, Slide] = [
   {
-    icon: 'shield-checkmark',
+    icon: 'lighthouse',
     title: 'Un doute ? Vérifiez.',
     text: 'SMS étrange, e-mail pressant, annonce trop belle ? Vigie vous dit en quelques secondes si cela ressemble à une arnaque connue, avec des mots simples.',
   },
   {
-    icon: 'chatbox-ellipses',
+    icon: 'chatbox-ellipses-outline',
     title: 'Comment ça marche',
     text: 'Collez un message, choisissez une capture d’écran ou un lien. Vigie analyse les signaux d’alerte et vous donne un avis clair, avec les bons gestes à suivre.',
   },
   {
-    icon: 'lock-closed',
+    icon: 'lock-closed-outline',
     title: 'Vos données restent à vous',
     text: 'Pas de compte, pas d’inscription. Les contenus analysés ne sont jamais conservés, et votre historique reste uniquement sur ce téléphone.',
   },
@@ -55,8 +59,12 @@ export default function OnboardingScreen(): ReactElement {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.content}>
-          <View style={styles.iconCircle}>
-            <Ionicons name={slide.icon} size={56} color={colors.onAccent} />
+          <View style={styles.medallion}>
+            {slide.icon === 'lighthouse' ? (
+              <LighthouseLogo size={88} />
+            ) : (
+              <Ionicons name={slide.icon} size={64} color={palette.encreMarine} />
+            )}
           </View>
           <Text style={styles.title}>{slide.title}</Text>
           <Text style={styles.text}>{slide.text}</Text>
@@ -85,7 +93,7 @@ export default function OnboardingScreen(): ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: palette.brume,
   },
   container: {
     flex: 1,
@@ -98,25 +106,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing.l,
   },
-  iconCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: colors.accent,
+  medallion: {
+    width: 152,
+    height: 152,
+    borderRadius: 76,
+    backgroundColor: palette.laitonPale,
+    borderWidth: 1.5,
+    borderColor: palette.laiton,
     alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
+    ...type.screenTitle,
     fontSize: 30,
-    fontWeight: '800',
-    color: colors.textPrimary,
+    lineHeight: 42,
     textAlign: 'center',
   },
   text: {
-    fontSize: fontSize.subtitle,
-    color: colors.textSecondary,
+    ...type.body,
+    color: palette.texteSecondaire,
     textAlign: 'center',
-    lineHeight: 30,
     paddingHorizontal: spacing.m,
   },
   footer: {
@@ -131,9 +140,9 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: colors.border,
+    backgroundColor: palette.bordure,
   },
   dotActive: {
-    backgroundColor: colors.accent,
+    backgroundColor: palette.laiton,
   },
 });

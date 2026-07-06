@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ReactElement } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { colors, fontSize, radius, spacing } from '../lib/theme';
+import { palette, spacing, type } from '../lib/theme';
 import { PrimaryButton } from './primary-button';
 
 interface ErrorViewProps {
@@ -20,7 +20,7 @@ export function ErrorView({
   return (
     <View style={styles.container} accessibilityLiveRegion="assertive">
       <View style={styles.iconCircle}>
-        <Ionicons name="cloud-offline" size={40} color={colors.textSecondary} />
+        <Ionicons name="cloud-offline-outline" size={40} color={palette.texteSecondaire} />
       </View>
       <Text style={styles.title}>Un problème est survenu</Text>
       <Text style={styles.message}>{message}</Text>
@@ -34,6 +34,7 @@ export function ErrorView({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: palette.brume,
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing.xl,
@@ -42,22 +43,21 @@ const styles = StyleSheet.create({
   iconCircle: {
     width: 88,
     height: 88,
-    borderRadius: radius.l,
-    backgroundColor: colors.surface,
+    borderRadius: 44,
+    backgroundColor: palette.surfaceLegere,
     alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
-    fontSize: fontSize.title,
-    fontWeight: '700',
-    color: colors.textPrimary,
+    ...type.screenTitle,
+    fontSize: 24,
+    lineHeight: 34,
     textAlign: 'center',
   },
   message: {
-    fontSize: fontSize.body,
-    color: colors.textSecondary,
+    ...type.body,
+    color: palette.texteSecondaire,
     textAlign: 'center',
-    lineHeight: 26,
   },
   button: {
     alignSelf: 'stretch',

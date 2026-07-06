@@ -11,7 +11,7 @@ import type { ImageUpload } from '../lib/api';
 import { analyzeImage, ApiFailure } from '../lib/api';
 import { getDeviceId } from '../lib/device-id';
 import { compressForUpload } from '../lib/image';
-import { colors, fontSize, radius, spacing } from '../lib/theme';
+import { palette, radius, spacing, type } from '../lib/theme';
 import { useHistory } from '../store/history';
 
 type ScreenState =
@@ -160,35 +160,29 @@ export default function VerifyImageScreen(): ReactElement {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: palette.brume,
   },
   container: {
     padding: spacing.l,
     gap: spacing.l,
   },
   instructions: {
-    fontSize: fontSize.body,
-    color: colors.textPrimary,
-    lineHeight: 26,
+    ...type.body,
   },
   preview: {
     width: '100%',
     height: 320,
-    borderRadius: radius.m,
-    backgroundColor: colors.surface,
+    borderRadius: radius.l,
+    backgroundColor: palette.surfaceLegere,
   },
   buttons: {
     gap: spacing.m,
   },
   hint: {
-    fontSize: fontSize.small,
-    color: colors.textSecondary,
-    lineHeight: 22,
+    ...type.bodySecondary,
   },
   privacyNote: {
-    fontSize: fontSize.small,
-    color: colors.textSecondary,
+    ...type.label,
     textAlign: 'center',
-    lineHeight: 22,
   },
 });

@@ -5,7 +5,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PrimaryButton } from '../../components/primary-button';
 import { guideById } from '../../lib/scam-guides';
-import { colors, fontSize, radius, spacing } from '../../lib/theme';
+import { palette, radius, spacing, type } from '../../lib/theme';
 
 /** Détail d'une fiche conseil (F6) : c'est quoi / la reconnaître / que faire / exemple. */
 export default function GuideDetailScreen(): ReactElement {
@@ -36,7 +36,7 @@ export default function GuideDetailScreen(): ReactElement {
             <Ionicons
               name={guide.icon as keyof typeof Ionicons.glyphMap}
               size={30}
-              color={colors.accent}
+              color={palette.encreMarine}
             />
           </View>
           <Text style={styles.title}>{guide.title}</Text>
@@ -83,7 +83,7 @@ export default function GuideDetailScreen(): ReactElement {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: palette.brume,
   },
   container: {
     padding: spacing.l,
@@ -98,28 +98,24 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: radius.m,
-    backgroundColor: colors.surface,
+    backgroundColor: palette.surfaceLegere,
     alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
     flex: 1,
-    fontSize: fontSize.title,
-    fontWeight: '800',
-    color: colors.textPrimary,
-    lineHeight: 32,
+    ...type.screenTitle,
+    fontSize: 24,
+    lineHeight: 34,
   },
   sectionTitle: {
-    fontSize: fontSize.subtitle,
-    fontWeight: '700',
-    color: colors.accent,
-    marginTop: spacing.l,
+    ...type.sectionTitle,
+    marginTop: spacing.xl,
     marginBottom: spacing.s,
   },
   paragraph: {
-    fontSize: fontSize.body,
-    color: colors.textSecondary,
-    lineHeight: 27,
+    ...type.body,
+    color: palette.texteSecondaire,
   },
   listItem: {
     flexDirection: 'row',
@@ -127,36 +123,32 @@ const styles = StyleSheet.create({
     paddingRight: spacing.m,
   },
   bullet: {
-    fontSize: fontSize.body,
-    fontWeight: '700',
-    color: colors.accent,
+    ...type.body,
+    fontFamily: 'Inter_700Bold',
+    color: palette.encreMarine,
     marginRight: spacing.s,
-    lineHeight: 26,
   },
   number: {
-    fontSize: fontSize.body,
-    fontWeight: '700',
-    color: colors.accent,
+    ...type.body,
+    fontFamily: 'Inter_700Bold',
+    color: palette.encreMarine,
     marginRight: spacing.s,
-    lineHeight: 26,
   },
   listText: {
     flex: 1,
-    fontSize: fontSize.body,
-    color: colors.textSecondary,
-    lineHeight: 26,
+    ...type.body,
+    color: palette.texteSecondaire,
   },
   exampleBox: {
-    backgroundColor: colors.surface,
+    backgroundColor: palette.laitonPale,
     borderRadius: radius.m,
-    padding: spacing.m,
-    borderLeftWidth: 4,
-    borderLeftColor: colors.accent,
+    padding: spacing.l,
+    borderLeftWidth: 3,
+    borderLeftColor: palette.laiton,
   },
   exampleText: {
-    fontSize: fontSize.body,
-    color: colors.textSecondary,
-    lineHeight: 26,
+    ...type.body,
+    color: palette.encreMarine,
     fontStyle: 'italic',
   },
   footerButton: {
@@ -164,14 +156,14 @@ const styles = StyleSheet.create({
   },
   missing: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: palette.brume,
     justifyContent: 'center',
     padding: spacing.xl,
     gap: spacing.l,
   },
   missingText: {
-    fontSize: fontSize.body,
-    color: colors.textSecondary,
+    ...type.body,
+    color: palette.texteSecondaire,
     textAlign: 'center',
   },
 });

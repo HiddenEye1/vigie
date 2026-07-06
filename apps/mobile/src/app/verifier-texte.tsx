@@ -9,7 +9,7 @@ import { PrimaryButton } from '../components/primary-button';
 import { WaitingView } from '../components/waiting-view';
 import { analyzeText, ApiFailure } from '../lib/api';
 import { getDeviceId } from '../lib/device-id';
-import { colors, fontSize, radius, spacing } from '../lib/theme';
+import { palette, radius, spacing, type } from '../lib/theme';
 import { useHistory } from '../store/history';
 
 type ScreenState = { step: 'editing' } | { step: 'loading' } | { step: 'error'; message: string };
@@ -83,7 +83,7 @@ export default function VerifyTextScreen(): ReactElement {
         value={content}
         onChangeText={setContent}
         placeholder="Exemple : « Votre colis est en attente, réglez 1,99 € pour le recevoir… »"
-        placeholderTextColor={colors.textSecondary}
+        placeholderTextColor={palette.texteSecondaire}
         textAlignVertical="top"
         accessibilityLabel="Message à vérifier"
         autoCorrect={false}
@@ -118,35 +118,29 @@ export default function VerifyTextScreen(): ReactElement {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: palette.brume,
   },
   container: {
     padding: spacing.l,
     gap: spacing.l,
   },
   instructions: {
-    fontSize: fontSize.body,
-    color: colors.textPrimary,
-    lineHeight: 26,
+    ...type.body,
   },
   input: {
     minHeight: 160,
-    borderWidth: 2,
-    borderColor: colors.border,
-    borderRadius: radius.m,
-    padding: spacing.m,
-    fontSize: fontSize.body,
-    color: colors.textPrimary,
-    backgroundColor: colors.card,
-    lineHeight: 26,
+    borderWidth: 1.5,
+    borderColor: palette.bordure,
+    borderRadius: radius.l,
+    padding: spacing.l,
+    ...type.body,
+    backgroundColor: palette.ecume,
   },
   buttons: {
     gap: spacing.m,
   },
   privacyNote: {
-    fontSize: fontSize.small,
-    color: colors.textSecondary,
+    ...type.label,
     textAlign: 'center',
-    lineHeight: 22,
   },
 });

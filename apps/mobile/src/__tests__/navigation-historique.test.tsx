@@ -16,10 +16,9 @@ describe('navigation — historique', () => {
     act(() => {
       router.navigate('/historique');
     });
+    // Texte de l'état vide défini par la charte « Le phare ».
     expect(
-      await view.findByText(
-        'Aucune vérification pour le moment. Vos analyses resteront uniquement sur ce téléphone.',
-      ),
+      await view.findByText('Aucune analyse pour l’instant. Au moindre doute, vérifiez ici.'),
     ).toBeTruthy();
   });
 });

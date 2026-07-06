@@ -4,18 +4,12 @@ import type { ReactElement } from 'react';
 import { Alert, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { colors, fontSize, MIN_TOUCH_TARGET, radius, spacing } from '../../lib/theme';
+import { LighthouseLogo } from '../../components/lighthouse-logo';
+import { formatRelativeDate } from '../../lib/relative-date';
+import { cardShadow, MIN_TOUCH_TARGET, palette, radius, spacing, type } from '../../lib/theme';
 import { VERDICT_UI } from '../../lib/verdict-ui';
 import type { HistoryEntry } from '../../store/history';
 import { useHistory } from '../../store/history';
-
-const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-});
 
 /** Historique local (§8.2) : liste, ré-affichage du verdict, purge totale. */
 export default function HistoryScreen(): ReactElement {
@@ -51,7 +45,7 @@ export default function HistoryScreen(): ReactElement {
             onPress={confirmClear}
             style={styles.clearButton}
           >
-            <Ionicons name="trash" size={18} color={colors.verdictDanger} />
+            <Ionicons name="trash-outline" size={18} color={palette.texteFeuRouge} />
             <Text style={styles.clearLabel}>Tout effacer</Text>
           </Pressable>
         ) : null}
@@ -59,9 +53,9 @@ export default function HistoryScreen(): ReactElement {
 
       {entries.length === 0 ? (
         <View style={styles.empty}>
-          <Ionicons name="time" size={48} color={colors.border} />
+          <LighthouseLogo size={72} />
           <Text style={styles.emptyText}>
-            Aucune vérification pour le moment. Vos analyses resteront uniquement sur ce téléphone.
+            Aucune analyse pour l’instant. Au moindre doute, vérifiez ici.
           </Text>
         </View>
       ) : (
@@ -91,22 +85,23 @@ function HistoryRow({
   readonly onPress: () => void;
 }): ReactElement {
   const ui = VERDICT_UI[entry.verdict];
+  const relativeDate = formatRelativeDate(entry.date);
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`Vérification du ${dateFormatter.format(new Date(entry.date))}, résultat : ${ui.label}`}
+      accessibilityLabel={`Vérification ${relativeDate}, résultat : ${ui.label}`}
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
     >
       <View style={[styles.dot, { backgroundColor: ui.fill }]} />
       <View style={styles.rowContent}>
-        <Text style={styles.rowDate}>{dateFormatter.format(new Date(entry.date))}</Text>
+        <Text style={styles.rowDate}>{relativeDate}</Text>
         <Text style={styles.rowExcerpt} numberOfLines={2}>
           {entry.excerpt}
         </Text>
         <Text style={[styles.rowVerdict, { color: ui.text }]}>{ui.label}</Text>
       </View>
-      <Ionicons name="chevron-forward" size={22} color={colors.border} />
+      <Ionicons name="chevron-forward" size={22} color={palette.texteSecondaire} />
     </Pressable>
   );
 }
@@ -114,7 +109,7 @@ function HistoryRow({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: palette.brume,
   },
   header: {
     flexDirection: 'row',
@@ -123,9 +118,7 @@ const styles = StyleSheet.create({
     padding: spacing.l,
   },
   title: {
-    fontSize: fontSize.title,
-    fontWeight: '800',
-    color: colors.textPrimary,
+    ...type.screenTitle,
   },
   clearButton: {
     flexDirection: 'row',
@@ -135,22 +128,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.s,
   },
   clearLabel: {
-    fontSize: fontSize.small,
-    color: colors.verdictDanger,
-    fontWeight: '600',
+    ...type.label,
+    color: palette.texteFeuRouge,
   },
   empty: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     padding: spacing.xl,
-    gap: spacing.m,
+    gap: spacing.l,
   },
   emptyText: {
-    fontSize: fontSize.body,
-    color: colors.textSecondary,
+    ...type.body,
+    color: palette.texteSecondaire,
     textAlign: 'center',
-    lineHeight: 26,
+    maxWidth: 280,
   },
   list: {
     paddingHorizontal: spacing.l,
@@ -158,39 +150,34 @@ const styles = StyleSheet.create({
     gap: spacing.m,
   },
   row: {
+    ...cardShadow,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.card,
-    borderRadius: radius.m,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.m,
+    backgroundColor: palette.ecume,
+    borderRadius: radius.l,
+    padding: spacing.l,
     minHeight: MIN_TOUCH_TARGET,
     gap: spacing.m,
   },
   rowPressed: {
-    backgroundColor: colors.surface,
+    backgroundColor: palette.surfaceLegere,
   },
   dot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
   },
   rowContent: {
     flex: 1,
-    gap: spacing.xs,
+    gap: 2,
   },
   rowDate: {
-    fontSize: fontSize.small,
-    color: colors.textSecondary,
+    ...type.label,
   },
   rowExcerpt: {
-    fontSize: fontSize.body,
-    color: colors.textPrimary,
-    lineHeight: 24,
+    ...type.body,
   },
   rowVerdict: {
-    fontSize: fontSize.small,
-    fontWeight: '700',
+    ...type.label,
   },
 });

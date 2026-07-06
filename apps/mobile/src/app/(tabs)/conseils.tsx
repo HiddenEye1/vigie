@@ -5,7 +5,14 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { SCAM_GUIDES } from '../../lib/scam-guides';
-import { colors, fontSize, MIN_TOUCH_TARGET, radius, spacing } from '../../lib/theme';
+import { cardShadow, MIN_TOUCH_TARGET, palette, radius, spacing, type } from '../../lib/theme';
+
+/** Icône linéaire cohérente : variante -outline quand elle existe. */
+function outlineIcon(icon: string): keyof typeof Ionicons.glyphMap {
+  const glyphs = Ionicons.glyphMap as Record<string, number>;
+  const outlined = `${icon}-outline`;
+  return (outlined in glyphs ? outlined : icon) as keyof typeof Ionicons.glyphMap;
+}
 
 /** Catalogue des 15 fiches conseils (F6) — contenu embarqué, consultable hors ligne. */
 export default function GuidesScreen(): ReactElement {
@@ -35,14 +42,10 @@ export default function GuidesScreen(): ReactElement {
             style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
           >
             <View style={styles.iconBox}>
-              <Ionicons
-                name={item.icon as keyof typeof Ionicons.glyphMap}
-                size={24}
-                color={colors.accent}
-              />
+              <Ionicons name={outlineIcon(item.icon)} size={24} color={palette.encreMarine} />
             </View>
             <Text style={styles.rowTitle}>{item.title}</Text>
-            <Ionicons name="chevron-forward" size={22} color={colors.border} />
+            <Ionicons name="chevron-forward" size={22} color={palette.texteSecondaire} />
           </Pressable>
         )}
       />
@@ -53,21 +56,17 @@ export default function GuidesScreen(): ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: palette.brume,
   },
   header: {
     paddingBottom: spacing.m,
     gap: spacing.s,
   },
   title: {
-    fontSize: fontSize.title,
-    fontWeight: '800',
-    color: colors.textPrimary,
+    ...type.screenTitle,
   },
   subtitle: {
-    fontSize: fontSize.body,
-    color: colors.textSecondary,
-    lineHeight: 26,
+    ...type.bodySecondary,
   },
   list: {
     padding: spacing.l,
@@ -75,32 +74,29 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl,
   },
   row: {
+    ...cardShadow,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.m,
-    padding: spacing.m,
+    backgroundColor: palette.ecume,
+    borderRadius: radius.l,
+    padding: spacing.l,
     minHeight: MIN_TOUCH_TARGET,
     gap: spacing.m,
   },
   rowPressed: {
-    backgroundColor: colors.surface,
+    backgroundColor: palette.surfaceLegere,
   },
   iconBox: {
     width: 44,
     height: 44,
     borderRadius: radius.s,
-    backgroundColor: colors.surface,
+    backgroundColor: palette.surfaceLegere,
     alignItems: 'center',
     justifyContent: 'center',
   },
   rowTitle: {
     flex: 1,
-    fontSize: fontSize.body,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    lineHeight: 24,
+    ...type.body,
+    fontFamily: 'Inter_600SemiBold',
   },
 });

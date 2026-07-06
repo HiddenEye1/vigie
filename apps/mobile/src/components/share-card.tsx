@@ -5,7 +5,7 @@ import { forwardRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { CATEGORY_LABELS, VERDICT_UI } from '../lib/verdict-ui';
-import { colors, fontSize, radius, spacing } from '../lib/theme';
+import { fonts, palette, radius, spacing, type } from '../lib/theme';
 import { LighthouseLogo } from './lighthouse-logo';
 
 interface ShareCardProps {
@@ -50,7 +50,7 @@ export const ShareCard = forwardRef<View, ShareCardProps>(function ShareCard(
 const styles = StyleSheet.create({
   card: {
     width: 360,
-    backgroundColor: colors.background,
+    backgroundColor: palette.ecume,
     borderRadius: radius.l,
     padding: spacing.l,
     gap: spacing.m,
@@ -60,49 +60,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.s,
   },
-  logoCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   appName: {
-    fontSize: fontSize.subtitle,
-    fontWeight: '800',
-    color: colors.textPrimary,
+    ...type.sectionTitle,
+    fontFamily: fonts.display,
+    fontSize: 21,
   },
   badge: {
     borderRadius: radius.m,
-    padding: spacing.m,
+    padding: spacing.l,
     alignItems: 'center',
     gap: spacing.s,
   },
   badgeLabel: {
-    color: colors.onAccent,
-    fontSize: fontSize.body,
-    fontWeight: '700',
+    ...type.verdict,
+    fontSize: 18,
+    lineHeight: 26,
     textAlign: 'center',
   },
   category: {
     alignSelf: 'flex-start',
-    fontSize: fontSize.small,
-    fontWeight: '700',
-    color: colors.textSecondary,
-    backgroundColor: colors.surface,
+    ...type.label,
+    color: palette.encreMarine,
+    backgroundColor: palette.surfaceLegere,
     borderRadius: radius.s,
     paddingHorizontal: spacing.m,
     paddingVertical: spacing.xs,
   },
   summary: {
-    fontSize: fontSize.body,
-    color: colors.textPrimary,
-    lineHeight: 26,
+    ...type.body,
   },
   footer: {
-    fontSize: fontSize.small,
-    color: colors.textSecondary,
-    lineHeight: 20,
+    ...type.label,
   },
 });

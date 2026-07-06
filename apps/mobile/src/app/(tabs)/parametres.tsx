@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { PrimaryButton } from '../../components/primary-button';
 import { apiBaseUrl, ApiFailure, joinWaitlist } from '../../lib/api';
 import { getDeviceId } from '../../lib/device-id';
-import { colors, fontSize, radius, spacing } from '../../lib/theme';
+import { cardShadow, colors, fonts, palette, radius, spacing, type } from '../../lib/theme';
 import { useHistory } from '../../store/history';
 
 type WaitlistState =
@@ -148,7 +148,7 @@ export default function SettingsScreen(): ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: palette.brume,
   },
   container: {
     padding: spacing.l,
@@ -156,52 +156,42 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl,
   },
   title: {
-    fontSize: fontSize.title,
-    fontWeight: '800',
-    color: colors.textPrimary,
+    ...type.screenTitle,
   },
   card: {
-    backgroundColor: colors.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.m,
-    padding: spacing.m,
+    ...cardShadow,
+    backgroundColor: palette.ecume,
+    borderRadius: radius.l,
+    padding: spacing.l,
     gap: spacing.m,
   },
   cardTitle: {
-    fontSize: fontSize.subtitle,
-    fontWeight: '700',
-    color: colors.textPrimary,
+    ...type.sectionTitle,
   },
   cardText: {
-    fontSize: fontSize.body,
-    color: colors.textSecondary,
-    lineHeight: 26,
+    ...type.body,
+    color: palette.texteSecondaire,
   },
   input: {
     minHeight: 56,
-    borderWidth: 2,
-    borderColor: colors.border,
+    borderWidth: 1.5,
+    borderColor: palette.bordure,
     borderRadius: radius.m,
-    paddingHorizontal: spacing.m,
-    fontSize: fontSize.body,
-    color: colors.textPrimary,
-    backgroundColor: colors.background,
+    paddingHorizontal: spacing.l,
+    ...type.body,
+    backgroundColor: palette.brume,
   },
   successText: {
-    fontSize: fontSize.body,
-    color: colors.verdictSafe,
-    fontWeight: '600',
-    lineHeight: 24,
+    ...type.body,
+    fontFamily: fonts.textSemiBold,
+    color: palette.texteFeuVert,
   },
   errorText: {
-    fontSize: fontSize.small,
-    color: colors.verdictDanger,
-    lineHeight: 22,
+    ...type.bodySecondary,
+    color: palette.texteFeuRouge,
   },
   version: {
-    fontSize: fontSize.small,
-    color: colors.textSecondary,
+    ...type.label,
     textAlign: 'center',
   },
 });

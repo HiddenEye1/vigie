@@ -12,7 +12,7 @@ import { VerdictContent } from '../../components/verdict-content';
 import { sendShareEvent } from '../../lib/api';
 import { getDeviceId } from '../../lib/device-id';
 import { guideForCategory } from '../../lib/scam-guides';
-import { colors, fontSize, MIN_TOUCH_TARGET, radius, spacing } from '../../lib/theme';
+import { fonts, MIN_TOUCH_TARGET, palette, radius, spacing, type } from '../../lib/theme';
 import { selectEntryById, useHistory } from '../../store/history';
 
 /** Écran de verdict (§4.2) — relit l'entrée depuis l'historique local. */
@@ -85,9 +85,9 @@ export default function VerdictScreen(): ReactElement {
           }}
           style={({ pressed }) => [styles.guideLink, pressed && styles.guideLinkPressed]}
         >
-          <Ionicons name="book" size={22} color={colors.accent} />
+          <Ionicons name="book-outline" size={22} color={palette.encreMarine} />
           <Text style={styles.guideLinkText}>En savoir plus : {guide.title}</Text>
-          <Ionicons name="chevron-forward" size={20} color={colors.accent} />
+          <Ionicons name="chevron-forward" size={20} color={palette.encreMarine} />
         </Pressable>
       ) : null}
 
@@ -122,39 +122,37 @@ export default function VerdictScreen(): ReactElement {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: palette.brume,
   },
   container: {
     padding: spacing.l,
     paddingBottom: spacing.xl,
   },
   urlInfo: {
-    fontSize: fontSize.small,
-    color: colors.textSecondary,
+    ...type.label,
     marginTop: spacing.m,
+    textAlign: 'center',
   },
   guideLink: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.s,
-    marginTop: spacing.l,
-    backgroundColor: colors.surface,
+    marginTop: spacing.xl,
+    backgroundColor: palette.surfaceLegere,
     borderRadius: radius.m,
-    padding: spacing.m,
+    padding: spacing.l,
     minHeight: MIN_TOUCH_TARGET,
   },
   guideLinkPressed: {
-    backgroundColor: colors.card,
+    backgroundColor: palette.bordure,
   },
   guideLinkText: {
     flex: 1,
-    fontSize: fontSize.body,
-    fontWeight: '600',
-    color: colors.accent,
-    lineHeight: 24,
+    ...type.body,
+    fontFamily: fonts.textSemiBold,
   },
   actions: {
-    marginTop: spacing.l,
+    marginTop: spacing.xl,
     gap: spacing.m,
   },
   offscreen: {
@@ -164,16 +162,15 @@ const styles = StyleSheet.create({
   },
   missing: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: palette.brume,
     alignItems: 'stretch',
     justifyContent: 'center',
     padding: spacing.xl,
     gap: spacing.l,
   },
   missingText: {
-    fontSize: fontSize.body,
-    color: colors.textSecondary,
+    ...type.body,
+    color: palette.texteSecondaire,
     textAlign: 'center',
-    lineHeight: 26,
   },
 });
