@@ -43,11 +43,19 @@ export function PrimaryButton({
         <Ionicons
           name={icon}
           size={22}
-          color={isPrimary ? palette.ecume : palette.encreMarine}
+          color={
+            disabled ? palette.texteMuet : isPrimary ? palette.surFeuSombre : palette.laiton
+          }
           style={styles.icon}
         />
       ) : null}
-      <Text style={[styles.label, isPrimary ? styles.labelPrimary : styles.labelSecondary]}>
+      <Text
+        style={[
+          styles.label,
+          isPrimary ? styles.labelPrimary : styles.labelSecondary,
+          disabled && styles.labelDisabled,
+        ]}
+      >
         {label}
       </Text>
     </Pressable>
@@ -65,24 +73,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primary: {
-    backgroundColor: palette.encreMarine,
+    backgroundColor: palette.laiton,
   },
   primaryPressed: {
-    backgroundColor: palette.encreMarinePressee,
+    backgroundColor: palette.laitonClair,
   },
   secondary: {
-    backgroundColor: palette.ecume,
+    backgroundColor: 'transparent',
     borderWidth: 1.5,
-    borderColor: palette.encreMarine,
+    borderColor: palette.laiton,
   },
   secondaryPressed: {
-    backgroundColor: palette.surfaceLegere,
+    backgroundColor: palette.laitonPale,
   },
   pressedScale: {
     transform: [{ scale: 0.98 }],
   },
   disabled: {
-    opacity: 0.45,
+    backgroundColor: palette.ardoiseElevee,
+    borderColor: 'transparent',
   },
   icon: {
     marginRight: spacing.s,
@@ -92,9 +101,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   labelPrimary: {
-    color: palette.ecume,
+    color: palette.surFeuSombre,
   },
   labelSecondary: {
-    color: palette.encreMarine,
+    color: palette.laiton,
+  },
+  labelDisabled: {
+    color: palette.texteMuet,
   },
 });

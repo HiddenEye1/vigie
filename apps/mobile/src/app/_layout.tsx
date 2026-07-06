@@ -74,7 +74,7 @@ export default function RootLayout(): ReactElement | null {
 
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: colors.background },
