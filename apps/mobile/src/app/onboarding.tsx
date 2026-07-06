@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AmbientRadar } from '../components/ambient-radar';
 import { LighthouseLogo } from '../components/lighthouse-logo';
 import { PrimaryButton } from '../components/primary-button';
 import { markOnboardingSeen } from '../lib/onboarding';
@@ -18,7 +19,7 @@ interface Slide {
 
 /**
  * Onboarding en 3 écrans (F9) : promesse → fonctionnement → confidentialité.
- * Le seul moment « storytelling » de l'app : le laiton a le droit de briller.
+ * Le seul moment « storytelling » de l'app : le radar tourne et le laiton brille.
  */
 const SLIDES: readonly [Slide, Slide, Slide] = [
   {
@@ -59,12 +60,17 @@ export default function OnboardingScreen(): ReactElement {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.content}>
-          <View style={styles.medallion}>
-            {slide.icon === 'lighthouse' ? (
-              <LighthouseLogo size={88} />
-            ) : (
-              <Ionicons name={slide.icon} size={64} color={palette.encreMarine} />
-            )}
+          <View style={styles.hero}>
+            <View style={styles.radar} pointerEvents="none">
+              <AmbientRadar size={300} />
+            </View>
+            <View style={styles.medallion}>
+              {slide.icon === 'lighthouse' ? (
+                <LighthouseLogo size={84} stroke={palette.texteClair} lantern={palette.laiton} />
+              ) : (
+                <Ionicons name={slide.icon} size={60} color={palette.laiton} />
+              )}
+            </View>
           </View>
           <Text style={styles.title}>{slide.title}</Text>
           <Text style={styles.text}>{slide.text}</Text>
@@ -93,7 +99,7 @@ export default function OnboardingScreen(): ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.nuit,
   },
   container: {
     flex: 1,
@@ -106,11 +112,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: spacing.l,
   },
+  hero: {
+    width: 300,
+    height: 300,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   medallion: {
-    width: 152,
-    height: 152,
-    borderRadius: 76,
-    backgroundColor: palette.laitonPale,
+    width: 148,
+    height: 148,
+    borderRadius: 74,
+    backgroundColor: palette.ardoiseHaute,
     borderWidth: 1.5,
     borderColor: palette.laiton,
     alignItems: 'center',
@@ -124,7 +145,7 @@ const styles = StyleSheet.create({
   },
   text: {
     ...type.body,
-    color: palette.texteSecondaire,
+    color: palette.texteDoux,
     textAlign: 'center',
     paddingHorizontal: spacing.m,
   },
@@ -144,5 +165,6 @@ const styles = StyleSheet.create({
   },
   dotActive: {
     backgroundColor: palette.laiton,
+    width: 22,
   },
 });
