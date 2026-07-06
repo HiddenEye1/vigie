@@ -1,88 +1,137 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import type { ReactElement } from 'react';
-import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AnchorHeader } from '../../components/anchor-header';
-import { CompactActionCard } from '../../components/compact-action-card';
-import { HeroActionCard } from '../../components/hero-action-card';
-import { SpotlightGuides } from '../../components/spotlight-guides';
-import { palette, spacing, type } from '../../lib/theme';
+import { AmbientRadar } from '../../components/ambient-radar';
+import { HeroField } from '../../components/hero-field';
+import { LighthouseLogo } from '../../components/lighthouse-logo';
+import { LiveFeed } from '../../components/live-feed';
+import { PrimaryButton } from '../../components/primary-button';
+import type { SegmentedOption } from '../../components/segmented-tabs';
+import { SegmentedTabs } from '../../components/segmented-tabs';
+import { VeilleBadge } from '../../components/veille-badge';
+import { fonts, MIN_TOUCH_TARGET, onHeader, palette, radius, spacing, type } from '../../lib/theme';
 
-/** Phrases d'état de veille, dans l'en-tête — le poste de garde qui veille. */
-const STATUS_LINES = [
-  'Prêt à vérifier.',
-  'Un doute ? Je veille.',
-  'Toujours à vos côtés.',
-] as const;
+type Mode = 'texte' | 'capture' | 'lien';
 
-const STATUS_ROTATION_MS = 5_000;
+interface ModeConfig extends SegmentedOption<Mode> {
+  readonly route: '/verifier-texte' | '/verifier-capture' | '/verifier-lien';
+  readonly cta: string;
+  readonly icon: 'chatbubble-ellipses-outline' | 'image-outline' | 'link-outline';
+  readonly ctaIcon: 'shield-checkmark' | 'image' | 'link';
+  readonly placeholder: string;
+  readonly ariaField: string;
+}
+
+/** Les trois façons de soumettre quelque chose à la veille. */
+const MODES = [
+  {
+    key: 'texte',
+    label: 'Message',
+    icon: 'chatbubble-ellipses-outline',
+    route: '/verifier-texte',
+    cta: 'Vérifier un message',
+    ctaIcon: 'shield-checkmark',
+    placeholder: 'Collez le message reçu…',
+    ariaField: 'Coller un message à vérifier',
+  },
+  {
+    key: 'capture',
+    label: 'Capture',
+    icon: 'image-outline',
+    route: '/verifier-capture',
+    cta: 'Vérifier une capture',
+    ctaIcon: 'image',
+    placeholder: 'Choisissez une capture d’écran…',
+    ariaField: 'Choisir une capture à vérifier',
+  },
+  {
+    key: 'lien',
+    label: 'Lien',
+    icon: 'link-outline',
+    route: '/verifier-lien',
+    cta: 'Vérifier un lien',
+    ctaIcon: 'link',
+    placeholder: 'Collez le lien reçu…',
+    ariaField: 'Coller un lien à vérifier',
+  },
+] as const satisfies readonly ModeConfig[];
 
 /**
- * Accueil : un poste de garde qui veille. Lecture en Z, ancrée en haut —
- * en-tête vivant → action principale → duo secondaire → contenu à explorer.
+ * Accueil « poste de veille » : un radar ambiant en fond, la veille active
+ * signalée, puis l'action du moment — choisir le type d'élément, le déposer
+ * dans le champ héros, lancer la vérification. En bas, le fil des arnaques
+ * du moment défile en direct.
  */
 export default function HomeScreen(): ReactElement {
   const router = useRouter();
-  const [statusIndex, setStatusIndex] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setStatusIndex((current) => (current + 1) % STATUS_LINES.length);
-    }, STATUS_ROTATION_MS);
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
+  const insets = useSafeAreaInsets();
+  const [mode, setMode] = useState<Mode>('texte');
+  const active = MODES.find((m) => m.key === mode) ?? MODES[0];
 
   return (
     <View style={styles.screen}>
-      <AnchorHeader
-        title="Vigie"
-        status={STATUS_LINES[statusIndex] ?? STATUS_LINES[0]}
-        showLighthouse
-        onSettings={() => {
-          router.push('/parametres');
-        }}
-      />
+      <View style={styles.radarLayer} pointerEvents="none">
+        <AmbientRadar size={380} />
+      </View>
 
       <ScrollView
-        contentContainerStyle={styles.body}
+        contentContainerStyle={[
+          styles.body,
+          { paddingTop: insets.top + spacing.m, paddingBottom: spacing.xxl },
+        ]}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.inset}>
-          <HeroActionCard
-            title="Vérifier un message"
-            subtitle="Collez un SMS, un e-mail, un message reçu"
-            icon="chatbox-ellipses"
+        <View style={styles.topBar}>
+          <View style={styles.brand}>
+            <LighthouseLogo size={34} lantern={palette.laiton} stroke={onHeader.text} />
+            <Text style={styles.wordmark}>Vigie</Text>
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Réglages"
+            hitSlop={12}
             onPress={() => {
-              router.push('/verifier-texte');
+              router.push('/parametres');
             }}
-          />
+            style={styles.gear}
+          >
+            <Ionicons name="settings-outline" size={20} color={onHeader.text} />
+          </Pressable>
         </View>
 
-        <View style={styles.duo}>
-          <CompactActionCard
-            title="Une capture d’écran"
-            icon="image-outline"
+        <View style={styles.hero}>
+          <VeilleBadge label="en veille" />
+          <Text style={styles.headline}>Un doute ?{'\n'}Vérifions-le ensemble.</Text>
+
+          <SegmentedTabs options={MODES} value={mode} onChange={setMode} />
+
+          <HeroField
+            placeholder={active.placeholder}
+            accessibilityLabel={active.ariaField}
             onPress={() => {
-              router.push('/verifier-capture');
+              router.push(active.route);
             }}
           />
-          <CompactActionCard
-            title="Un lien"
-            icon="link-outline"
+
+          <PrimaryButton
+            label={active.cta}
+            icon={active.ctaIcon}
+            variant="secondary"
             onPress={() => {
-              router.push('/verifier-lien');
+              router.push(active.route);
             }}
           />
+
+          <Text style={styles.privacy}>
+            Gratuit, sans inscription. Vos messages ne sont jamais conservés.
+          </Text>
         </View>
 
-        <SpotlightGuides />
-
-        <Text style={styles.privacy}>
-          Gratuit, sans inscription. Vos messages ne sont jamais conservés.
-        </Text>
+        <LiveFeed />
       </ScrollView>
     </View>
   );
@@ -91,24 +140,55 @@ export default function HomeScreen(): ReactElement {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.nuit,
+  },
+  radarLayer: {
+    position: 'absolute',
+    top: -80,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
   },
   body: {
-    paddingTop: spacing.l,
-    paddingBottom: spacing.xl,
     gap: spacing.xl,
   },
-  inset: {
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: spacing.l,
   },
-  duo: {
+  brand: {
     flexDirection: 'row',
-    gap: spacing.m,
+    alignItems: 'center',
+    gap: spacing.s,
+  },
+  wordmark: {
+    fontFamily: fonts.display,
+    fontSize: 24,
+    color: palette.texteClair,
+  },
+  gear: {
+    minWidth: MIN_TOUCH_TARGET - 12,
+    minHeight: MIN_TOUCH_TARGET - 12,
+    borderRadius: radius.m,
+    backgroundColor: onHeader.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hero: {
     paddingHorizontal: spacing.l,
+    gap: spacing.l,
+  },
+  headline: {
+    ...type.screenTitle,
+    fontSize: 30,
+    lineHeight: 40,
   },
   privacy: {
     ...type.label,
+    color: palette.texteMuet,
     textAlign: 'center',
-    paddingHorizontal: spacing.l,
+    marginTop: spacing.xs,
   },
 });
