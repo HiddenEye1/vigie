@@ -110,11 +110,25 @@ export const spacing = {
   xxl: 40,
 } as const;
 
-/** Rayons : cartes 16 (l), boutons 14 (m). */
+/** Rayons : cartes 16 (l), boutons 14 (m), en-tête ancré 24 (xl). */
 export const radius = {
   s: 10,
   m: 14,
   l: 16,
+  xl: 24,
+} as const;
+
+/**
+ * Sur l'en-tête encre-marine, le texte est clair. Déclinaisons dédiées pour
+ * garder le contraste AA sur ce fond foncé.
+ */
+export const onHeader = {
+  /** Texte principal sur l'en-tête (blanc cassé chaud, pas blanc pur). */
+  text: '#F4F1E9',
+  /** Texte secondaire sur l'en-tête (bleu-gris clair, AA sur encre-marine). */
+  textMuted: '#A9BDC9',
+  /** Surface légère posée sur l'en-tête (puce d'engrenage, etc.). */
+  surface: 'rgba(244, 241, 233, 0.12)',
 } as const;
 
 /** Une seule ombre, douce et basse — jamais d'ombres multiples ou colorées. */
