@@ -1,7 +1,8 @@
 {
   "id": "legit-01-code-bancaire",
-  "label": "Vraie notification bancaire (code de validation)",
+  "label": "Code OTP bancaire — ambigu (peut être déclenché par un attaquant)",
   "kind": "text",
-  "expected": "legitimate",
+  "expected": "ambiguous",
+  "note": "Ré-étiqueté de 'legitimate' à 'ambiguous' : un code de validation (OTP) est légitime si l'utilisateur vient d'agir, mais un attaquant qui tente de se connecter à sa place déclenche exactement le même SMS. Classer SUSPECT est donc défendable (prudence), pas un vrai faux positif. Le prompt système n'est PAS modifié pour ce cas.",
   "content": "Votre code de validation est 245 871. Il expire dans 10 minutes. Ne le communiquez jamais, y compris à un conseiller. Si vous n'êtes pas à l'origine de cette demande, appelez le numéro au dos de votre carte."
 }

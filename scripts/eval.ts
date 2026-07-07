@@ -114,6 +114,50 @@ function pad(value: string, width: number): string {
   return value.length >= width ? value.slice(0, width) : value.padEnd(width);
 }
 
+/** Nombre de répétitions par cas en mode stabilité (option --runs, défaut 3). */
+function runsOption(): number {
+  const index = process.argv.indexOf('--runs');
+  const value = index !== -1 ? Number(process.argv[index + 1]) : Number.NaN;
+  return Number.isInteger(value) && value > 0 ? value : 3;
+}
+
+/**
+ * Mode stabilité (--stability) : rejoue chaque cas plusieurs fois et signale
+ * tout cas dont le verdict change d'un run à l'autre. Sur une app anti-arnaque,
+ * l'inconstance est un défaut : le même message doit donner le même verdict.
+ */
+async function checkStability(base: string, fixtures: Fixture[], runs: number): Promise<void> {
+  console.log(
+    `\nVérification de stabilité — ${String(fixtures.length)} exemples × ${String(runs)} runs — API ${base}\n`,
+  );
+  console.log(`${pad('EXEMPLE', 28)} ${pad('VERDICTS OBSERVÉS', 48)} STABILITÉ`);
+  console.log('-'.repeat(92));
+
+  let unstable = 0;
+  for (const fixture of fixtures) {
+    const verdicts: string[] = [];
+    for (let i = 0; i < runs; i += 1) {
+      const row = await evaluate(base, fixture);
+      verdicts.push(row.verdict);
+    }
+    const stable = new Set(verdicts).size === 1;
+    if (!stable) {
+      unstable += 1;
+    }
+    console.log(
+      `${pad(fixture.id, 28)} ${pad(verdicts.join(' / '), 48)} ${stable ? '✅ stable' : '❌ INSTABLE'}`,
+    );
+  }
+
+  console.log('-'.repeat(92));
+  console.log(`Cas instables : ${String(unstable)}/${String(fixtures.length)}`);
+  if (unstable === 0) {
+    console.log(`\n✅ Chaque cas donne le même verdict sur les ${String(runs)} runs.`);
+  } else {
+    console.log('\n⚠️  Certains cas changent de verdict d’un run à l’autre (voir INSTABLE ci-dessus).');
+  }
+}
+
 async function main(): Promise<void> {
   const base = apiBase();
   const aiMode = await fetchAiMode(base);
@@ -125,6 +169,12 @@ async function main(): Promise<void> {
   }
 
   const fixtures = await loadFixtures();
+
+  if (process.argv.includes('--stability')) {
+    await checkStability(base, fixtures, runsOption());
+    return;
+  }
+
   console.log(
     `\nÉvaluation Vigie — ${String(fixtures.length)} exemples — API ${base} (mode IA : ${aiMode})\n`,
   );

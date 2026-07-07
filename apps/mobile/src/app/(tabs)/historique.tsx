@@ -6,12 +6,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LighthouseLogo } from '../../components/lighthouse-logo';
 import { formatRelativeDate } from '../../lib/relative-date';
-import { cardShadow, MIN_TOUCH_TARGET, palette, radius, spacing, type } from '../../lib/theme';
+import { fonts, MIN_TOUCH_TARGET, palette, spacing, type } from '../../lib/theme';
 import { VERDICT_UI } from '../../lib/verdict-ui';
 import type { HistoryEntry } from '../../store/history';
 import { useHistory } from '../../store/history';
 
-/** Historique local (§8.2) : liste, ré-affichage du verdict, purge totale. */
+/** Historique local (§8.2) : le journal de veille, ré-affichage du verdict, purge. */
 export default function HistoryScreen(): ReactElement {
   const router = useRouter();
   const entries = useHistory((state) => state.entries);
@@ -35,9 +35,16 @@ export default function HistoryScreen(): ReactElement {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.header}>
-        <Text style={styles.title}>Historique</Text>
+        <View style={styles.headerText}>
+          <Text style={styles.title}>Journal de veille</Text>
+          {entries.length > 0 ? (
+            <Text style={styles.subtitle}>
+              {entries.length} vérification{entries.length > 1 ? 's' : ''} sur ce téléphone
+            </Text>
+          ) : null}
+        </View>
         {entries.length > 0 ? (
           <Pressable
             accessibilityRole="button"
@@ -46,14 +53,14 @@ export default function HistoryScreen(): ReactElement {
             style={styles.clearButton}
           >
             <Ionicons name="trash-outline" size={18} color={palette.texteFeuRouge} />
-            <Text style={styles.clearLabel}>Tout effacer</Text>
+            <Text style={styles.clearLabel}>Effacer</Text>
           </Pressable>
         ) : null}
       </View>
 
       {entries.length === 0 ? (
         <View style={styles.empty}>
-          <LighthouseLogo size={72} />
+          <LighthouseLogo size={72} stroke={palette.texteDoux} lantern={palette.laiton} />
           <Text style={styles.emptyText}>
             Aucune analyse pour l’instant. Au moindre doute, vérifiez ici.
           </Text>
@@ -63,9 +70,12 @@ export default function HistoryScreen(): ReactElement {
           data={entries}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
-          renderItem={({ item }) => (
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item, index }) => (
             <HistoryRow
               entry={item}
+              first={index === 0}
+              last={index === entries.length - 1}
               onPress={() => {
                 router.push(`/verdict/${item.id}`);
               }}
@@ -79,9 +89,13 @@ export default function HistoryScreen(): ReactElement {
 
 function HistoryRow({
   entry,
+  first,
+  last,
   onPress,
 }: {
   readonly entry: HistoryEntry;
+  readonly first: boolean;
+  readonly last: boolean;
   readonly onPress: () => void;
 }): ReactElement {
   const ui = VERDICT_UI[entry.verdict];
@@ -93,7 +107,15 @@ function HistoryRow({
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
     >
-      <View style={[styles.dot, { backgroundColor: ui.fill }]} />
+      <View style={styles.rail}>
+        <View style={[styles.spine, first && styles.spineHidden]} />
+        <View style={styles.dotWrap}>
+          <View style={[styles.halo, { backgroundColor: ui.fill }]} />
+          <View style={[styles.core, { backgroundColor: ui.fill }]} />
+        </View>
+        <View style={[styles.spine, styles.spineGrow, last && styles.spineHidden]} />
+      </View>
+
       <View style={styles.rowContent}>
         <Text style={styles.rowDate}>{relativeDate}</Text>
         <Text style={styles.rowExcerpt} numberOfLines={2}>
@@ -101,24 +123,37 @@ function HistoryRow({
         </Text>
         <Text style={[styles.rowVerdict, { color: ui.text }]}>{ui.label}</Text>
       </View>
-      <Ionicons name="chevron-forward" size={22} color={palette.texteSecondaire} />
+
+      <Ionicons name="chevron-forward" size={20} color={palette.texteMuet} />
     </Pressable>
   );
 }
 
+const RAIL_WIDTH = 30;
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.nuit,
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    padding: spacing.l,
+    paddingHorizontal: spacing.l,
+    paddingTop: spacing.m,
+    paddingBottom: spacing.l,
+  },
+  headerText: {
+    flex: 1,
+    gap: 2,
   },
   title: {
     ...type.screenTitle,
+  },
+  subtitle: {
+    ...type.bodySecondary,
+    color: palette.texteMuet,
   },
   clearButton: {
     flexDirection: 'row',
@@ -140,42 +175,72 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     ...type.body,
-    color: palette.texteSecondaire,
+    color: palette.texteDoux,
     textAlign: 'center',
     maxWidth: 280,
   },
   list: {
     paddingHorizontal: spacing.l,
     paddingBottom: spacing.xl,
-    gap: spacing.m,
   },
   row: {
-    ...cardShadow,
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: palette.ecume,
-    borderRadius: radius.l,
-    padding: spacing.l,
-    minHeight: MIN_TOUCH_TARGET,
+    alignItems: 'stretch',
     gap: spacing.m,
   },
   rowPressed: {
-    backgroundColor: palette.surfaceLegere,
+    opacity: 0.6,
   },
-  dot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+  rail: {
+    width: RAIL_WIDTH,
+    alignItems: 'center',
+  },
+  spine: {
+    width: 2,
+    height: 16,
+    backgroundColor: palette.bordure,
+  },
+  spineGrow: {
+    flex: 1,
+    height: undefined,
+  },
+  spineHidden: {
+    backgroundColor: 'transparent',
+  },
+  dotWrap: {
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  halo: {
+    position: 'absolute',
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    opacity: 0.24,
+  },
+  core: {
+    width: 11,
+    height: 11,
+    borderRadius: 5.5,
   },
   rowContent: {
     flex: 1,
-    gap: 2,
+    paddingTop: spacing.s,
+    paddingBottom: spacing.l,
+    gap: 3,
+    minHeight: MIN_TOUCH_TARGET,
   },
   rowDate: {
-    ...type.label,
+    fontFamily: fonts.textSemiBold,
+    fontSize: 12,
+    color: palette.texteMuet,
   },
   rowExcerpt: {
     ...type.body,
+    fontSize: 15,
+    lineHeight: 21,
   },
   rowVerdict: {
     ...type.label,

@@ -1,47 +1,87 @@
 import type { TextStyle, ViewStyle } from 'react-native';
 
 /**
- * Thème « Le phare » — identité visuelle unique de Vigie.
+ * Thème « Gardien / la veille radar » — identité visuelle unique de Vigie.
  *
- * Métaphore : un phare de poche, calme et solide, qui s'illumine pour signaler
- * le danger. Encre marine pour la structure, brume pour le fond, écume pour
- * les surfaces, laiton (cuivre d'instruments de marine) en accent rare.
- * Les « feux » (rouge/ambre/vert/gris) sont réservés EXCLUSIVEMENT aux verdicts.
+ * Métaphore : un poste de veille dans la nuit. Fond bleu nuit, surfaces ardoise,
+ * un radar ambiant qui balaie, et le laiton (cuivre d'instruments de marine)
+ * en accent RARE — contours et détails, aplat réservé à l'action du moment.
+ * Les « feux » (rouge/ambre/vert/gris) lumineux sont réservés aux verdicts.
  *
  * Règle absolue : aucune couleur ni taille en dur dans les composants —
- * tout vient d'ici.
+ * tout vient d'ici, pour pouvoir réajuster une teinte à un seul endroit.
  */
 
 export const palette = {
-  /** Textes forts et éléments structurants — jamais de noir pur. */
-  encreMarine: '#0E2A3C',
-  /** État pressé des surfaces encre-marine. */
-  encreMarinePressee: '#28495D',
-  /** Fond principal — jamais de blanc pur. */
-  brume: '#F6F8FA',
-  /** Surfaces de cartes, posées sur la brume. */
-  ecume: '#FFFFFF',
-  /** Surface intermédiaire (puces, badges, états pressés clairs). */
-  surfaceLegere: '#ECF1F5',
-  /** Accent premium RARE : lanterne du phare, détails, onboarding. Jamais interactif. */
-  laiton: '#C8A24B',
-  /** Laiton très pâle pour fonds d'accent discrets (onboarding). */
-  laitonPale: '#F3EBD7',
-  /** Texte secondaire — AA sur brume et écume. */
-  texteSecondaire: '#46606F',
-  /** Bordures discrètes. */
-  bordure: '#E2E8ED',
+  // — Fonds : le bleu nuit —
+  /** Fond principal de l'app. */
+  nuit: '#0A1F2E',
+  /** Haut de dégradé (un souffle plus clair). */
+  nuitHaute: '#0D2436',
+  /** Bas de dégradé / creux profond. */
+  nuitProfonde: '#081A27',
 
-  // — Les feux de verdict (pastilles et halos UNIQUEMENT) —
-  feuRouge: '#C63D2F',
-  feuAmbre: '#D98E04',
-  feuVert: '#1E7F4F',
-  feuGris: '#8A97A3',
-  // — Déclinaisons AA pour du TEXTE posé sur brume/écume —
-  texteFeuRouge: '#B02F22',
-  texteFeuAmbre: '#8A5A03',
-  texteFeuVert: '#1E7F4F',
-  texteFeuGris: '#5B6B77',
+  // — Surfaces : l'ardoise —
+  /** Surfaces de cartes, champs, tuiles. */
+  ardoise: '#16304A',
+  /** Surface active / pressée / pilule d'onglet active. */
+  ardoiseElevee: '#1E3A52',
+  /** Champ héros — un cran plus sombre que la carte. */
+  ardoiseHaute: '#13293D',
+  /** Filets et contours discrets. */
+  bordure: '#294B67',
+  /** Filet plus doux, presque fondu. */
+  bordureDouce: '#1E3A52',
+
+  // — Accent laiton : RARE —
+  /** Laiton : contours, détails, aplat sur l'action du moment uniquement. */
+  laiton: '#C8A24B',
+  /** Laiton clair (survol / pression sur aplat laiton). */
+  laitonClair: '#D9B968',
+  /** Voile de laiton pour fonds d'accent discrets. */
+  laitonPale: 'rgba(200, 162, 75, 0.14)',
+  /** Filet de laiton (hairline sur les champs). */
+  laitonFilet: 'rgba(200, 162, 75, 0.30)',
+
+  // — Texte : blanc cassé chaud —
+  /** Texte principal — jamais de blanc pur. */
+  texteClair: '#F2F4F5',
+  /** Texte secondaire — AA sur nuit et ardoise. */
+  texteDoux: '#9DB2C4',
+  /** Texte tertiaire / légendes. */
+  texteMuet: '#7C93A6',
+
+  // — Les feux de verdict (pastilles et halos), lumineux sur la nuit —
+  feuRouge: '#E5564A',
+  feuAmbre: '#F0A83C',
+  feuVert: '#35B37E',
+  feuGris: '#8AA0B2',
+  // — Déclinaisons plus claires pour du TEXTE posé sur nuit/ardoise —
+  texteFeuRouge: '#F08379',
+  texteFeuAmbre: '#F0BE6B',
+  texteFeuVert: '#5FCE9E',
+  texteFeuGris: '#B4C4D2',
+  // — Glyphe posé SUR un feu plein (pastille) —
+  surFeuClair: '#FBF3E7',
+  surFeuSombre: '#0A1F2E',
+
+  // ————————————————————————————————————————————————————————————————
+  // Alias hérités — mappés sur la nuit pour que les écrans non encore
+  // migrés restent cohérents (surfaces sombres, texte clair) sans casser.
+  // Les nouveaux écrans utilisent directement les tokens ci-dessus.
+  // ————————————————————————————————————————————————————————————————
+  /** = nuit (fond d'écran). */
+  brume: '#0A1F2E',
+  /** = ardoise (surface de carte). */
+  ecume: '#16304A',
+  /** = ardoiseElevee (surface intermédiaire / pressée). */
+  surfaceLegere: '#1E3A52',
+  /** Structure foncée : fond d'en-tête ancré, reste sombre. */
+  encreMarine: '#0C2233',
+  /** État pressé des surfaces encre-marine. */
+  encreMarinePressee: '#123049',
+  /** = texteDoux (texte secondaire). */
+  texteSecondaire: '#9DB2C4',
 } as const;
 
 /** Familles chargées via @expo-google-fonts (voir app/_layout.tsx). */
@@ -62,7 +102,7 @@ export const type = {
     fontFamily: fonts.display,
     fontSize: 28,
     lineHeight: 41,
-    color: palette.encreMarine,
+    color: palette.texteClair,
   },
   verdict: {
     fontFamily: fonts.display,
@@ -73,25 +113,25 @@ export const type = {
     fontFamily: fonts.displaySemiBold,
     fontSize: 19,
     lineHeight: 28,
-    color: palette.encreMarine,
+    color: palette.texteClair,
   },
   body: {
     fontFamily: fonts.text,
     fontSize: 17,
     lineHeight: 25,
-    color: palette.encreMarine,
+    color: palette.texteClair,
   },
   bodySecondary: {
     fontFamily: fonts.text,
     fontSize: 15,
     lineHeight: 22,
-    color: palette.texteSecondaire,
+    color: palette.texteDoux,
   },
   label: {
     fontFamily: fonts.textSemiBold,
     fontSize: 13,
     lineHeight: 19,
-    color: palette.texteSecondaire,
+    color: palette.texteDoux,
   },
   button: {
     fontFamily: fonts.textSemiBold,
@@ -110,54 +150,74 @@ export const spacing = {
   xxl: 40,
 } as const;
 
-/** Rayons : cartes 16 (l), boutons 14 (m), en-tête ancré 24 (xl). */
+/** Rayons : cartes 16 (l), boutons 14 (m), en-tête / champ héros 24 (xl). */
 export const radius = {
   s: 10,
   m: 14,
   l: 16,
   xl: 24,
+  pill: 999,
 } as const;
 
 /**
- * Sur l'en-tête encre-marine, le texte est clair. Déclinaisons dédiées pour
- * garder le contraste AA sur ce fond foncé.
+ * Sur l'en-tête encre-marine foncé, le texte est clair. Déclinaisons dédiées
+ * pour garder le contraste AA sur ce fond.
  */
 export const onHeader = {
-  /** Texte principal sur l'en-tête (blanc cassé chaud, pas blanc pur). */
-  text: '#F4F1E9',
-  /** Texte secondaire sur l'en-tête (bleu-gris clair, AA sur encre-marine). */
-  textMuted: '#A9BDC9',
+  /** Texte principal sur l'en-tête (blanc cassé chaud). */
+  text: '#F2F4F5',
+  /** Texte secondaire sur l'en-tête (bleu-gris clair, AA). */
+  textMuted: '#9DB2C4',
   /** Surface légère posée sur l'en-tête (puce d'engrenage, etc.). */
-  surface: 'rgba(244, 241, 233, 0.12)',
+  surface: 'rgba(242, 244, 245, 0.10)',
 } as const;
 
-/** Une seule ombre, douce et basse — jamais d'ombres multiples ou colorées. */
+/**
+ * Le radar ambiant et les halos de verdict — teintes et rythmes centralisés
+ * pour que la « veille » respire de la même façon partout.
+ */
+export const veille = {
+  /** Teinte du radar ambiant de l'accueil (laiton très voilé). */
+  radar: 'rgba(200, 162, 75, 0.16)',
+  /** Trait des anneaux fixes du radar. */
+  radarAnneau: 'rgba(157, 178, 196, 0.14)',
+  /** Point « en veille / en direct » (vert vivant). */
+  pointVeille: '#35B37E',
+  /** Durée d'un balayage de radar (ms). */
+  balayageMs: 6000,
+  /** Durée d'une impulsion d'anneau (ms). */
+  pulseMs: 4500,
+  /** Durée d'un battement de halo de verdict (ms). */
+  haloMs: 3200,
+} as const;
+
+/** Une seule ombre, profonde et basse — portée par la nuit, jamais colorée. */
 export const cardShadow: ViewStyle = {
-  shadowColor: palette.encreMarine,
-  shadowOffset: { width: 0, height: 2 },
-  shadowRadius: 12,
-  shadowOpacity: 0.06,
-  elevation: 2,
+  shadowColor: '#000000',
+  shadowOffset: { width: 0, height: 6 },
+  shadowRadius: 16,
+  shadowOpacity: 0.28,
+  elevation: 6,
 };
 
 /** Cible tactile minimale (le brief exige ≥ 48 pt, on vise large). */
 export const MIN_TOUCH_TARGET = 56;
 
 /**
- * Alias hérités de la première itération — mappés sur la palette du phare.
+ * Alias hérités de la première itération — mappés sur la palette de la nuit.
  * Les écrans migrent progressivement vers `palette`/`type` ; ces alias
  * garantissent qu'aucune couleur hors charte ne subsiste entre-temps.
  */
 export const colors = {
-  background: palette.brume,
-  surface: palette.surfaceLegere,
-  card: palette.ecume,
+  background: palette.nuit,
+  surface: palette.ardoiseElevee,
+  card: palette.ardoise,
   border: palette.bordure,
-  textPrimary: palette.encreMarine,
-  textSecondary: palette.texteSecondaire,
-  accent: palette.encreMarine,
-  accentPressed: palette.encreMarinePressee,
-  onAccent: palette.ecume,
+  textPrimary: palette.texteClair,
+  textSecondary: palette.texteDoux,
+  accent: palette.laiton,
+  accentPressed: palette.laitonClair,
+  onAccent: palette.surFeuSombre,
   verdictDanger: palette.texteFeuRouge,
   verdictWarning: palette.texteFeuAmbre,
   verdictSafe: palette.texteFeuVert,

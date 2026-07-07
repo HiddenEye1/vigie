@@ -22,7 +22,7 @@ export const VERDICT_UI: Record<VerdictLevel, VerdictUi> = {
   ARNAQUE_PROBABLE: {
     label: 'Arnaque très probable',
     fill: palette.feuRouge,
-    onFill: palette.ecume,
+    onFill: palette.surFeuClair,
     halo: palette.feuRouge,
     text: palette.texteFeuRouge,
     icon: 'warning',
@@ -30,8 +30,8 @@ export const VERDICT_UI: Record<VerdictLevel, VerdictUi> = {
   SUSPECT: {
     label: 'Méfiance, plusieurs signaux d’alerte',
     fill: palette.feuAmbre,
-    // L'ambre est trop clair pour du blanc : l'icône passe en encre marine (AA).
-    onFill: palette.encreMarine,
+    // L'ambre est trop clair pour du blanc : le glyphe passe en bleu nuit (AA).
+    onFill: palette.surFeuSombre,
     halo: palette.feuAmbre,
     text: palette.texteFeuAmbre,
     icon: 'help',
@@ -39,7 +39,7 @@ export const VERDICT_UI: Record<VerdictLevel, VerdictUi> = {
   PLUTOT_SUR: {
     label: 'Aucun signal d’arnaque détecté',
     fill: palette.feuVert,
-    onFill: palette.ecume,
+    onFill: palette.surFeuSombre,
     halo: palette.feuVert,
     text: palette.texteFeuVert,
     icon: 'checkmark',
@@ -47,7 +47,7 @@ export const VERDICT_UI: Record<VerdictLevel, VerdictUi> = {
   INDETERMINE: {
     label: 'Impossible de me prononcer',
     fill: palette.feuGris,
-    onFill: palette.encreMarine,
+    onFill: palette.surFeuSombre,
     halo: palette.feuGris,
     text: palette.texteFeuGris,
     icon: 'remove',

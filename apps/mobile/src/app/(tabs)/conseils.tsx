@@ -5,7 +5,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { SCAM_GUIDES } from '../../lib/scam-guides';
-import { cardShadow, MIN_TOUCH_TARGET, palette, radius, spacing, type } from '../../lib/theme';
+import { fonts, MIN_TOUCH_TARGET, palette, radius, spacing, type } from '../../lib/theme';
 
 /** Icône linéaire cohérente : variante -outline quand elle existe. */
 function outlineIcon(icon: string): keyof typeof Ionicons.glyphMap {
@@ -19,11 +19,12 @@ export default function GuidesScreen(): ReactElement {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <FlatList
         data={SCAM_GUIDES}
         keyExtractor={(guide) => guide.id}
         contentContainerStyle={styles.list}
+        showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View style={styles.header}>
             <Text style={styles.title}>Fiches conseils</Text>
@@ -42,10 +43,10 @@ export default function GuidesScreen(): ReactElement {
             style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
           >
             <View style={styles.iconBox}>
-              <Ionicons name={outlineIcon(item.icon)} size={24} color={palette.encreMarine} />
+              <Ionicons name={outlineIcon(item.icon)} size={22} color={palette.laiton} />
             </View>
             <Text style={styles.rowTitle}>{item.title}</Text>
-            <Ionicons name="chevron-forward" size={22} color={palette.texteSecondaire} />
+            <Ionicons name="chevron-forward" size={20} color={palette.texteMuet} />
           </Pressable>
         )}
       />
@@ -56,9 +57,10 @@ export default function GuidesScreen(): ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.nuit,
   },
   header: {
+    paddingTop: spacing.m,
     paddingBottom: spacing.m,
     gap: spacing.s,
   },
@@ -74,29 +76,32 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xl,
   },
   row: {
-    ...cardShadow,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: palette.ecume,
+    backgroundColor: palette.ardoise,
+    borderWidth: 1,
+    borderColor: palette.bordureDouce,
     borderRadius: radius.l,
     padding: spacing.l,
     minHeight: MIN_TOUCH_TARGET,
     gap: spacing.m,
   },
   rowPressed: {
-    backgroundColor: palette.surfaceLegere,
+    backgroundColor: palette.ardoiseElevee,
   },
   iconBox: {
     width: 44,
     height: 44,
     borderRadius: radius.s,
-    backgroundColor: palette.surfaceLegere,
+    backgroundColor: palette.laitonPale,
+    borderWidth: 1,
+    borderColor: palette.laitonFilet,
     alignItems: 'center',
     justifyContent: 'center',
   },
   rowTitle: {
     flex: 1,
     ...type.body,
-    fontFamily: 'Inter_600SemiBold',
+    fontFamily: fonts.textSemiBold,
   },
 });

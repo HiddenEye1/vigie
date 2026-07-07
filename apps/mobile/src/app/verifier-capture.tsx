@@ -6,8 +6,9 @@ import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { ErrorView } from '../components/error-view';
 import { PrimaryButton } from '../components/primary-button';
+import { VerifyModeSwitcher } from '../components/verify-mode-switcher';
 import { WaitingView } from '../components/waiting-view';
-import type { ImageUpload } from '../lib/api';
+import type { ApiFailureKind, ImageUpload } from '../lib/api';
 import { analyzeImage, ApiFailure } from '../lib/api';
 import { getDeviceId } from '../lib/device-id';
 import { compressForUpload } from '../lib/image';
@@ -18,7 +19,7 @@ type ScreenState =
   | { step: 'choosing' }
   | { step: 'preview'; image: ImageUpload }
   | { step: 'loading' }
-  | { step: 'error'; message: string };
+  | { step: 'error'; message: string; kind: ApiFailureKind };
 
 /** Vérification d'une capture d'écran (F2) : galerie → compression → analyse. */
 export default function VerifyImageScreen(): ReactElement {
@@ -41,6 +42,7 @@ export default function VerifyImageScreen(): ReactElement {
           setState({
             step: 'error',
             message: 'Cette image n’a pas pu être préparée. Choisissez-la depuis votre galerie.',
+            kind: 'invalid_request',
           });
         }
       })();
@@ -64,6 +66,7 @@ export default function VerifyImageScreen(): ReactElement {
       setState({
         step: 'error',
         message: 'Cette image n’a pas pu être préparée. Essayez avec une autre capture.',
+        kind: 'invalid_request',
       });
     }
   };
@@ -80,7 +83,8 @@ export default function VerifyImageScreen(): ReactElement {
         error instanceof ApiFailure
           ? error.userMessage
           : 'Une erreur inattendue est survenue. Merci de réessayer.';
-      setState({ step: 'error', message });
+      const kind = error instanceof ApiFailure ? error.kind : 'unknown';
+      setState({ step: 'error', message, kind });
     }
   };
 
@@ -92,6 +96,7 @@ export default function VerifyImageScreen(): ReactElement {
     return (
       <ErrorView
         message={state.message}
+        kind={state.kind}
         onRetry={() => {
           setState({ step: 'choosing' });
         }}
@@ -103,6 +108,7 @@ export default function VerifyImageScreen(): ReactElement {
   if (state.step === 'preview') {
     return (
       <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
+        <VerifyModeSwitcher active="capture" />
         <Text style={styles.instructions}>Voici la capture qui sera analysée :</Text>
         <Image
           source={{ uri: state.image.uri }}
@@ -136,6 +142,7 @@ export default function VerifyImageScreen(): ReactElement {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
+      <VerifyModeSwitcher active="capture" />
       <Text style={styles.instructions}>
         Choisissez la capture d’écran du message qui vous inquiète : SMS, e-mail, annonce ou
         conversation.
@@ -160,7 +167,7 @@ export default function VerifyImageScreen(): ReactElement {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.nuit,
   },
   container: {
     padding: spacing.l,
@@ -173,7 +180,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 320,
     borderRadius: radius.l,
-    backgroundColor: palette.surfaceLegere,
+    borderWidth: 1,
+    borderColor: palette.bordureDouce,
+    backgroundColor: palette.ardoise,
   },
   buttons: {
     gap: spacing.m,
@@ -183,6 +192,7 @@ const styles = StyleSheet.create({
   },
   privacyNote: {
     ...type.label,
+    color: palette.texteMuet,
     textAlign: 'center',
   },
 });

@@ -6,13 +6,18 @@ import { Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-n
 
 import { ErrorView } from '../components/error-view';
 import { PrimaryButton } from '../components/primary-button';
+import { VerifyModeSwitcher } from '../components/verify-mode-switcher';
 import { WaitingView } from '../components/waiting-view';
+import type { ApiFailureKind } from '../lib/api';
 import { analyzeText, ApiFailure } from '../lib/api';
 import { getDeviceId } from '../lib/device-id';
 import { palette, radius, spacing, type } from '../lib/theme';
 import { useHistory } from '../store/history';
 
-type ScreenState = { step: 'editing' } | { step: 'loading' } | { step: 'error'; message: string };
+type ScreenState =
+  | { step: 'editing' }
+  | { step: 'loading' }
+  | { step: 'error'; message: string; kind: ApiFailureKind };
 
 /** Saisie / collage du message suspect, écran d'attente, puis verdict. */
 export default function VerifyTextScreen(): ReactElement {
@@ -47,7 +52,8 @@ export default function VerifyTextScreen(): ReactElement {
         error instanceof ApiFailure
           ? error.userMessage
           : 'Une erreur inattendue est survenue. Merci de réessayer.';
-      setState({ step: 'error', message });
+      const kind = error instanceof ApiFailure ? error.kind : 'unknown';
+      setState({ step: 'error', message, kind });
     }
   };
 
@@ -59,6 +65,7 @@ export default function VerifyTextScreen(): ReactElement {
     return (
       <ErrorView
         message={state.message}
+        kind={state.kind}
         onRetry={() => {
           setState({ step: 'editing' });
         }}
@@ -73,6 +80,8 @@ export default function VerifyTextScreen(): ReactElement {
       contentContainerStyle={styles.container}
       keyboardShouldPersistTaps="handled"
     >
+      <VerifyModeSwitcher active="texte" />
+
       <Text style={styles.instructions}>
         Collez le message qui vous inquiète : SMS, e-mail, annonce ou conversation.
       </Text>
@@ -83,7 +92,7 @@ export default function VerifyTextScreen(): ReactElement {
         value={content}
         onChangeText={setContent}
         placeholder="Exemple : « Votre colis est en attente, réglez 1,99 € pour le recevoir… »"
-        placeholderTextColor={palette.texteSecondaire}
+        placeholderTextColor={palette.texteMuet}
         textAlignVertical="top"
         accessibilityLabel="Message à vérifier"
         autoCorrect={false}
@@ -118,7 +127,7 @@ export default function VerifyTextScreen(): ReactElement {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.nuit,
   },
   container: {
     padding: spacing.l,
@@ -129,18 +138,19 @@ const styles = StyleSheet.create({
   },
   input: {
     minHeight: 160,
-    borderWidth: 1.5,
-    borderColor: palette.bordure,
+    borderWidth: 1,
+    borderColor: palette.bordureDouce,
     borderRadius: radius.l,
     padding: spacing.l,
     ...type.body,
-    backgroundColor: palette.ecume,
+    backgroundColor: palette.ardoiseHaute,
   },
   buttons: {
     gap: spacing.m,
   },
   privacyNote: {
     ...type.label,
+    color: palette.texteMuet,
     textAlign: 'center',
   },
 });

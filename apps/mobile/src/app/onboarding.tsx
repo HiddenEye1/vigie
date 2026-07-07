@@ -2,9 +2,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { AmbientRadar } from '../components/ambient-radar';
 import { LighthouseLogo } from '../components/lighthouse-logo';
 import { PrimaryButton } from '../components/primary-button';
 import { markOnboardingSeen } from '../lib/onboarding';
@@ -18,7 +19,7 @@ interface Slide {
 
 /**
  * Onboarding en 3 écrans (F9) : promesse → fonctionnement → confidentialité.
- * Le seul moment « storytelling » de l'app : le laiton a le droit de briller.
+ * Le seul moment « storytelling » de l'app : le radar tourne et le laiton brille.
  */
 const SLIDES: readonly [Slide, Slide, Slide] = [
   {
@@ -40,6 +41,10 @@ const SLIDES: readonly [Slide, Slide, Slide] = [
 
 export default function OnboardingScreen(): ReactElement {
   const router = useRouter();
+  const { height } = useWindowDimensions();
+  // Sur les petits écrans (type iPhone SE), le médaillon rétrécit pour laisser
+  // toute la place au titre et au texte sans rogner.
+  const heroSize = height < 720 ? 216 : 300;
   const [index, setIndex] = useState<0 | 1 | 2>(0);
   const slide = SLIDES[index];
   const isLast = index === SLIDES.length - 1;
@@ -58,17 +63,26 @@ export default function OnboardingScreen(): ReactElement {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <View style={styles.content}>
-          <View style={styles.medallion}>
-            {slide.icon === 'lighthouse' ? (
-              <LighthouseLogo size={88} />
-            ) : (
-              <Ionicons name={slide.icon} size={64} color={palette.encreMarine} />
-            )}
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={[styles.hero, { width: heroSize, height: heroSize }]}>
+            <View style={styles.radar} pointerEvents="none">
+              <AmbientRadar size={heroSize} />
+            </View>
+            <View style={styles.medallion}>
+              {slide.icon === 'lighthouse' ? (
+                <LighthouseLogo size={84} stroke={palette.texteClair} lantern={palette.laiton} />
+              ) : (
+                <Ionicons name={slide.icon} size={60} color={palette.laiton} />
+              )}
+            </View>
           </View>
           <Text style={styles.title}>{slide.title}</Text>
           <Text style={styles.text}>{slide.text}</Text>
-        </View>
+        </ScrollView>
 
         <View style={styles.footer}>
           <View style={styles.dots} accessibilityLabel={`Étape ${String(index + 1)} sur 3`}>
@@ -93,24 +107,40 @@ export default function OnboardingScreen(): ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.nuit,
   },
   container: {
     flex: 1,
     padding: spacing.l,
-    justifyContent: 'space-between',
+  },
+  scroll: {
+    flex: 1,
   },
   content: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.l,
+    paddingBottom: spacing.l,
+  },
+  hero: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  radar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   medallion: {
-    width: 152,
-    height: 152,
-    borderRadius: 76,
-    backgroundColor: palette.laitonPale,
+    width: 148,
+    height: 148,
+    borderRadius: 74,
+    backgroundColor: palette.ardoiseHaute,
     borderWidth: 1.5,
     borderColor: palette.laiton,
     alignItems: 'center',
@@ -124,7 +154,7 @@ const styles = StyleSheet.create({
   },
   text: {
     ...type.body,
-    color: palette.texteSecondaire,
+    color: palette.texteDoux,
     textAlign: 'center',
     paddingHorizontal: spacing.m,
   },
@@ -144,5 +174,6 @@ const styles = StyleSheet.create({
   },
   dotActive: {
     backgroundColor: palette.laiton,
+    width: 22,
   },
 });

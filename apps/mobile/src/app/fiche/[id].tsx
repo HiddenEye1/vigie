@@ -36,7 +36,7 @@ export default function GuideDetailScreen(): ReactElement {
             <Ionicons
               name={guide.icon as keyof typeof Ionicons.glyphMap}
               size={30}
-              color={palette.encreMarine}
+              color={palette.laiton}
             />
           </View>
           <Text style={styles.title}>{guide.title}</Text>
@@ -83,7 +83,7 @@ export default function GuideDetailScreen(): ReactElement {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.nuit,
   },
   container: {
     padding: spacing.l,
@@ -98,7 +98,9 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: radius.m,
-    backgroundColor: palette.surfaceLegere,
+    backgroundColor: palette.laitonPale,
+    borderWidth: 1,
+    borderColor: palette.laitonFilet,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -125,13 +127,13 @@ const styles = StyleSheet.create({
   bullet: {
     ...type.body,
     fontFamily: 'Inter_700Bold',
-    color: palette.encreMarine,
+    color: palette.laiton,
     marginRight: spacing.s,
   },
   number: {
     ...type.body,
     fontFamily: 'Inter_700Bold',
-    color: palette.encreMarine,
+    color: palette.laiton,
     marginRight: spacing.s,
   },
   listText: {
@@ -148,7 +150,7 @@ const styles = StyleSheet.create({
   },
   exampleText: {
     ...type.body,
-    color: palette.encreMarine,
+    color: palette.texteClair,
     fontStyle: 'italic',
   },
   footerButton: {
@@ -156,14 +158,14 @@ const styles = StyleSheet.create({
   },
   missing: {
     flex: 1,
-    backgroundColor: palette.brume,
+    backgroundColor: palette.nuit,
     justifyContent: 'center',
     padding: spacing.xl,
     gap: spacing.l,
   },
   missingText: {
     ...type.body,
-    color: palette.texteSecondaire,
+    color: palette.texteDoux,
     textAlign: 'center',
   },
 });

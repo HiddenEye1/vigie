@@ -28,11 +28,11 @@ export default function TabsLayout(): ReactElement {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: palette.encreMarine,
-        tabBarInactiveTintColor: palette.texteSecondaire,
+        tabBarActiveTintColor: palette.laiton,
+        tabBarInactiveTintColor: palette.texteMuet,
         tabBarLabelStyle: { fontFamily: fonts.textSemiBold, fontSize: 12 },
         tabBarStyle: {
-          backgroundColor: palette.ecume,
+          backgroundColor: palette.nuitProfonde,
           borderTopColor: palette.bordure,
           height: 64,
           paddingBottom: 8,
