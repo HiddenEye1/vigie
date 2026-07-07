@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AmbientRadar } from '../components/ambient-radar';
@@ -41,6 +41,10 @@ const SLIDES: readonly [Slide, Slide, Slide] = [
 
 export default function OnboardingScreen(): ReactElement {
   const router = useRouter();
+  const { height } = useWindowDimensions();
+  // Sur les petits écrans (type iPhone SE), le médaillon rétrécit pour laisser
+  // toute la place au titre et au texte sans rogner.
+  const heroSize = height < 720 ? 216 : 300;
   const [index, setIndex] = useState<0 | 1 | 2>(0);
   const slide = SLIDES[index];
   const isLast = index === SLIDES.length - 1;
@@ -59,10 +63,14 @@ export default function OnboardingScreen(): ReactElement {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <View style={styles.content}>
-          <View style={styles.hero}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={[styles.hero, { width: heroSize, height: heroSize }]}>
             <View style={styles.radar} pointerEvents="none">
-              <AmbientRadar size={300} />
+              <AmbientRadar size={heroSize} />
             </View>
             <View style={styles.medallion}>
               {slide.icon === 'lighthouse' ? (
@@ -74,7 +82,7 @@ export default function OnboardingScreen(): ReactElement {
           </View>
           <Text style={styles.title}>{slide.title}</Text>
           <Text style={styles.text}>{slide.text}</Text>
-        </View>
+        </ScrollView>
 
         <View style={styles.footer}>
           <View style={styles.dots} accessibilityLabel={`Étape ${String(index + 1)} sur 3`}>
@@ -104,17 +112,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: spacing.l,
-    justifyContent: 'space-between',
+  },
+  scroll: {
+    flex: 1,
   },
   content: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.l,
+    paddingBottom: spacing.l,
   },
   hero: {
-    width: 300,
-    height: 300,
     alignItems: 'center',
     justifyContent: 'center',
   },
