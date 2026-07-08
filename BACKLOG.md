@@ -2,6 +2,31 @@
 
 Points reportés volontairement, avec la phase prévue pour les traiter.
 
+## Bouclier famille
+
+Le cœur du produit (voir `VISION.md`). Approche : **manuelle et consentie d'abord**, jamais de détection automatique des messages d'un tiers — iOS et Android l'interdisent, et ce serait franchir la ligne veille/surveillance.
+
+### Fait (v1)
+
+| Brique                        | Détail                                                                                                                                                                                                          |
+| :---------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Proche de confiance           | Un contact (prénom + numéro ou e-mail), canal auto-détecté, stocké **uniquement sur le téléphone** (AsyncStorage). Enregistrable, modifiable, **retirable** à tout moment (consentement révocable).             |
+| Envoi du verdict pour avis    | Sur le verdict : « Envoyer à [prénom] pour avis » → compositeur natif **déjà adressé**, message pré-écrit (verdict + résumé + catégorie + « Qu'en penses-tu ? »). **Jamais** le contenu original analysé.        |
+| Mode simplifié (senior)       | Réglage opt-in et réversible : accueil réduit à un très grand bouton « Vérifier un message », plus « Demander à [prénom] » si un proche existe. Typo agrandie, contrastes renforcés, cibles 104 pt, VoiceOver/TalkBack. |
+
+**Contrainte OS assumée** : une feuille de partage avec pièce jointe ne peut pas être pré-adressée à un contact, et un compositeur pré-adressé (`sms:`/`mailto:`) ne peut pas porter d'image. Choix retenu : le compositeur pré-adressé (un tap pour le senior) ; la ShareCard reste sur « Partager ce verdict ».
+
+### Reste pour le Bouclier famille complet (v2)
+
+| #   | Sujet                                   | Détail                                                                                                                                                                                                        |
+| :-- | :-------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B1  | Comptes reliés aidant ↔ senior          | Aujourd'hui le lien est un simple contact local. v2 : appairage réel (code court, QR), avec révocation des deux côtés et **transparence totale** (le senior voit ce que l'aidant voit).                        |
+| B2  | Tableau de bord de l'aidant             | Vue calme, silencieuse par défaut. **Jamais le contenu des messages** — uniquement des signaux de risque (VISION §3).                                                                                          |
+| B3  | Alertes proactives vers l'aidant        | « Une campagne Ameli touche votre région. » Nécessite un backend d'événements + notifications push. Se heurte au mur technique iOS/Android : aucun accès aux SMS/appels d'un tiers.                            |
+| B4  | Signalements agrégés (effet réseau)     | « 200 familles ont signalé ce faux SMS ce matin. » Suppose un flux anonymisé côté serveur, sans contenu personnel.                                                                                             |
+| B5  | Configuration à distance par le proche  | Le proche installe et configure chez le senior (VISION §4 : celui qui installe n'est pas celui qui est protégé). Suppose B1.                                                                                   |
+| B6  | Test terrain du pari familial           | Observer un vrai senior utiliser le mode simplifié et le bouton « Demander à… » **sans aide**. C'est LE test qui valide ou tue le fil intergénérationnel (VISION §7). Lié à l'item 14.                          |
+
 | #   | Sujet                                      | Détail                                                                                                                                                                                                                                                                                                                            | Phase cible |
 | :-- | :----------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------- |
 | 1   | ~~Initialisation Expo~~                    | Réglé en Phase 3 : app créée via `create-expo-app` (SDK 57), intégrée aux workspaces npm.                                                                                                                                                                                                                                         | ✔ Fait      |
