@@ -1,6 +1,12 @@
 import type { AnalyzeResponse } from '@vigie/shared';
 
-import { buildAdviceMessage, buildContactUrl, detectChannel, firstName } from './trusted-contact';
+import {
+  buildAdviceMessage,
+  buildContactUrl,
+  buildHelpMessage,
+  detectChannel,
+  firstName,
+} from './trusted-contact';
 
 const SCAM: AnalyzeResponse = {
   verdict: 'ARNAQUE_PROBABLE',
@@ -56,6 +62,15 @@ describe('buildAdviceMessage', () => {
   it('omet la catégorie quand elle vaut AUCUNE', () => {
     const message = buildAdviceMessage({ ...SCAM, category: 'AUCUNE' });
     expect(message).not.toContain('Type d’arnaque possible');
+  });
+});
+
+describe('buildHelpMessage', () => {
+  it('demande de l’aide sans prétendre à un verdict', () => {
+    const message = buildHelpMessage();
+    expect(message).toContain('Peux-tu me dire ce que tu en penses ?');
+    expect(message).toContain('Envoyé depuis Vigie');
+    expect(message).not.toContain('Vigie pense que');
   });
 });
 

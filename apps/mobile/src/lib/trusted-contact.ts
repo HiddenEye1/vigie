@@ -50,6 +50,18 @@ export function buildAdviceMessage(result: AnalyzeResponse): string {
 }
 
 /**
+ * Message envoyé depuis l'accueil simplifié, quand le senior veut simplement
+ * demander de l'aide à son proche — aucun verdict n'a encore été rendu.
+ */
+export function buildHelpMessage(): string {
+  return [
+    'Bonjour, j’ai reçu un message dont je ne suis pas sûr.',
+    'Peux-tu me dire ce que tu en penses ?',
+    '— Envoyé depuis Vigie',
+  ].join('\n\n');
+}
+
+/**
  * Lien qui ouvre le compositeur natif DÉJÀ adressé au proche, message pré-rempli.
  * iOS attend `&body=` après le numéro, Android `?body=`.
  */

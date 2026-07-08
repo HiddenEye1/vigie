@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AmbientRadar } from '../../components/ambient-radar';
@@ -12,8 +12,12 @@ import { LiveFeed } from '../../components/live-feed';
 import { PrimaryButton } from '../../components/primary-button';
 import type { SegmentedOption } from '../../components/segmented-tabs';
 import { SegmentedTabs } from '../../components/segmented-tabs';
+import { SimpleHome } from '../../components/simple-home';
 import { VeilleBadge } from '../../components/veille-badge';
 import { fonts, MIN_TOUCH_TARGET, onHeader, palette, radius, spacing, type } from '../../lib/theme';
+import { buildContactUrl, buildHelpMessage, firstName } from '../../lib/trusted-contact';
+import { useSettings } from '../../store/settings';
+import { useTrustedContact } from '../../store/trusted-contact';
 
 type Mode = 'texte' | 'capture' | 'lien';
 
@@ -69,8 +73,49 @@ const MODES = [
 export default function HomeScreen(): ReactElement {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const simpleMode = useSettings((state) => state.simpleMode);
+  const trustedContact = useTrustedContact((state) => state.contact);
   const [mode, setMode] = useState<Mode>('texte');
   const active = MODES.find((m) => m.key === mode) ?? MODES[0];
+
+  /** Mode simplifié : demander directement de l'aide au proche, sans verdict. */
+  const askContact = async (): Promise<void> => {
+    if (!trustedContact) {
+      return;
+    }
+    try {
+      await Linking.openURL(buildContactUrl(trustedContact, buildHelpMessage()));
+    } catch {
+      Alert.alert(
+        'Envoi impossible',
+        'Aucune application de ce téléphone ne peut écrire à votre proche. Vérifiez le moyen de contact enregistré dans les réglages.',
+      );
+    }
+  };
+
+  if (simpleMode) {
+    return (
+      <SimpleHome
+        contactFirstName={trustedContact ? firstName(trustedContact.name) : null}
+        topInset={insets.top}
+        onVerifyText={() => {
+          router.push('/verifier-texte');
+        }}
+        onAskContact={() => {
+          void askContact();
+        }}
+        onCapture={() => {
+          router.push('/verifier-capture');
+        }}
+        onLink={() => {
+          router.push('/verifier-lien');
+        }}
+        onSettings={() => {
+          router.push('/parametres');
+        }}
+      />
+    );
+  }
 
   return (
     <View style={styles.screen}>
