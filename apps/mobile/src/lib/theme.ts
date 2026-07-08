@@ -204,6 +204,42 @@ export const cardShadow: ViewStyle = {
 export const MIN_TOUCH_TARGET = 56;
 
 /**
+ * Mode simplifié (senior) : typographie nettement agrandie, cibles tactiles
+ * très grandes, contrastes renforcés (le texte secondaire passe en texte clair
+ * plutôt qu'en gris doux). Un seul geste dominant par écran.
+ */
+export const simple = {
+  /** Hauteur d'un grand bouton — bien au-delà des 48 pt réglementaires. */
+  cible: 104,
+  /** Taille des icônes des grands boutons. */
+  icone: 32,
+  titre: {
+    fontFamily: fonts.display,
+    fontSize: 34,
+    lineHeight: 44,
+    color: palette.texteClair,
+  },
+  sousTitre: {
+    fontFamily: fonts.text,
+    fontSize: 19,
+    lineHeight: 28,
+    // Contraste renforcé : on n'utilise PAS le gris doux ici.
+    color: palette.texteClair,
+  },
+  bouton: {
+    fontFamily: fonts.displaySemiBold,
+    fontSize: 24,
+    lineHeight: 32,
+  },
+  lienDiscret: {
+    fontFamily: fonts.textSemiBold,
+    fontSize: 17,
+    lineHeight: 25,
+    color: palette.texteDoux,
+  },
+} as const;
+
+/**
  * Alias hérités de la première itération — mappés sur la palette de la nuit.
  * Les écrans migrent progressivement vers `palette`/`type` ; ces alias
  * garantissent qu'aucune couleur hors charte ne subsiste entre-temps.
