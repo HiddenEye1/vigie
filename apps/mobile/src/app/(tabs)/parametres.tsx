@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
 
 import { PrimaryButton } from '../../components/primary-button';
+import { TrustedContactSection } from '../../components/trusted-contact-section';
 import { apiBaseUrl, ApiFailure, joinWaitlist } from '../../lib/api';
 import { getDeviceId } from '../../lib/device-id';
 import { colors, fonts, palette, radius, spacing, type } from '../../lib/theme';
@@ -67,6 +68,8 @@ export default function SettingsScreen(): ReactElement {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Réglages</Text>
+
+        <TrustedContactSection />
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Bouclier famille — bientôt</Text>
