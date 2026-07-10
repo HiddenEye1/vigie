@@ -1,11 +1,12 @@
+import { avantDePayer } from './definitions/avant-de-payer';
 import { donnerUnCode } from './definitions/donner-un-code';
 import type { ParcoursDefinition } from './types';
 
 /**
- * Catalogue des parcours proactifs. Ajouter un parcours (« Avant de payer »,
- * « Avant de cliquer »…) revient à créer sa définition et à l'inscrire ici.
+ * Catalogue des parcours proactifs. Ajouter un parcours (« Avant de cliquer »…)
+ * revient à créer sa définition et à l'inscrire ici.
  */
-export const PARCOURS: readonly ParcoursDefinition[] = [donnerUnCode];
+export const PARCOURS: readonly ParcoursDefinition[] = [donnerUnCode, avantDePayer];
 
 export function getParcours(id: string): ParcoursDefinition | undefined {
   return PARCOURS.find((parcours) => parcours.id === id);
@@ -13,7 +14,6 @@ export function getParcours(id: string): ParcoursDefinition | undefined {
 
 /** Parcours annoncés mais pas encore disponibles (affichés en « bientôt »). */
 export const UPCOMING_PARCOURS = [
-  'Avant de payer',
   'Arnaque en direct',
   'Avant de cliquer',
   'Je ne sais pas si je peux faire confiance',
