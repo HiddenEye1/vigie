@@ -9,6 +9,7 @@ describe('runPostProcessRules — orchestrateur', () => {
       'confidence-degradation',
       'injection-guard',
       'category-coherence',
+      'url-signals',
       'extended-fields',
     ]);
   });

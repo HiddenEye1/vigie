@@ -1,14 +1,7 @@
 import type { ScamCategory, VerdictLevel } from '@vigie/shared';
 
 import type { PostProcessRule } from './types.js';
-
-/** Sévérité croissante d'un verdict, pour comparer sans jamais rétrograder. */
-const VERDICT_SEVERITY: Record<VerdictLevel, number> = {
-  PLUTOT_SUR: 0,
-  INDETERMINE: 1,
-  SUSPECT: 2,
-  ARNAQUE_PROBABLE: 3,
-};
+import { VERDICT_SEVERITY } from './verdict-severity.js';
 
 /**
  * Plancher de verdict par catégorie DÉFINITIONNELLEMENT frauduleuse : si le

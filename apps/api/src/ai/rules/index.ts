@@ -6,6 +6,7 @@ import { confidenceDegradationRule } from './confidence-degradation.rule.js';
 import { extendedFieldsRule } from './extended-fields.rule.js';
 import { injectionGuardRule } from './injection-guard.rule.js';
 import type { PostProcessRule } from './types.js';
+import { urlSignalsRule } from './url-signals.rule.js';
 
 export type { PostProcessRule, RuleContext, RuleOutcome } from './types.js';
 
@@ -17,16 +18,19 @@ export type { PostProcessRule, RuleContext, RuleOutcome } from './types.js';
  *     ensuite car il n'y a plus de règle de dégradation après lui) ;
  *  3. category-coherence — relève un verdict trop rassurant pour une catégorie
  *     dangereuse (filet défensif) ;
- *  4. extended-fields — dérive les champs étendus du verdict FINAL (donc en
+ *  4. url-signals — relève selon les signaux techniques du lien (filet
+ *     défensif) ;
+ *  5. extended-fields — dérive les champs étendus du verdict FINAL (donc en
  *     dernier, pour rester cohérent avec les relèvements ci-dessus).
  *
- * Ajouter un détecteur (signaux d'URL, signaux de fraude…) revient à insérer une
+ * Ajouter un détecteur (signaux de fraude de contenu…) revient à insérer une
  * règle dans cette liste, avant extended-fields, sans toucher à l'orchestrateur.
  */
 export const POST_PROCESS_RULES: readonly PostProcessRule[] = [
   confidenceDegradationRule,
   injectionGuardRule,
   categoryCoherenceRule,
+  urlSignalsRule,
   extendedFieldsRule,
 ];
 
