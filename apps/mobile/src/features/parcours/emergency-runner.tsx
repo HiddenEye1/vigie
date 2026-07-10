@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PrimaryButton } from '@/components/primary-button';
-import { fonts, MIN_TOUCH_TARGET, palette, radius, spacing, type } from '@/lib/theme';
+import { useSeniorMode } from '@/features/family';
+import { fonts, palette, radius, spacing, type } from '@/lib/theme';
 
+import { ChoiceButton } from './choice-button';
 import type { EmergencyParcours, EmergencySituation } from './types';
 import { useAskContact } from './use-ask-contact';
 
@@ -26,6 +28,7 @@ export function EmergencyRunner({
   readonly definition: EmergencyParcours;
 }): ReactElement {
   const [situation, setSituation] = useState<EmergencySituation | null>(null);
+  const large = useSeniorMode((state) => state.simpleMode);
   const askContact = useAskContact(HELP_MESSAGE);
 
   if (situation !== null) {
@@ -44,16 +47,16 @@ export function EmergencyRunner({
           <Text style={styles.backLabel}>Retour</Text>
         </Pressable>
 
-        <Text style={styles.heading}>{situation.heading}</Text>
+        <Text style={[styles.heading, large && styles.headingLarge]}>{situation.heading}</Text>
         <Text style={styles.actionsLead}>À faire, dans cet ordre :</Text>
 
         <View style={styles.steps}>
-          {situation.actions.map((action, index) => (
+          {situation.actions.map((action, position) => (
             <View key={action} style={styles.step}>
               <View style={styles.stepNumber}>
-                <Text style={styles.stepNumberText}>{index + 1}</Text>
+                <Text style={styles.stepNumberText}>{position + 1}</Text>
               </View>
-              <Text style={styles.stepText}>{action}</Text>
+              <Text style={[styles.stepText, large && styles.textLarge]}>{action}</Text>
             </View>
           ))}
         </View>
@@ -74,32 +77,24 @@ export function EmergencyRunner({
           {definition.immediateSteps.map((step) => (
             <View key={step} style={styles.immediateRow}>
               <Ionicons name="ellipse" size={7} color={palette.feuRouge} style={styles.dot} />
-              <Text style={styles.immediateText}>{step}</Text>
+              <Text style={[styles.immediateText, large && styles.textLarge]}>{step}</Text>
             </View>
           ))}
         </View>
       </View>
 
-      <Text style={styles.pickTitle}>Que s’est-il passé ?</Text>
+      <Text style={[styles.pickTitle, large && styles.headingLarge]}>Que s’est-il passé ?</Text>
       <View style={styles.situations}>
         {definition.situations.map((item) => (
-          <Pressable
+          <ChoiceButton
             key={item.id}
-            accessibilityRole="button"
-            accessibilityLabel={item.label}
+            label={item.label}
+            icon={item.icon}
+            large={large}
             onPress={() => {
               setSituation(item);
             }}
-            style={({ pressed }) => [styles.situation, pressed && styles.situationPressed]}
-          >
-            {item.icon !== undefined ? (
-              <View style={styles.situationIcon}>
-                <Ionicons name={item.icon} size={22} color={palette.laiton} />
-              </View>
-            ) : null}
-            <Text style={styles.situationLabel}>{item.label}</Text>
-            <Ionicons name="chevron-forward" size={20} color={palette.texteMuet} />
-          </Pressable>
+          />
         ))}
       </View>
     </ScrollView>
@@ -148,43 +143,20 @@ const styles = StyleSheet.create({
     flex: 1,
     ...type.body,
   },
+  textLarge: {
+    fontSize: 20,
+    lineHeight: 29,
+  },
   pickTitle: {
     ...type.sectionTitle,
     marginTop: spacing.m,
   },
+  headingLarge: {
+    fontSize: 30,
+    lineHeight: 40,
+  },
   situations: {
     gap: spacing.m,
-  },
-  situation: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    minHeight: MIN_TOUCH_TARGET + 8,
-    backgroundColor: palette.ardoise,
-    borderWidth: 1,
-    borderColor: palette.bordureDouce,
-    borderRadius: radius.l,
-    paddingHorizontal: spacing.l,
-    paddingVertical: spacing.m,
-    gap: spacing.m,
-  },
-  situationPressed: {
-    backgroundColor: palette.ardoiseElevee,
-    borderColor: palette.laitonFilet,
-  },
-  situationIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.s,
-    backgroundColor: palette.laitonPale,
-    borderWidth: 1,
-    borderColor: palette.laitonFilet,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  situationLabel: {
-    flex: 1,
-    ...type.body,
-    fontFamily: fonts.textSemiBold,
   },
   back: {
     flexDirection: 'row',

@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { useSeniorMode } from '@/features/family';
 import { palette } from '@/lib/theme';
 
 import { ParcoursQuestionView } from './parcours-question';
@@ -22,6 +23,7 @@ export function ParcoursRunner({
 }): ReactElement {
   const router = useRouter();
   const askContact = useAskContact();
+  const large = useSeniorMode((state) => state.simpleMode);
   const [answers, setAnswers] = useState<ParcoursAnswers>({});
   const [index, setIndex] = useState(0);
   const [finished, setFinished] = useState(false);
@@ -52,6 +54,7 @@ export function ParcoursRunner({
       <View style={styles.screen}>
         <ParcoursResultView
           outcome={definition.evaluate(answers)}
+          large={large}
           onAnalyze={() => {
             router.push('/verifier-texte');
           }}
@@ -77,6 +80,10 @@ export function ParcoursRunner({
         index={index}
         total={questions.length}
         onAnswer={handleAnswer}
+        onBack={index > 0 ? () => {
+          setIndex(index - 1);
+        } : undefined}
+        large={large}
       />
     </View>
   );

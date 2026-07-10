@@ -14,6 +14,8 @@ interface ParcoursResultViewProps {
   readonly onAskContact: () => void;
   readonly onEmergency: () => void;
   readonly onRestart: () => void;
+  /** Mode senior : titre et texte agrandis. */
+  readonly large?: boolean;
 }
 
 /**
@@ -28,6 +30,7 @@ export function ParcoursResultView({
   onAskContact,
   onEmergency,
   onRestart,
+  large = false,
 }: ParcoursResultViewProps): ReactElement {
   const ui = PARCOURS_LEVEL_UI[outcome.level];
 
@@ -38,8 +41,10 @@ export function ParcoursResultView({
         <Text style={[styles.badgeLabel, { color: ui.onFill }]}>{ui.label}</Text>
       </View>
 
-      <Text style={[styles.title, { color: ui.text }]}>{outcome.title}</Text>
-      <Text style={styles.message}>{outcome.message}</Text>
+      <Text style={[styles.title, large && styles.titleLarge, { color: ui.text }]}>
+        {outcome.title}
+      </Text>
+      <Text style={[styles.message, large && styles.textLarge]}>{outcome.message}</Text>
 
       <View style={styles.doNotCard}>
         <View style={styles.cardHead}>
@@ -48,7 +53,7 @@ export function ParcoursResultView({
             À ne surtout pas faire
           </Text>
         </View>
-        <Text style={styles.cardBody}>{outcome.doNot}</Text>
+        <Text style={[styles.cardBody, large && styles.textLarge]}>{outcome.doNot}</Text>
       </View>
 
       <View style={styles.doCard}>
@@ -58,7 +63,7 @@ export function ParcoursResultView({
             Ce que vous pouvez faire
           </Text>
         </View>
-        <Text style={styles.cardBody}>{outcome.doInstead}</Text>
+        <Text style={[styles.cardBody, large && styles.textLarge]}>{outcome.doInstead}</Text>
       </View>
 
       <View style={styles.actions}>
@@ -116,6 +121,14 @@ const styles = StyleSheet.create({
     ...type.screenTitle,
     fontSize: 26,
     lineHeight: 34,
+  },
+  titleLarge: {
+    fontSize: 30,
+    lineHeight: 40,
+  },
+  textLarge: {
+    fontSize: 20,
+    lineHeight: 29,
   },
   message: {
     ...type.body,
