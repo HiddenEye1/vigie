@@ -14,14 +14,18 @@ const INJECTION_REASON =
  *    être PLUTOT_SUR ni INDETERMINE : il est remonté à SUSPECT au minimum,
  *    avec une raison explicite (§7 point 9, testé indépendamment du provider) ;
  * 3. format étendu (risk_level, score, senior_summary, do_not) : complété à
- *    partir du verdict FINAL si le fournisseur ne l'a pas fourni, pour que le
- *    contrat soit toujours cohérent et complet.
+ *    partir du verdict FINAL si le fournisseur ne l'a pas fourni. Si un
+ *    garde-fou a CHANGÉ le verdict, les champs fournis décrivaient l'ancien
+ *    verdict : ils sont entièrement recalculés, sinon on afficherait un
+ *    « risque faible » sur un verdict devenu suspect.
  */
 export function finalizeVerdict(raw: AIVerdict, input: AnalyzeInput): AIVerdict & VerdictExtras {
   let result = raw;
+  let verdictChanged = false;
 
   if (result.confidence < 0.5 && result.verdict !== 'INDETERMINE') {
     result = { ...result, verdict: 'INDETERMINE' };
+    verdictChanged = true;
   }
 
   const injectionSignals = detectInjectionSignals(textualContent(input));
@@ -35,17 +39,21 @@ export function finalizeVerdict(raw: AIVerdict, input: AnalyzeInput): AIVerdict 
       category: result.category === 'AUCUNE' ? 'AUTRE' : result.category,
       reasons: [...result.reasons, INJECTION_REASON],
     };
+    verdictChanged = true;
   }
 
-  // Dérivé APRÈS les ajustements ci-dessus, donc cohérent avec le verdict final.
-  const extras = deriveVerdictExtras(result.verdict, result.confidence);
-  return {
-    ...result,
-    risk_level: result.risk_level ?? extras.risk_level,
-    score: result.score ?? extras.score,
-    senior_summary: result.senior_summary ?? extras.senior_summary,
-    do_not: result.do_not ?? extras.do_not,
-  };
+  // Dérivé APRÈS les ajustements, donc toujours cohérent avec le verdict final.
+  const derived = deriveVerdictExtras(result.verdict, result.confidence);
+  const extras: VerdictExtras = verdictChanged
+    ? derived
+    : {
+        risk_level: result.risk_level ?? derived.risk_level,
+        score: result.score ?? derived.score,
+        senior_summary: result.senior_summary ?? derived.senior_summary,
+        do_not: result.do_not ?? derived.do_not,
+      };
+
+  return { ...result, ...extras };
 }
 
 /**
