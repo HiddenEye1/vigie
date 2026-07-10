@@ -73,3 +73,33 @@ describe('finalizeVerdict — garde-fou anti-injection (§7 point 9)', () => {
     expect(result.verdict).toBe('PLUTOT_SUR');
   });
 });
+
+describe('finalizeVerdict — format de verdict étendu (préparation Phase 2)', () => {
+  it('complète risk_level, score, senior_summary et do_not', () => {
+    const result = finalizeVerdict(
+      makeVerdict({ verdict: 'ARNAQUE_PROBABLE', confidence: 0.95 }),
+      makeInput('Alerte de votre banque, appelez votre conseiller.'),
+    );
+    expect(result.risk_level).toBe('CRITICAL');
+    expect(result.score).toBeGreaterThanOrEqual(75);
+    expect(result.senior_summary.length).toBeGreaterThan(0);
+    expect(result.do_not.length).toBeGreaterThan(0);
+  });
+
+  it('dérive les extras du verdict FINAL, après dégradation de confiance', () => {
+    const result = finalizeVerdict(
+      makeVerdict({ verdict: 'ARNAQUE_PROBABLE', confidence: 0.4 }),
+      makeInput('Message quelconque sans signal particulier.'),
+    );
+    expect(result.verdict).toBe('INDETERMINE');
+    expect(result.risk_level).toBe('MEDIUM');
+  });
+
+  it('conserve un champ étendu déjà fourni par le fournisseur', () => {
+    const result = finalizeVerdict(
+      makeVerdict({ verdict: 'SUSPECT', confidence: 0.7, score: 42 }),
+      makeInput('Message quelconque sans signal particulier.'),
+    );
+    expect(result.score).toBe(42);
+  });
+});

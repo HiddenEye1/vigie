@@ -15,6 +15,7 @@ import { StatusBar } from 'expo-status-bar';
 import type { ReactElement } from 'react';
 import { useEffect } from 'react';
 
+import { ErrorBoundary } from '../components/error-boundary';
 import { hasSeenOnboarding } from '../lib/onboarding';
 import { useIncomingShare } from '../lib/share-intent';
 import { colors, fonts, fontSize } from '../lib/theme';
@@ -73,7 +74,7 @@ export default function RootLayout(): ReactElement | null {
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <StatusBar style="light" />
       <Stack
         screenOptions={{
@@ -96,6 +97,6 @@ export default function RootLayout(): ReactElement | null {
         <Stack.Screen name="verdict/[id]" options={{ title: 'Résultat' }} />
         <Stack.Screen name="fiche/[id]" options={{ title: 'Fiche conseil' }} />
       </Stack>
-    </>
+    </ErrorBoundary>
   );
 }

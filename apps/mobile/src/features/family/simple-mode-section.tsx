@@ -1,16 +1,17 @@
 import type { ReactElement } from 'react';
 import { StyleSheet, Switch, Text, View } from 'react-native';
 
-import { fonts, palette, radius, spacing, type } from '../lib/theme';
-import { useSettings } from '../store/settings';
+import { fonts, palette, radius, spacing, type } from '@/lib/theme';
+
+import { useSeniorMode } from './senior-mode.store';
 
 /**
  * Bascule du mode simplifié (senior). Réversible à tout moment : le senior
  * comme le proche qui l'aide à configurer peuvent revenir en arrière ici.
  */
 export function SimpleModeSection(): ReactElement {
-  const simpleMode = useSettings((state) => state.simpleMode);
-  const setSimpleMode = useSettings((state) => state.setSimpleMode);
+  const simpleMode = useSeniorMode((state) => state.simpleMode);
+  const setSimpleMode = useSeniorMode((state) => state.setSimpleMode);
 
   return (
     <View style={styles.card}>

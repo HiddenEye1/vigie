@@ -5,6 +5,15 @@ import { useState } from 'react';
 import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import {
+  buildContactUrl,
+  buildHelpMessage,
+  firstName,
+  SimpleHome,
+  useSeniorMode,
+  useTrustedContact,
+} from '@/features/family';
+
 import { AmbientRadar } from '../../components/ambient-radar';
 import { HeroField } from '../../components/hero-field';
 import { LighthouseLogo } from '../../components/lighthouse-logo';
@@ -12,12 +21,8 @@ import { LiveFeed } from '../../components/live-feed';
 import { PrimaryButton } from '../../components/primary-button';
 import type { SegmentedOption } from '../../components/segmented-tabs';
 import { SegmentedTabs } from '../../components/segmented-tabs';
-import { SimpleHome } from '../../components/simple-home';
 import { VeilleBadge } from '../../components/veille-badge';
 import { fonts, MIN_TOUCH_TARGET, onHeader, palette, radius, spacing, type } from '../../lib/theme';
-import { buildContactUrl, buildHelpMessage, firstName } from '../../lib/trusted-contact';
-import { useSettings } from '../../store/settings';
-import { useTrustedContact } from '../../store/trusted-contact';
 
 type Mode = 'texte' | 'capture' | 'lien';
 
@@ -73,7 +78,7 @@ const MODES = [
 export default function HomeScreen(): ReactElement {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const simpleMode = useSettings((state) => state.simpleMode);
+  const simpleMode = useSeniorMode((state) => state.simpleMode);
   const trustedContact = useTrustedContact((state) => state.contact);
   const [mode, setMode] = useState<Mode>('texte');
   const active = MODES.find((m) => m.key === mode) ?? MODES[0];

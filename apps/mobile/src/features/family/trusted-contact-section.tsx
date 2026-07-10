@@ -3,10 +3,11 @@ import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { detectChannel } from '../lib/trusted-contact';
-import { fonts, palette, radius, spacing, type } from '../lib/theme';
-import { useTrustedContact } from '../store/trusted-contact';
-import { PrimaryButton } from './primary-button';
+import { PrimaryButton } from '@/components/primary-button';
+import { fonts, palette, radius, spacing, type } from '@/lib/theme';
+
+import { useTrustedContact } from './contact.store';
+import { detectChannel } from './messages';
 
 /**
  * « Mon proche de confiance » (Bouclier famille, étape 1).

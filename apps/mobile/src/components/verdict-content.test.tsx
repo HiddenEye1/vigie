@@ -17,6 +17,17 @@ function makeResult(verdict: VerdictLevel): AnalyzeResponse {
   };
 }
 
+/** Verdict au format étendu (Phase 2). */
+function makeExtendedResult(): AnalyzeResponse {
+  return {
+    ...makeResult('ARNAQUE_PROBABLE'),
+    risk_level: 'CRITICAL',
+    score: 96,
+    senior_summary: 'C’est très probablement une arnaque. Ne réponds pas et ne clique sur rien.',
+    do_not: 'Ne communique jamais tes codes ni tes coordonnées bancaires.',
+  };
+}
+
 /** §13 : rendu des 4 états de verdict. RNTL v14 : render() est asynchrone. */
 describe('VerdictContent', () => {
   it.each([
@@ -54,5 +65,31 @@ describe('VerdictContent', () => {
   it('ne montre pas de badge de catégorie quand AUCUNE', async () => {
     const view = await render(<VerdictContent result={makeResult('PLUTOT_SUR')} />);
     expect(view.queryByText('Aucune catégorie')).toBeNull();
+  });
+});
+
+describe('VerdictContent — format étendu (Phase 2)', () => {
+  it('affiche le niveau de risque, le score, le résumé simple et l’action à éviter', async () => {
+    const view = await render(<VerdictContent result={makeExtendedResult()} />);
+    expect(view.getByText('Risque critique')).toBeTruthy();
+    expect(view.getByText('96 / 100')).toBeTruthy();
+    expect(view.getByText('Résumé simple')).toBeTruthy();
+    expect(
+      view.getByText('C’est très probablement une arnaque. Ne réponds pas et ne clique sur rien.'),
+    ).toBeTruthy();
+    expect(view.getByText('À ne surtout pas faire')).toBeTruthy();
+    expect(
+      view.getByText('Ne communique jamais tes codes ni tes coordonnées bancaires.'),
+    ).toBeTruthy();
+  });
+
+  it('reste fonctionnel quand les champs étendus sont absents (rétrocompatible)', async () => {
+    const view = await render(<VerdictContent result={makeResult('ARNAQUE_PROBABLE')} />);
+    expect(view.queryByText(/^Risque /)).toBeNull();
+    expect(view.queryByText('Résumé simple')).toBeNull();
+    expect(view.queryByText('À ne surtout pas faire')).toBeNull();
+    // L'ancien contenu reste présent.
+    expect(view.getByText('Pourquoi ?')).toBeTruthy();
+    expect(view.getByText('C’est le scénario classique du faux conseiller bancaire.')).toBeTruthy();
   });
 });

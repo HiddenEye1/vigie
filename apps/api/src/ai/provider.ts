@@ -1,4 +1,4 @@
-import type { ImageMimeType, ScamCategory, VerdictLevel } from '@vigie/shared';
+import type { ImageMimeType, RiskLevel, ScamCategory, VerdictLevel } from '@vigie/shared';
 
 import type { UrlSignals } from '../url/url-analyzer.js';
 
@@ -22,6 +22,12 @@ export interface AIVerdict {
   readonly summary: string;
   readonly reasons: readonly string[];
   readonly actions: readonly string[];
+  // Format étendu (Phase 2) : un fournisseur PEUT les renseigner ; sinon le
+  // post-traitement les dérive (voir finalizeVerdict). Optionnels ici.
+  readonly risk_level?: RiskLevel;
+  readonly score?: number;
+  readonly senior_summary?: string;
+  readonly do_not?: string;
 }
 
 /**

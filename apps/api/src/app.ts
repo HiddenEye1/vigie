@@ -252,6 +252,10 @@ export function createApp({
       reasons: [...finalVerdict.reasons],
       actions: [...finalVerdict.actions],
       url_analysis: urlAnalysis,
+      risk_level: finalVerdict.risk_level,
+      score: finalVerdict.score,
+      senior_summary: finalVerdict.senior_summary,
+      do_not: finalVerdict.do_not,
       request_id: requestId,
     };
     return c.json(response, 200);

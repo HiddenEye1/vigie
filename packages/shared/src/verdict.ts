@@ -6,6 +6,15 @@ export const VERDICT_LEVELS = ['ARNAQUE_PROBABLE', 'SUSPECT', 'PLUTOT_SUR', 'IND
 export const verdictLevelSchema = z.enum(VERDICT_LEVELS);
 export type VerdictLevel = z.infer<typeof verdictLevelSchema>;
 
+/**
+ * Niveau de risque produit — valeur machine STABLE (jamais de chaîne accentuée
+ * sur le réseau). Les libellés français (« faible », « moyen »…) sont fournis
+ * par `RISK_LEVEL_LABELS` (voir verdict-extras).
+ */
+export const RISK_LEVELS = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'] as const;
+export const riskLevelSchema = z.enum(RISK_LEVELS);
+export type RiskLevel = z.infer<typeof riskLevelSchema>;
+
 /** Catégories d'arnaque (§6 du cahier des charges). */
 export const SCAM_CATEGORIES = [
   'FAUX_CONSEILLER_BANCAIRE',
@@ -45,6 +54,13 @@ export const analyzeResponseSchema = z.object({
   reasons: z.array(z.string().min(1)).min(1).max(6),
   actions: z.array(z.string().min(1)).min(1).max(6),
   url_analysis: urlAnalysisSchema.nullable(),
+  // — Format de verdict étendu (préparation Phase 2) —
+  // Champs OPTIONNELS et rétrocompatibles : le serveur les remplit
+  // systématiquement (voir finalizeVerdict), l'UI les exploitera plus tard.
+  risk_level: riskLevelSchema.optional(),
+  score: z.number().int().min(0).max(100).optional(),
+  senior_summary: z.string().min(1).optional(),
+  do_not: z.string().min(1).optional(),
   request_id: z.uuid(),
 });
 export type AnalyzeResponse = z.infer<typeof analyzeResponseSchema>;

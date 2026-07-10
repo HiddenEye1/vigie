@@ -2,9 +2,10 @@ import type { AnalyzeResponse } from '@vigie/shared';
 import type { ReactElement } from 'react';
 import { Alert, Linking } from 'react-native';
 
-import { buildAdviceMessage, buildContactUrl, firstName } from '../lib/trusted-contact';
-import { useTrustedContact } from '../store/trusted-contact';
-import { PrimaryButton } from './primary-button';
+import { PrimaryButton } from '@/components/primary-button';
+
+import { useTrustedContact } from './contact.store';
+import { buildAdviceMessage, buildContactUrl, firstName } from './messages';
 
 interface AskTrustedContactProps {
   readonly result: AnalyzeResponse;

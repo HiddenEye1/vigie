@@ -2,10 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ReactElement } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { fonts, MIN_TOUCH_TARGET, onHeader, palette, radius, simple, spacing } from '../lib/theme';
-import { AmbientRadar } from './ambient-radar';
+import { AmbientRadar } from '@/components/ambient-radar';
+import { LighthouseLogo } from '@/components/lighthouse-logo';
+import { fonts, MIN_TOUCH_TARGET, onHeader, palette, radius, simple, spacing } from '@/lib/theme';
+
 import { BigActionButton } from './big-action-button';
-import { LighthouseLogo } from './lighthouse-logo';
 
 interface SimpleHomeProps {
   /** Prénom du proche de confiance, ou `null` si aucun n'est enregistré. */
