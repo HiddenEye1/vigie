@@ -3,6 +3,7 @@ import type { VerdictExtras } from '@vigie/shared';
 import type { AIVerdict, AnalyzeInput } from '../provider.js';
 import { categoryCoherenceRule } from './category-coherence.rule.js';
 import { confidenceDegradationRule } from './confidence-degradation.rule.js';
+import { contentSignalsRule } from './content-signals.rule.js';
 import { extendedFieldsRule } from './extended-fields.rule.js';
 import { injectionGuardRule } from './injection-guard.rule.js';
 import type { PostProcessRule } from './types.js';
@@ -20,17 +21,20 @@ export type { PostProcessRule, RuleContext, RuleOutcome } from './types.js';
  *     dangereuse (filet défensif) ;
  *  4. url-signals — relève selon les signaux techniques du lien (filet
  *     défensif) ;
- *  5. extended-fields — dérive les champs étendus du verdict FINAL (donc en
+ *  5. content-signals — relève selon les procédés de fraude repérés dans le
+ *     texte, surtout leurs croisements (filet défensif) ;
+ *  6. extended-fields — dérive les champs étendus du verdict FINAL (donc en
  *     dernier, pour rester cohérent avec les relèvements ci-dessus).
  *
- * Ajouter un détecteur (signaux de fraude de contenu…) revient à insérer une
- * règle dans cette liste, avant extended-fields, sans toucher à l'orchestrateur.
+ * Ajouter un détecteur revient à insérer une règle dans cette liste, avant
+ * extended-fields, sans toucher à l'orchestrateur.
  */
 export const POST_PROCESS_RULES: readonly PostProcessRule[] = [
   confidenceDegradationRule,
   injectionGuardRule,
   categoryCoherenceRule,
   urlSignalsRule,
+  contentSignalsRule,
   extendedFieldsRule,
 ];
 

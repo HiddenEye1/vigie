@@ -10,6 +10,7 @@ describe('runPostProcessRules — orchestrateur', () => {
       'injection-guard',
       'category-coherence',
       'url-signals',
+      'content-signals',
       'extended-fields',
     ]);
   });
