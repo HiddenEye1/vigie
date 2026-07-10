@@ -4,20 +4,16 @@ import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { useRequest } from '@/lib/use-request';
+
 import { ErrorView } from '../components/error-view';
 import { PrimaryButton } from '../components/primary-button';
 import { VerifyModeSwitcher } from '../components/verify-mode-switcher';
 import { WaitingView } from '../components/waiting-view';
-import type { ApiFailureKind } from '../lib/api';
-import { analyzeUrl, ApiFailure } from '../lib/api';
+import { analyzeUrl, toApiError } from '../lib/api';
 import { getDeviceId } from '../lib/device-id';
 import { palette, radius, spacing, type } from '../lib/theme';
 import { useHistory } from '../store/history';
-
-type ScreenState =
-  | { step: 'editing' }
-  | { step: 'loading' }
-  | { step: 'error'; message: string; kind: ApiFailureKind };
 
 /** Vérification d'un lien (F3) : saisie/collage → attente → verdict. */
 export default function VerifyUrlScreen(): ReactElement {
@@ -25,7 +21,21 @@ export default function VerifyUrlScreen(): ReactElement {
   const { partage } = useLocalSearchParams<{ partage?: string }>();
   const addToHistory = useHistory((state) => state.add);
   const [url, setUrl] = useState(partage ?? '');
-  const [state, setState] = useState<ScreenState>({ step: 'editing' });
+
+  const { state, run, reset } = useRequest(
+    async () => {
+      const trimmed = url.trim();
+      const deviceId = await getDeviceId();
+      const result = await analyzeUrl(trimmed, deviceId);
+      return addToHistory({ kind: 'url', excerpt: trimmed, result });
+    },
+    {
+      mapError: toApiError,
+      onSuccess: (entry) => {
+        router.replace(`/verdict/${entry.id}`);
+      },
+    },
+  );
 
   const pasteFromClipboard = async (): Promise<void> => {
     const text = await Clipboard.getStringAsync();
@@ -34,40 +44,24 @@ export default function VerifyUrlScreen(): ReactElement {
     }
   };
 
-  const submit = async (): Promise<void> => {
-    const trimmed = url.trim();
-    if (trimmed.length === 0) {
+  const submit = (): void => {
+    if (url.trim().length === 0) {
       return;
     }
     Keyboard.dismiss();
-    setState({ step: 'loading' });
-    try {
-      const deviceId = await getDeviceId();
-      const result = await analyzeUrl(trimmed, deviceId);
-      const entry = addToHistory({ kind: 'url', excerpt: trimmed, result });
-      router.replace(`/verdict/${entry.id}`);
-    } catch (error) {
-      const message =
-        error instanceof ApiFailure
-          ? error.userMessage
-          : 'Une erreur inattendue est survenue. Merci de réessayer.';
-      const kind = error instanceof ApiFailure ? error.kind : 'unknown';
-      setState({ step: 'error', message, kind });
-    }
+    void run();
   };
 
-  if (state.step === 'loading') {
+  if (state.status === 'loading' || state.status === 'success') {
     return <WaitingView />;
   }
 
-  if (state.step === 'error') {
+  if (state.status === 'error') {
     return (
       <ErrorView
-        message={state.message}
-        kind={state.kind}
-        onRetry={() => {
-          setState({ step: 'editing' });
-        }}
+        message={state.error.message}
+        kind={state.error.kind}
+        onRetry={reset}
         retryLabel="Revenir au lien"
       />
     );
@@ -112,9 +106,7 @@ export default function VerifyUrlScreen(): ReactElement {
           label="Vérifier ce lien"
           icon="search"
           disabled={url.trim().length === 0}
-          onPress={() => {
-            void submit();
-          }}
+          onPress={submit}
         />
       </View>
 

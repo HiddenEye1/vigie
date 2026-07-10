@@ -4,20 +4,16 @@ import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { useRequest } from '@/lib/use-request';
+
 import { ErrorView } from '../components/error-view';
 import { PrimaryButton } from '../components/primary-button';
 import { VerifyModeSwitcher } from '../components/verify-mode-switcher';
 import { WaitingView } from '../components/waiting-view';
-import type { ApiFailureKind } from '../lib/api';
-import { analyzeText, ApiFailure } from '../lib/api';
+import { analyzeText, toApiError } from '../lib/api';
 import { getDeviceId } from '../lib/device-id';
 import { palette, radius, spacing, type } from '../lib/theme';
 import { useHistory } from '../store/history';
-
-type ScreenState =
-  | { step: 'editing' }
-  | { step: 'loading' }
-  | { step: 'error'; message: string; kind: ApiFailureKind };
 
 /** Saisie / collage du message suspect, écran d'attente, puis verdict. */
 export default function VerifyTextScreen(): ReactElement {
@@ -26,7 +22,21 @@ export default function VerifyTextScreen(): ReactElement {
   const { partage } = useLocalSearchParams<{ partage?: string }>();
   const addToHistory = useHistory((state) => state.add);
   const [content, setContent] = useState(partage ?? '');
-  const [state, setState] = useState<ScreenState>({ step: 'editing' });
+
+  const { state, run, reset } = useRequest(
+    async () => {
+      const trimmed = content.trim();
+      const deviceId = await getDeviceId();
+      const result = await analyzeText(trimmed, deviceId);
+      return addToHistory({ kind: 'text', excerpt: trimmed, result });
+    },
+    {
+      mapError: toApiError,
+      onSuccess: (entry) => {
+        router.replace(`/verdict/${entry.id}`);
+      },
+    },
+  );
 
   const pasteFromClipboard = async (): Promise<void> => {
     const text = await Clipboard.getStringAsync();
@@ -35,40 +45,24 @@ export default function VerifyTextScreen(): ReactElement {
     }
   };
 
-  const submit = async (): Promise<void> => {
-    const trimmed = content.trim();
-    if (trimmed.length === 0) {
+  const submit = (): void => {
+    if (content.trim().length === 0) {
       return;
     }
     Keyboard.dismiss();
-    setState({ step: 'loading' });
-    try {
-      const deviceId = await getDeviceId();
-      const result = await analyzeText(trimmed, deviceId);
-      const entry = addToHistory({ kind: 'text', excerpt: trimmed, result });
-      router.replace(`/verdict/${entry.id}`);
-    } catch (error) {
-      const message =
-        error instanceof ApiFailure
-          ? error.userMessage
-          : 'Une erreur inattendue est survenue. Merci de réessayer.';
-      const kind = error instanceof ApiFailure ? error.kind : 'unknown';
-      setState({ step: 'error', message, kind });
-    }
+    void run();
   };
 
-  if (state.step === 'loading') {
+  if (state.status === 'loading' || state.status === 'success') {
     return <WaitingView />;
   }
 
-  if (state.step === 'error') {
+  if (state.status === 'error') {
     return (
       <ErrorView
-        message={state.message}
-        kind={state.kind}
-        onRetry={() => {
-          setState({ step: 'editing' });
-        }}
+        message={state.error.message}
+        kind={state.error.kind}
+        onRetry={reset}
         retryLabel="Revenir au message"
       />
     );
@@ -111,9 +105,7 @@ export default function VerifyTextScreen(): ReactElement {
           label="Vérifier maintenant"
           icon="search"
           disabled={content.trim().length === 0}
-          onPress={() => {
-            void submit();
-          }}
+          onPress={submit}
         />
       </View>
 

@@ -4,22 +4,28 @@ import type { ReactElement } from 'react';
 import { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { useRequest } from '@/lib/use-request';
+
 import { ErrorView } from '../components/error-view';
 import { PrimaryButton } from '../components/primary-button';
 import { VerifyModeSwitcher } from '../components/verify-mode-switcher';
 import { WaitingView } from '../components/waiting-view';
-import type { ApiFailureKind, ImageUpload } from '../lib/api';
-import { analyzeImage, ApiFailure } from '../lib/api';
+import type { ApiErrorInfo, ImageUpload } from '../lib/api';
+import { analyzeImage, toApiError } from '../lib/api';
 import { getDeviceId } from '../lib/device-id';
 import { compressForUpload } from '../lib/image';
 import { palette, radius, spacing, type } from '../lib/theme';
 import { useHistory } from '../store/history';
 
-type ScreenState =
-  | { step: 'choosing' }
-  | { step: 'preview'; image: ImageUpload }
-  | { step: 'loading' }
-  | { step: 'error'; message: string; kind: ApiFailureKind };
+/** Échec de préparation de l'image (compression) — même affichage qu'une erreur d'API. */
+const PREP_ERROR_FROM_SHARE: ApiErrorInfo = {
+  message: 'Cette image n’a pas pu être préparée. Choisissez-la depuis votre galerie.',
+  kind: 'invalid_request',
+};
+const PREP_ERROR_FROM_GALLERY: ApiErrorInfo = {
+  message: 'Cette image n’a pas pu être préparée. Essayez avec une autre capture.',
+  kind: 'invalid_request',
+};
 
 /** Vérification d'une capture d'écran (F2) : galerie → compression → analyse. */
 export default function VerifyImageScreen(): ReactElement {
@@ -29,24 +35,35 @@ export default function VerifyImageScreen(): ReactElement {
     imageWidth?: string;
   }>();
   const addToHistory = useHistory((state) => state.add);
-  const [state, setState] = useState<ScreenState>({ step: 'choosing' });
+  const [image, setImage] = useState<ImageUpload | null>(null);
+  const [prepError, setPrepError] = useState<ApiErrorInfo | null>(null);
+
+  const { state, run, reset } = useRequest(
+    async (chosen: ImageUpload) => {
+      const deviceId = await getDeviceId();
+      const result = await analyzeImage(chosen, deviceId);
+      return addToHistory({ kind: 'image', excerpt: 'Capture d’écran vérifiée', result });
+    },
+    {
+      mapError: toApiError,
+      onSuccess: (entry) => {
+        router.replace(`/verdict/${entry.id}`);
+      },
+    },
+  );
 
   // Image reçue via le partage entrant (F10) : compression puis aperçu direct.
   useEffect(() => {
-    if (imageUri) {
-      void (async () => {
-        try {
-          const image = await compressForUpload(imageUri, Number(imageWidth ?? '0'));
-          setState({ step: 'preview', image });
-        } catch {
-          setState({
-            step: 'error',
-            message: 'Cette image n’a pas pu être préparée. Choisissez-la depuis votre galerie.',
-            kind: 'invalid_request',
-          });
-        }
-      })();
+    if (!imageUri) {
+      return;
     }
+    void (async () => {
+      try {
+        setImage(await compressForUpload(imageUri, Number(imageWidth ?? '0')));
+      } catch {
+        setPrepError(PREP_ERROR_FROM_SHARE);
+      }
+    })();
   }, [imageUri, imageWidth]);
 
   const pickFromGallery = async (): Promise<void> => {
@@ -60,58 +77,42 @@ export default function VerifyImageScreen(): ReactElement {
       return;
     }
     try {
-      const image = await compressForUpload(asset.uri, asset.width);
-      setState({ step: 'preview', image });
+      setImage(await compressForUpload(asset.uri, asset.width));
+      setPrepError(null);
     } catch {
-      setState({
-        step: 'error',
-        message: 'Cette image n’a pas pu être préparée. Essayez avec une autre capture.',
-        kind: 'invalid_request',
-      });
+      setPrepError(PREP_ERROR_FROM_GALLERY);
     }
   };
 
-  const submit = async (image: ImageUpload): Promise<void> => {
-    setState({ step: 'loading' });
-    try {
-      const deviceId = await getDeviceId();
-      const result = await analyzeImage(image, deviceId);
-      const entry = addToHistory({ kind: 'image', excerpt: 'Capture d’écran vérifiée', result });
-      router.replace(`/verdict/${entry.id}`);
-    } catch (error) {
-      const message =
-        error instanceof ApiFailure
-          ? error.userMessage
-          : 'Une erreur inattendue est survenue. Merci de réessayer.';
-      const kind = error instanceof ApiFailure ? error.kind : 'unknown';
-      setState({ step: 'error', message, kind });
-    }
+  const backToChoosing = (): void => {
+    reset();
+    setImage(null);
+    setPrepError(null);
   };
 
-  if (state.step === 'loading') {
+  if (state.status === 'loading' || state.status === 'success') {
     return <WaitingView />;
   }
 
-  if (state.step === 'error') {
+  const shownError = state.status === 'error' ? state.error : prepError;
+  if (shownError) {
     return (
       <ErrorView
-        message={state.message}
-        kind={state.kind}
-        onRetry={() => {
-          setState({ step: 'choosing' });
-        }}
+        message={shownError.message}
+        kind={shownError.kind}
+        onRetry={backToChoosing}
         retryLabel="Choisir une capture"
       />
     );
   }
 
-  if (state.step === 'preview') {
+  if (image) {
     return (
       <ScrollView style={styles.screen} contentContainerStyle={styles.container}>
         <VerifyModeSwitcher active="capture" />
         <Text style={styles.instructions}>Voici la capture qui sera analysée :</Text>
         <Image
-          source={{ uri: state.image.uri }}
+          source={{ uri: image.uri }}
           style={styles.preview}
           resizeMode="contain"
           accessibilityLabel="Aperçu de la capture d’écran choisie"
@@ -121,7 +122,7 @@ export default function VerifyImageScreen(): ReactElement {
             label="Vérifier cette capture"
             icon="search"
             onPress={() => {
-              void submit(state.image);
+              void run(image);
             }}
           />
           <PrimaryButton
