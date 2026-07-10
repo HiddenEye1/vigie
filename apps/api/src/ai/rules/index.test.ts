@@ -8,6 +8,7 @@ describe('runPostProcessRules — orchestrateur', () => {
     expect(POST_PROCESS_RULES.map((rule) => rule.name)).toEqual([
       'confidence-degradation',
       'injection-guard',
+      'category-coherence',
       'extended-fields',
     ]);
   });

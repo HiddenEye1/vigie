@@ -1,6 +1,7 @@
 import type { VerdictExtras } from '@vigie/shared';
 
 import type { AIVerdict, AnalyzeInput } from '../provider.js';
+import { categoryCoherenceRule } from './category-coherence.rule.js';
 import { confidenceDegradationRule } from './confidence-degradation.rule.js';
 import { extendedFieldsRule } from './extended-fields.rule.js';
 import { injectionGuardRule } from './injection-guard.rule.js';
@@ -14,15 +15,18 @@ export type { PostProcessRule, RuleContext, RuleOutcome } from './types.js';
  *  1. confidence-degradation — dégrade en INDETERMINE si peu sûr ;
  *  2. injection-guard — remonte à SUSPECT si injection (jamais rétrogradé
  *     ensuite car il n'y a plus de règle de dégradation après lui) ;
- *  3. extended-fields — dérive les champs étendus du verdict FINAL (donc en
- *     dernier).
+ *  3. category-coherence — relève un verdict trop rassurant pour une catégorie
+ *     dangereuse (filet défensif) ;
+ *  4. extended-fields — dérive les champs étendus du verdict FINAL (donc en
+ *     dernier, pour rester cohérent avec les relèvements ci-dessus).
  *
- * Ajouter un détecteur par catégorie (Phase 2, Lot 3) revient à insérer une
- * règle dans cette liste, sans toucher à l'orchestrateur.
+ * Ajouter un détecteur (signaux d'URL, signaux de fraude…) revient à insérer une
+ * règle dans cette liste, avant extended-fields, sans toucher à l'orchestrateur.
  */
 export const POST_PROCESS_RULES: readonly PostProcessRule[] = [
   confidenceDegradationRule,
   injectionGuardRule,
+  categoryCoherenceRule,
   extendedFieldsRule,
 ];
 
