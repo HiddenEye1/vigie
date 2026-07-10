@@ -1,4 +1,5 @@
-import type { ScamCategory, VerdictLevel } from '@vigie/shared';
+import type { RiskLevel, ScamCategory, VerdictLevel } from '@vigie/shared';
+import { RISK_LEVEL_LABELS } from '@vigie/shared';
 
 import { palette } from './theme';
 
@@ -70,6 +71,20 @@ export const CATEGORY_LABELS: Record<ScamCategory, string> = {
   SMISHING_AUTRE: 'SMS frauduleux',
   AUTRE: 'Autre arnaque',
   AUCUNE: 'Aucune catégorie',
+};
+
+/** Habillage du niveau de risque (Phase 2) : libellé FR + feu associé. */
+export interface RiskUi {
+  readonly label: string;
+  readonly fill: string;
+  readonly onFill: string;
+}
+
+export const RISK_LEVEL_UI: Record<RiskLevel, RiskUi> = {
+  LOW: { label: RISK_LEVEL_LABELS.LOW, fill: palette.feuVert, onFill: palette.surFeuClair },
+  MEDIUM: { label: RISK_LEVEL_LABELS.MEDIUM, fill: palette.feuAmbre, onFill: palette.surFeuSombre },
+  HIGH: { label: RISK_LEVEL_LABELS.HIGH, fill: palette.feuRouge, onFill: palette.surFeuClair },
+  CRITICAL: { label: RISK_LEVEL_LABELS.CRITICAL, fill: palette.feuRouge, onFill: palette.surFeuClair },
 };
 
 /** Mention obligatoire sur chaque verdict (§4.2 point 7). */
