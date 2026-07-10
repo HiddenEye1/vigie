@@ -7,9 +7,9 @@ import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
 
+import { SimpleModeSection, TrustedContactSection } from '@/features/family';
+
 import { PrimaryButton } from '../../components/primary-button';
-import { SimpleModeSection } from '../../components/simple-mode-section';
-import { TrustedContactSection } from '../../components/trusted-contact-section';
 import { apiBaseUrl, ApiFailure, joinWaitlist } from '../../lib/api';
 import { getDeviceId } from '../../lib/device-id';
 import { colors, fonts, palette, radius, spacing, type } from '../../lib/theme';

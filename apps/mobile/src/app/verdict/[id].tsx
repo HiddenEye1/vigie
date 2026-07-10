@@ -6,7 +6,8 @@ import { useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { captureRef } from 'react-native-view-shot';
 
-import { AskTrustedContact } from '../../components/ask-trusted-contact';
+import { AskTrustedContact, useTrustedContact } from '@/features/family';
+
 import { PrimaryButton } from '../../components/primary-button';
 import { ShareCard } from '../../components/share-card';
 import { VerdictContent } from '../../components/verdict-content';
@@ -15,7 +16,6 @@ import { getDeviceId } from '../../lib/device-id';
 import { guideForCategory } from '../../lib/scam-guides';
 import { fonts, MIN_TOUCH_TARGET, palette, radius, spacing, type } from '../../lib/theme';
 import { selectEntryById, useHistory } from '../../store/history';
-import { useTrustedContact } from '../../store/trusted-contact';
 
 /** Écran de verdict (§4.2) — relit l'entrée depuis l'historique local. */
 export default function VerdictScreen(): ReactElement {

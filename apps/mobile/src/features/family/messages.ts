@@ -2,8 +2,9 @@ import type { AnalyzeResponse } from '@vigie/shared';
 import { Platform } from 'react-native';
 import { z } from 'zod';
 
-import type { ContactChannel, TrustedContact } from '../store/trusted-contact';
-import { CATEGORY_LABELS, VERDICT_UI } from './verdict-ui';
+import { CATEGORY_LABELS, VERDICT_UI } from '@/lib/verdict-ui';
+
+import type { ContactChannel, TrustedContact } from './contact.store';
 
 /** Numéro français ou international, saisi souplement (espaces, points, tirets). */
 const PHONE_PATTERN = /^[+0-9][0-9 .\-()]{5,}$/;

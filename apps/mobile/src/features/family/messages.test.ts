@@ -6,7 +6,7 @@ import {
   buildHelpMessage,
   detectChannel,
   firstName,
-} from './trusted-contact';
+} from './messages';
 
 const SCAM: AnalyzeResponse = {
   verdict: 'ARNAQUE_PROBABLE',

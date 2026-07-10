@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { ReactElement } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
-import { palette, radius, simple, spacing } from '../lib/theme';
+import { palette, radius, simple, spacing } from '@/lib/theme';
 
 interface BigActionButtonProps {
   readonly label: string;

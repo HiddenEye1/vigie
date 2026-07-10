@@ -1,7 +1,7 @@
 import type { AnalyzeResponse } from '@vigie/shared';
 import { render } from '@testing-library/react-native';
 
-import { useTrustedContact } from '../store/trusted-contact';
+import { useTrustedContact } from './contact.store';
 import { AskTrustedContact } from './ask-trusted-contact';
 
 const RESULT: AnalyzeResponse = {
