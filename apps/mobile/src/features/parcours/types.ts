@@ -44,14 +44,47 @@ export interface ParcoursOutcome {
 /** Réponses en cours : identifiant de question → identifiant d'option choisie. */
 export type ParcoursAnswers = Readonly<Record<string, string>>;
 
-export interface ParcoursDefinition {
+interface ParcoursBase {
   readonly id: string;
   /** Titre affiché (« Avant de donner un code »). */
   readonly title: string;
-  /** Une phrase d'accroche rassurante avant la première question. */
+  /** Une phrase d'accroche rassurante. */
   readonly intro: string;
   readonly icon: keyof typeof Ionicons.glyphMap;
+}
+
+/**
+ * Parcours-questionnaire : quelques questions, un score, un verdict. Le format
+ * de base (donner un code, payer…).
+ */
+export interface QuestionnaireParcours extends ParcoursBase {
+  readonly kind: 'questionnaire';
   readonly questions: readonly ParcoursQuestion[];
   /** Calcule le résultat à partir des réponses. Logique pure, testable. */
   readonly evaluate: (answers: ParcoursAnswers) => ParcoursOutcome;
 }
+
+/** Une situation d'urgence et les actions prioritaires qui en découlent. */
+export interface EmergencySituation {
+  readonly id: string;
+  readonly label: string;
+  readonly icon?: keyof typeof Ionicons.glyphMap;
+  /** Titre de l'écran d'actions. */
+  readonly heading: string;
+  /** Actions prioritaires, dans l'ordre. */
+  readonly actions: readonly string[];
+}
+
+/**
+ * Parcours d'urgence (« Arnaque en direct ») : des consignes immédiates, puis
+ * un choix de situation qui mène aux actions prioritaires. Pas de score : la
+ * priorité est d'agir vite, pas de « diagnostiquer ».
+ */
+export interface EmergencyParcours extends ParcoursBase {
+  readonly kind: 'emergency';
+  /** Consignes affichées d'entrée, avant tout choix. */
+  readonly immediateSteps: readonly string[];
+  readonly situations: readonly EmergencySituation[];
+}
+
+export type ParcoursDefinition = QuestionnaireParcours | EmergencyParcours;

@@ -2,7 +2,7 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import type { ReactElement } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { getParcours, ParcoursRunner } from '@/features/parcours';
+import { EmergencyRunner, getParcours, ParcoursRunner } from '@/features/parcours';
 import { palette, spacing, type } from '@/lib/theme';
 
 /** Déroule un parcours proactif identifié par son id (route /parcours/[id]). */
@@ -22,7 +22,11 @@ export default function ParcoursScreen(): ReactElement {
   return (
     <>
       <Stack.Screen options={{ title: parcours.title }} />
-      <ParcoursRunner definition={parcours} />
+      {parcours.kind === 'emergency' ? (
+        <EmergencyRunner definition={parcours} />
+      ) : (
+        <ParcoursRunner definition={parcours} />
+      )}
     </>
   );
 }

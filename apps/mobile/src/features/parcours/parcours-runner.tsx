@@ -1,28 +1,27 @@
 import { useRouter } from 'expo-router';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
-import { Alert, Linking, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import { buildContactUrl, buildHelpMessage, useTrustedContact } from '@/features/family';
 import { palette } from '@/lib/theme';
 
-import { showEmergencySteps } from './emergency';
 import { ParcoursQuestionView } from './parcours-question';
 import { ParcoursResultView } from './parcours-result';
-import type { ParcoursAnswers, ParcoursDefinition } from './types';
+import type { ParcoursAnswers, QuestionnaireParcours } from './types';
+import { useAskContact } from './use-ask-contact';
 
 /**
- * Déroulé d'un parcours : pose les questions une à une, mémorise les réponses
- * en LOCAL (rien n'est envoyé), puis affiche le résultat. Réutilisable tel quel
- * par les futurs parcours.
+ * Déroulé d'un parcours-questionnaire : pose les questions une à une, mémorise
+ * les réponses en LOCAL (rien n'est envoyé), puis affiche le résultat.
+ * Réutilisable tel quel par les futurs parcours de ce format.
  */
 export function ParcoursRunner({
   definition,
 }: {
-  readonly definition: ParcoursDefinition;
+  readonly definition: QuestionnaireParcours;
 }): ReactElement {
   const router = useRouter();
-  const contact = useTrustedContact((state) => state.contact);
+  const askContact = useAskContact();
   const [answers, setAnswers] = useState<ParcoursAnswers>({});
   const [index, setIndex] = useState(0);
   const [finished, setFinished] = useState(false);
@@ -48,24 +47,6 @@ export function ParcoursRunner({
     setFinished(false);
   };
 
-  const askContact = async (): Promise<void> => {
-    if (!contact) {
-      Alert.alert(
-        'Ajouter un proche',
-        'Pour demander l’avis d’un proche, enregistrez d’abord son contact dans les réglages de Vigie.',
-      );
-      return;
-    }
-    try {
-      await Linking.openURL(buildContactUrl(contact, buildHelpMessage()));
-    } catch {
-      Alert.alert(
-        'Envoi impossible',
-        'Aucune application de ce téléphone ne peut écrire à votre proche. Vérifiez le moyen de contact enregistré dans les réglages.',
-      );
-    }
-  };
-
   if (finished) {
     return (
       <View style={styles.screen}>
@@ -74,10 +55,10 @@ export function ParcoursRunner({
           onAnalyze={() => {
             router.push('/verifier-texte');
           }}
-          onAskContact={() => {
-            void askContact();
+          onAskContact={askContact}
+          onEmergency={() => {
+            router.push('/parcours/arnaque-en-direct');
           }}
-          onEmergency={showEmergencySteps}
           onRestart={restart}
         />
       </View>

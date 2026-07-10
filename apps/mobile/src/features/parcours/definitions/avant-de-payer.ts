@@ -170,6 +170,7 @@ function evaluate(answers: ParcoursAnswers): ParcoursOutcome {
 }
 
 export const avantDePayer = {
+  kind: 'questionnaire',
   id: 'avant-de-payer',
   title: 'Avant de payer',
   intro:

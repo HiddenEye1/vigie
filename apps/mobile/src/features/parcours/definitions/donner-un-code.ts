@@ -131,6 +131,7 @@ function evaluate(answers: ParcoursAnswers): ParcoursOutcome {
 }
 
 export const donnerUnCode = {
+  kind: 'questionnaire',
   id: 'donner-un-code',
   title: 'Avant de donner un code',
   intro:
