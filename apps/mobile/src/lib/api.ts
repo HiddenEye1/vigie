@@ -29,6 +29,23 @@ export class ApiFailure extends Error {
   }
 }
 
+/** Erreur prête à afficher : message + nature (pour l'icône/titre de l'ErrorView). */
+export interface ApiErrorInfo {
+  readonly message: string;
+  readonly kind: ApiFailureKind;
+}
+
+/**
+ * Normalise n'importe quelle erreur en `ApiErrorInfo`. Conserve les messages
+ * actuels : le message utilisateur d'une `ApiFailure`, sinon le repli générique.
+ */
+export function toApiError(error: unknown): ApiErrorInfo {
+  if (error instanceof ApiFailure) {
+    return { message: error.userMessage, kind: error.kind };
+  }
+  return { message: FALLBACK_MESSAGES.unknown, kind: 'unknown' };
+}
+
 /**
  * URL de base de l'API :
  * 1. EXPO_PUBLIC_API_URL si définie (apps/mobile/.env) ;
