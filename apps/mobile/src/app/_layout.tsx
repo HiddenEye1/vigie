@@ -96,6 +96,8 @@ export default function RootLayout(): ReactElement | null {
         <Stack.Screen name="verifier-capture" options={{ title: 'Vérifier une capture' }} />
         <Stack.Screen name="verdict/[id]" options={{ title: 'Résultat' }} />
         <Stack.Screen name="fiche/[id]" options={{ title: 'Fiche conseil' }} />
+        <Stack.Screen name="parcours/index" options={{ title: 'Se protéger avant d’agir' }} />
+        <Stack.Screen name="parcours/[id]" options={{ title: 'Parcours' }} />
       </Stack>
     </ErrorBoundary>
   );

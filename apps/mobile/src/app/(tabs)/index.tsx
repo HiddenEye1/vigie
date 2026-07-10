@@ -181,6 +181,29 @@ export default function HomeScreen(): ReactElement {
           </Text>
         </View>
 
+        <View style={styles.proactive}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Se protéger avant d’agir"
+            accessibilityHint="Des parcours guidés avant de donner un code, de payer ou de cliquer"
+            onPress={() => {
+              router.push('/parcours');
+            }}
+            style={({ pressed }) => [styles.proactiveCard, pressed && styles.proactiveCardPressed]}
+          >
+            <View style={styles.proactiveIcon}>
+              <Ionicons name="shield-half" size={22} color={palette.laiton} />
+            </View>
+            <View style={styles.proactiveText}>
+              <Text style={styles.proactiveTitle}>Se protéger avant d’agir</Text>
+              <Text style={styles.proactiveSubtitle}>
+                Un doute avant de donner un code, de payer ou de cliquer ?
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={palette.texteMuet} />
+          </Pressable>
+        </View>
+
         <LiveFeed />
       </ScrollView>
     </View>
@@ -240,5 +263,42 @@ const styles = StyleSheet.create({
     color: palette.texteMuet,
     textAlign: 'center',
     marginTop: spacing.xs,
+  },
+  proactive: {
+    paddingHorizontal: spacing.l,
+  },
+  proactiveCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.m,
+    backgroundColor: palette.ardoise,
+    borderWidth: 1,
+    borderColor: palette.laitonFilet,
+    borderRadius: radius.l,
+    padding: spacing.l,
+  },
+  proactiveCardPressed: {
+    backgroundColor: palette.ardoiseElevee,
+  },
+  proactiveIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.s,
+    backgroundColor: palette.laitonPale,
+    borderWidth: 1,
+    borderColor: palette.laitonFilet,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  proactiveText: {
+    flex: 1,
+    gap: 2,
+  },
+  proactiveTitle: {
+    ...type.body,
+    fontFamily: fonts.textSemiBold,
+  },
+  proactiveSubtitle: {
+    ...type.bodySecondary,
   },
 });
