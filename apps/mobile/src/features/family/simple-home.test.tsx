@@ -27,6 +27,16 @@ describe('SimpleHome', () => {
     expect(view.getByText('Demander à Marie')).toBeTruthy();
   });
 
+  it('affiche la présence rassurante du proche quand il est enregistré', async () => {
+    const view = await render(<SimpleHome contactFirstName="Marie" {...handlers} />);
+    expect(view.getByText('Marie veille avec vous.')).toBeTruthy();
+  });
+
+  it('n’affiche aucune présence de proche quand aucun n’est enregistré', async () => {
+    const view = await render(<SimpleHome contactFirstName={null} {...handlers} />);
+    expect(view.queryByText(/veille avec vous/)).toBeNull();
+  });
+
   it('déclenche les bonnes actions', async () => {
     const view = await render(<SimpleHome contactFirstName="Marie" {...handlers} />);
     await fireEvent.press(view.getByText('Vérifier un message'));

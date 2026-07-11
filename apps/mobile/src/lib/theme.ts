@@ -104,6 +104,13 @@ export const type = {
     lineHeight: 41,
     color: palette.texteClair,
   },
+  /** Titre d'un GROUPE de cartes dans un écran (entre le titre d'écran et les titres de carte). */
+  groupTitle: {
+    fontFamily: fonts.displaySemiBold,
+    fontSize: 22,
+    lineHeight: 30,
+    color: palette.texteClair,
+  },
   verdict: {
     fontFamily: fonts.display,
     fontSize: 22,

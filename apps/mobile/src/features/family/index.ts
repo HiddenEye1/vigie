@@ -23,3 +23,6 @@ export { SimpleHome } from './simple-home';
 export { SimpleModeSection } from './simple-mode-section';
 export { TrustedContactSection } from './trusted-contact-section';
 export { AskTrustedContact } from './ask-trusted-contact';
+export { FamilyPresence } from './family-presence';
+export { FamilyConsentCard } from './family-consent-card';
+export { FamilyShieldSection } from './family-shield-section';

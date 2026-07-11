@@ -7,7 +7,7 @@ import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
 
-import { SimpleModeSection, TrustedContactSection } from '@/features/family';
+import { FamilyShieldSection } from '@/features/family';
 
 import { PrimaryButton } from '../../components/primary-button';
 import { apiBaseUrl, ApiFailure, joinWaitlist } from '../../lib/api';
@@ -70,16 +70,14 @@ export default function SettingsScreen(): ReactElement {
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Réglages</Text>
 
-        <SimpleModeSection />
-
-        <TrustedContactSection />
+        <FamilyShieldSection />
 
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Bouclier famille — bientôt</Text>
+          <Text style={styles.cardTitle}>Bientôt — prévenir un proche à distance</Text>
           <Text style={styles.cardText}>
-            Bientôt, Vigie pourra prévenir un proche de confiance lorsqu’une personne que vous
-            protégez reçoit un message dangereux. Laissez votre e-mail pour être averti du
-            lancement.
+            Aujourd’hui, tout reste sur ce téléphone. Bientôt, et seulement si vous le choisissez,
+            Vigie pourra prévenir un proche de confiance lorsqu’une personne que vous protégez reçoit
+            un message dangereux. Laissez votre e-mail pour être averti du lancement.
           </Text>
           {waitlist.step === 'done' ? (
             <Text style={styles.successText}>
