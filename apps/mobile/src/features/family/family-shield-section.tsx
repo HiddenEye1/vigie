@@ -14,7 +14,14 @@ import { TrustedContactSection } from './trusted-contact-section';
  * quitte le téléphone (VISION §3). La veille à distance (réseau) est présentée
  * à part, comme un « bientôt ».
  */
-export function FamilyShieldSection(): ReactElement {
+interface FamilyShieldSectionProps {
+  /** Lance l'assistant guidé de configuration du proche (câblé par l'écran). */
+  readonly onConfigureContact?: () => void;
+}
+
+export function FamilyShieldSection({
+  onConfigureContact,
+}: FamilyShieldSectionProps = {}): ReactElement {
   return (
     <View style={styles.section}>
       <View style={styles.header}>
@@ -24,7 +31,7 @@ export function FamilyShieldSection(): ReactElement {
           rien ne quitte ce téléphone.
         </Text>
       </View>
-      <TrustedContactSection />
+      <TrustedContactSection {...(onConfigureContact ? { onConfigure: onConfigureContact } : {})} />
       <FamilyConsentCard />
       <SimpleModeSection />
     </View>

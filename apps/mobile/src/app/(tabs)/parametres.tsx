@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
+import { useRouter } from 'expo-router';
 import { Linking } from 'react-native';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
@@ -20,6 +21,7 @@ type WaitlistState =
 
 /** Paramètres (§4.1 écran 6) : confidentialité, suppression, waitlist, version. */
 export default function SettingsScreen(): ReactElement {
+  const router = useRouter();
   const clearHistory = useHistory((state) => state.clear);
   const [email, setEmail] = useState('');
   const [waitlist, setWaitlist] = useState<WaitlistState>({ step: 'idle' });
@@ -70,7 +72,11 @@ export default function SettingsScreen(): ReactElement {
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <Text style={styles.title}>Réglages</Text>
 
-        <FamilyShieldSection />
+        <FamilyShieldSection
+          onConfigureContact={() => {
+            router.push('/family-onboarding');
+          }}
+        />
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Bientôt — prévenir un proche à distance</Text>

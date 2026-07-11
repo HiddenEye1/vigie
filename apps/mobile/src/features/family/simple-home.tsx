@@ -15,6 +15,8 @@ interface SimpleHomeProps {
   readonly topInset?: number;
   readonly onVerifyText: () => void;
   readonly onAskContact: () => void;
+  /** Lance l'assistant guidé de configuration du proche (affiché si aucun proche). */
+  readonly onAddContact: () => void;
   readonly onCapture: () => void;
   readonly onLink: () => void;
   readonly onSettings: () => void;
@@ -31,6 +33,7 @@ export function SimpleHome({
   topInset = 0,
   onVerifyText,
   onAskContact,
+  onAddContact,
   onCapture,
   onLink,
   onSettings,
@@ -86,6 +89,19 @@ export function SimpleHome({
             />
           ) : null}
         </View>
+
+        {contactFirstName === null ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Ajouter un proche de confiance"
+            accessibilityHint="Configure une personne à qui demander un avis, en quelques étapes simples."
+            onPress={onAddContact}
+            style={styles.addContact}
+          >
+            <Ionicons name="person-add-outline" size={22} color={palette.laiton} />
+            <Text style={styles.addContactLabel}>Ajouter un proche de confiance</Text>
+          </Pressable>
+        ) : null}
 
         <View style={styles.discreet}>
           <Pressable
@@ -167,6 +183,22 @@ const styles = StyleSheet.create({
   actions: {
     paddingHorizontal: spacing.l,
     gap: spacing.l,
+  },
+  addContact: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.m,
+    marginHorizontal: spacing.l,
+    minHeight: MIN_TOUCH_TARGET,
+    paddingHorizontal: spacing.l,
+    borderRadius: radius.m,
+    backgroundColor: palette.laitonPale,
+    borderWidth: 1,
+    borderColor: palette.laitonFilet,
+  },
+  addContactLabel: {
+    ...simple.lienDiscret,
+    color: palette.laiton,
   },
   discreet: {
     paddingHorizontal: spacing.l,

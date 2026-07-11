@@ -5,6 +5,7 @@ import { SimpleHome } from './simple-home';
 const handlers = {
   onVerifyText: jest.fn(),
   onAskContact: jest.fn(),
+  onAddContact: jest.fn(),
   onCapture: jest.fn(),
   onLink: jest.fn(),
   onSettings: jest.fn(),
@@ -35,6 +36,17 @@ describe('SimpleHome', () => {
   it('n’affiche aucune présence de proche quand aucun n’est enregistré', async () => {
     const view = await render(<SimpleHome contactFirstName={null} {...handlers} />);
     expect(view.queryByText(/veille avec vous/)).toBeNull();
+  });
+
+  it('propose « Ajouter un proche de confiance » quand aucun n’est enregistré', async () => {
+    const view = await render(<SimpleHome contactFirstName={null} {...handlers} />);
+    await fireEvent.press(view.getByText('Ajouter un proche de confiance'));
+    expect(handlers.onAddContact).toHaveBeenCalledTimes(1);
+  });
+
+  it('ne propose pas d’ajout de proche quand un proche existe déjà', async () => {
+    const view = await render(<SimpleHome contactFirstName="Marie" {...handlers} />);
+    expect(view.queryByText('Ajouter un proche de confiance')).toBeNull();
   });
 
   it('déclenche les bonnes actions', async () => {

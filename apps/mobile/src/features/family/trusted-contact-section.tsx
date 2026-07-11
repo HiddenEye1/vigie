@@ -9,12 +9,24 @@ import { fonts, palette, radius, spacing, type } from '@/lib/theme';
 import { useTrustedContact } from './contact.store';
 import { detectChannel } from './messages';
 
+interface TrustedContactSectionProps {
+  /**
+   * Lance l'assistant guidé de première configuration. Fourni par l'écran (qui
+   * possède la navigation). Si absent, on retombe sur le formulaire inline —
+   * rétro-compatibilité pour tout appelant qui ne câble pas d'assistant.
+   */
+  readonly onConfigure?: () => void;
+}
+
 /**
- * « Mon proche de confiance » (Bouclier famille, étape 1).
+ * « Mon proche de confiance » (Bouclier famille).
  * Un seul contact, enregistré par le senior lui-même, stocké sur ce téléphone
  * uniquement, modifiable et supprimable à tout moment (consentement révocable).
+ *
+ * Sans proche : propose l'assistant guidé (`onConfigure`) plutôt que le
+ * formulaire brut. Avec un proche : la carte + édition inline (Modifier/Retirer).
  */
-export function TrustedContactSection(): ReactElement {
+export function TrustedContactSection({ onConfigure }: TrustedContactSectionProps = {}): ReactElement {
   const contact = useTrustedContact((state) => state.contact);
   const save = useTrustedContact((state) => state.save);
   const clear = useTrustedContact((state) => state.clear);
@@ -25,7 +37,9 @@ export function TrustedContactSection(): ReactElement {
 
   const channel = detectChannel(value);
   const canSave = name.trim().length > 0 && channel !== null;
-  const showForm = contact === null || editing;
+  // Entrée guidée quand aucun proche n'est enregistré et qu'un assistant est câblé.
+  const guidedEntry = contact === null && onConfigure !== undefined;
+  const showForm = editing || (contact === null && onConfigure === undefined);
 
   const startEditing = (): void => {
     setName(contact?.name ?? '');
@@ -72,7 +86,15 @@ export function TrustedContactSection(): ReactElement {
         que vous l’envoyiez vous-même. Vous pouvez le retirer à tout moment.
       </Text>
 
-      {showForm ? (
+      {guidedEntry ? (
+        <PrimaryButton
+          label="Configurer mon proche de confiance"
+          icon="person-add"
+          onPress={() => {
+            onConfigure();
+          }}
+        />
+      ) : showForm ? (
         <>
           <TextInput
             style={styles.input}
@@ -111,7 +133,7 @@ export function TrustedContactSection(): ReactElement {
             />
           ) : null}
         </>
-      ) : (
+      ) : contact !== null ? (
         <>
           <View style={styles.contactRow}>
             <View style={styles.contactIcon}>
@@ -139,7 +161,7 @@ export function TrustedContactSection(): ReactElement {
             onPress={confirmRemove}
           />
         </>
-      )}
+      ) : null}
     </View>
   );
 }
