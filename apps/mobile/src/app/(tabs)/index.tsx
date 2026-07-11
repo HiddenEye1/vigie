@@ -25,12 +25,12 @@ import { SegmentedTabs } from '../../components/segmented-tabs';
 import { VeilleBadge } from '../../components/veille-badge';
 import { fonts, MIN_TOUCH_TARGET, onHeader, palette, radius, spacing, type } from '../../lib/theme';
 
-type Mode = 'texte' | 'capture' | 'lien';
+type Mode = 'texte' | 'capture' | 'lien' | 'mail';
 
 interface ModeConfig extends SegmentedOption<Mode> {
-  readonly route: '/verifier-texte' | '/verifier-capture' | '/verifier-lien';
+  readonly route: '/verifier-texte' | '/verifier-capture' | '/verifier-lien' | '/verifier-mail';
   readonly cta: string;
-  readonly icon: 'chatbubble-ellipses-outline' | 'image-outline' | 'link-outline';
+  readonly icon: 'chatbubble-ellipses-outline' | 'image-outline' | 'link-outline' | 'mail-outline';
   readonly ctaIcon: 'shield-checkmark' | 'image' | 'link';
   readonly placeholder: string;
   readonly ariaField: string;
@@ -67,6 +67,16 @@ const MODES = [
     ctaIcon: 'link',
     placeholder: 'Collez le lien reçu…',
     ariaField: 'Coller un lien à vérifier',
+  },
+  {
+    key: 'mail',
+    label: 'Mail',
+    icon: 'mail-outline',
+    route: '/verifier-mail',
+    cta: 'Vérifier un mail',
+    ctaIcon: 'shield-checkmark',
+    placeholder: 'Collez le mail reçu…',
+    ariaField: 'Coller un mail à vérifier',
   },
 ] as const satisfies readonly ModeConfig[];
 

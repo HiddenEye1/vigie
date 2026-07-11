@@ -95,6 +95,7 @@ export default function RootLayout(): ReactElement | null {
         <Stack.Screen name="comment-fonctionne-bouclier" options={{ title: 'Bouclier famille' }} />
         <Stack.Screen name="verifier-texte" options={{ title: 'Vérifier un message' }} />
         <Stack.Screen name="verifier-lien" options={{ title: 'Vérifier un lien' }} />
+        <Stack.Screen name="verifier-mail" options={{ title: 'Vérifier un mail' }} />
         <Stack.Screen name="verifier-capture" options={{ title: 'Vérifier une capture' }} />
         <Stack.Screen name="verdict/[id]" options={{ title: 'Résultat' }} />
         <Stack.Screen name="fiche/[id]" options={{ title: 'Fiche conseil' }} />
