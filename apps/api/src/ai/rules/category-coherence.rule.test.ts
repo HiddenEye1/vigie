@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { MOCK_SCENARIOS } from '../mock-scenarios.js';
 import { categoryCoherenceRule } from './category-coherence.rule.js';
 import { runPostProcessRules } from './index.js';
-import type { RuleContext } from './types.js';
+import type { RuleContext, RuleOutcome } from './types.js';
 import { makeInput, makeVerdict } from './test-helpers.js';
 
 const context: RuleContext = { input: makeInput('peu importe'), original: makeVerdict() };
@@ -74,6 +74,71 @@ describe('categoryCoherenceRule — ne surclasse pas', () => {
     for (const { id, verdict } of MOCK_SCENARIOS) {
       expect(categoryCoherenceRule.apply(verdict, context), id).toBeNull();
     }
+  });
+});
+
+describe('categoryCoherenceRule — exception OTP isolé', () => {
+  // Contenus RÉELS du corpus (fixtures/corpus.json).
+  const otpSeul = 'Votre code de validation est 245 871. Il expire dans 10 minutes.';
+  const demandeCode =
+    "Bonjour, pour annuler l'opération frauduleuse, communiquez-nous le code reçu par SMS. C'est urgent, sinon le prélèvement partira.";
+
+  function apply(content: string): RuleOutcome | null {
+    return categoryCoherenceRule.apply(
+      makeVerdict({ verdict: 'PLUTOT_SUR', confidence: 0.9, category: 'FAUX_CONSEILLER_BANCAIRE' }),
+      { input: makeInput(content), original: makeVerdict() },
+    );
+  }
+
+  it('plafonne à SUSPECT un OTP livré sans demande de transmission (ambigu-otp-seul)', () => {
+    expect(apply(otpSeul)?.patch.verdict).toBe('SUSPECT');
+  });
+
+  it('conserve ARNAQUE_PROBABLE quand le code est explicitement demandé (danger-demande-code-sms)', () => {
+    expect(apply(demandeCode)?.patch.verdict).toBe('ARNAQUE_PROBABLE');
+  });
+
+  it('conserve ARNAQUE_PROBABLE quand un OTP est accompagné d’un appel à agir', () => {
+    const otpPlusAppel =
+      'Votre code de validation est 245 871. Appelez le service anti-fraude pour confirmer, sinon votre compte sera bloqué.';
+    expect(apply(otpPlusAppel)?.patch.verdict).toBe('ARNAQUE_PROBABLE');
+  });
+});
+
+describe('chaîne complète — OTP isolé vs vraie demande de code', () => {
+  const otpSeul = 'Votre code de validation est 245 871. Il expire dans 10 minutes.';
+  const demandeCode =
+    "Bonjour, pour annuler l'opération frauduleuse, communiquez-nous le code reçu par SMS. C'est urgent, sinon le prélèvement partira.";
+
+  it('l’OTP isolé reste SUSPECT et un risque modéré, jamais ARNAQUE_PROBABLE / HIGH', () => {
+    const { verdict } = runPostProcessRules(
+      makeVerdict({
+        verdict: 'SUSPECT',
+        confidence: 0.6,
+        category: 'FAUX_CONSEILLER_BANCAIRE',
+        risk_level: 'MEDIUM',
+        score: 50,
+      }),
+      makeInput(otpSeul),
+    );
+    expect(verdict.verdict).toBe('SUSPECT');
+    expect(verdict.risk_level).not.toBe('HIGH');
+    expect(verdict.risk_level).not.toBe('CRITICAL');
+  });
+
+  it('la vraie demande de code SMS reste ARNAQUE_PROBABLE et un risque élevé', () => {
+    const { verdict } = runPostProcessRules(
+      makeVerdict({
+        verdict: 'SUSPECT',
+        confidence: 0.7,
+        category: 'FAUX_CONSEILLER_BANCAIRE',
+        risk_level: 'MEDIUM',
+        score: 55,
+      }),
+      makeInput(demandeCode),
+    );
+    expect(verdict.verdict).toBe('ARNAQUE_PROBABLE');
+    expect(['HIGH', 'CRITICAL']).toContain(verdict.risk_level);
   });
 });
 
