@@ -1,15 +1,18 @@
 import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
 
-import { buildContactUrl, buildHelpMessage, useTrustedContact } from '@/features/family';
+import { buildContactUrl, buildHelpMessage, firstName, useTrustedContact } from '@/features/family';
 
 /**
  * « Prévenir un proche », mutualisé entre les parcours. Ouvre le compositeur
  * natif déjà adressé au proche, avec un message pré-rempli que la personne
  * relit et envoie elle-même. Si aucun proche n'est configuré, on oriente vers
  * les réglages sans bloquer.
+ *
+ * Sans `message` explicite, le message d'aide par défaut est composé au moment
+ * du clic, salué avec le prénom du proche enregistré.
  */
-export function useAskContact(message: string = buildHelpMessage()): () => void {
+export function useAskContact(message?: string): () => void {
   const contact = useTrustedContact((state) => state.contact);
   return useCallback(() => {
     void (async () => {
@@ -20,8 +23,9 @@ export function useAskContact(message: string = buildHelpMessage()): () => void 
         );
         return;
       }
+      const body = message ?? buildHelpMessage(firstName(contact.name));
       try {
-        await Linking.openURL(buildContactUrl(contact, message));
+        await Linking.openURL(buildContactUrl(contact, body));
       } catch {
         Alert.alert(
           'Envoi impossible',

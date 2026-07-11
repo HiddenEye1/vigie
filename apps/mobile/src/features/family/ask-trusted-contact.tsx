@@ -27,7 +27,7 @@ export function AskTrustedContact({ result }: AskTrustedContactProps): ReactElem
   const prenom = firstName(contact.name);
 
   const send = async (): Promise<void> => {
-    const url = buildContactUrl(contact, buildAdviceMessage(result));
+    const url = buildContactUrl(contact, buildAdviceMessage(result, prenom));
     try {
       await Linking.openURL(url);
     } catch {
