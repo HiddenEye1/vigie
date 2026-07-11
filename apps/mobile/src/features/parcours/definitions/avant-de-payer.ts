@@ -26,13 +26,13 @@ const QUESTIONS: readonly ParcoursQuestion[] = [
     options: [
       {
         id: 'inconnu-acompte',
-        label: 'Un vendeur/particulier, pour un acompte (logement, vente, livraison)',
+        label: 'Un vendeur, pour un acompte',
         weight: 3,
         icon: 'home-outline',
       },
       {
         id: 'inconnu',
-        label: 'Une personne ou un vendeur que je ne connais pas',
+        label: 'Quelqu’un que je ne connais pas',
         weight: 2,
         icon: 'person-outline',
       },
@@ -44,14 +44,14 @@ const QUESTIONS: readonly ParcoursQuestion[] = [
       },
       {
         id: 'support',
-        label: 'Un support technique (Microsoft, Apple…)',
+        label: 'Un support technique',
         weight: 3,
         icon: 'desktop-outline',
       },
       { id: 'proche', label: 'Un proche ou ma famille', weight: 1, icon: 'people-outline' },
       {
         id: 'moi',
-        label: 'Personne — j’achète moi-même sur un site que je connais',
+        label: 'Personne, j’achète moi-même',
         weight: 0,
         icon: 'storefront-outline',
       },
@@ -63,27 +63,27 @@ const QUESTIONS: readonly ParcoursQuestion[] = [
     options: [
       {
         id: 'coupon',
-        label: 'Coupon PCS, Transcash ou carte cadeau',
+        label: 'Par coupon ou carte cadeau',
         weight: 0,
         decisive: true,
         icon: 'pricetag-outline',
       },
-      { id: 'crypto', label: 'En crypto (bitcoin…)', weight: 3, icon: 'logo-bitcoin' },
+      { id: 'crypto', label: 'En crypto (bitcoin)', weight: 3, icon: 'logo-bitcoin' },
       {
         id: 'virement-inconnu',
-        label: 'Virement vers un compte que je ne connais pas',
+        label: 'Virement vers un compte inconnu',
         weight: 3,
         icon: 'swap-horizontal-outline',
       },
       {
         id: 'carte-lien',
-        label: 'Par carte, via un lien qu’on m’a envoyé',
+        label: 'Par carte, via un lien reçu',
         weight: 2,
         icon: 'link-outline',
       },
       {
         id: 'connu',
-        label: 'Vers quelqu’un ou un site que je connais bien',
+        label: 'Vers quelqu’un que je connais bien',
         weight: 0,
         icon: 'shield-checkmark-outline',
       },
@@ -101,7 +101,7 @@ const QUESTIONS: readonly ParcoursQuestion[] = [
     id: 'remboursement',
     title: 'Vous promet-on d’être remboursé après avoir payé ?',
     options: [
-      { id: 'oui', label: 'Oui, on me dit que je serai remboursé', weight: 2, icon: 'cash-outline' },
+      { id: 'oui', label: 'Oui, on me promet un remboursement', weight: 2, icon: 'cash-outline' },
       { id: 'non', label: 'Non', weight: 0, icon: 'checkmark-outline' },
     ],
   },

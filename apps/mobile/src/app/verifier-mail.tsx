@@ -179,9 +179,8 @@ export default function VerifyMailScreen(): ReactElement {
       </View>
 
       <Text style={styles.privacyNote}>
-        Vigie analyse le contenu, l’expéditeur affiché, l’objet et les liens visibles. Elle ne
-        vérifie pas l’authenticité technique du mail. Le mail est analysé puis aussitôt oublié : il
-        n’est jamais conservé sur nos serveurs.
+        Vigie analyse le contenu, l’expéditeur et l’objet, mais ne vérifie pas l’authenticité
+        technique du mail. Il est analysé puis aussitôt oublié, jamais conservé.
       </Text>
     </ScrollView>
   );
