@@ -27,3 +27,4 @@ export { FamilyPresence } from './family-presence';
 export { FamilyConsentCard } from './family-consent-card';
 export { FamilyShieldSection } from './family-shield-section';
 export { ContactOnboarding } from './contact-onboarding';
+export { FamilyShieldExplainer } from './family-shield-explainer';

@@ -76,6 +76,9 @@ export default function SettingsScreen(): ReactElement {
           onConfigureContact={() => {
             router.push('/family-onboarding');
           }}
+          onExplain={() => {
+            router.push('/comment-fonctionne-bouclier');
+          }}
         />
 
         <View style={styles.card}>
