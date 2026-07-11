@@ -11,11 +11,15 @@
 export { PARCOURS, UPCOMING_PARCOURS, getParcours } from './registry';
 export { ParcoursRunner } from './parcours-runner';
 export { EmergencyRunner } from './emergency-runner';
+export { OrientationRunner } from './orientation-runner';
 export type {
   ParcoursDefinition,
   QuestionnaireParcours,
   EmergencyParcours,
   EmergencySituation,
+  OrientationParcours,
+  OrientationOutcome,
+  OrientationAction,
   ParcoursLevel,
   ParcoursOutcome,
   ParcoursQuestion,

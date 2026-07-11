@@ -2,6 +2,7 @@ import { arnaqueEnDirect } from './definitions/arnaque-en-direct';
 import { avantDeCliquer } from './definitions/avant-de-cliquer';
 import { avantDePayer } from './definitions/avant-de-payer';
 import { donnerUnCode } from './definitions/donner-un-code';
+import { faireConfiance } from './definitions/faire-confiance';
 import type { ParcoursDefinition } from './types';
 
 /**
@@ -13,6 +14,7 @@ export const PARCOURS: readonly ParcoursDefinition[] = [
   avantDePayer,
   avantDeCliquer,
   arnaqueEnDirect,
+  faireConfiance,
 ];
 
 export function getParcours(id: string): ParcoursDefinition | undefined {
@@ -20,4 +22,4 @@ export function getParcours(id: string): ParcoursDefinition | undefined {
 }
 
 /** Parcours annoncés mais pas encore disponibles (affichés en « bientôt »). */
-export const UPCOMING_PARCOURS = ['Je ne sais pas si je peux faire confiance'] as const;
+export const UPCOMING_PARCOURS: readonly string[] = [];

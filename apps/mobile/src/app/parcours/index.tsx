@@ -45,17 +45,21 @@ export default function ParcoursIndexScreen(): ReactElement {
         ))}
       </View>
 
-      <Text style={styles.soonTitle}>Bientôt disponibles</Text>
-      <View style={styles.list}>
-        {UPCOMING_PARCOURS.map((title) => (
-          <View key={title} style={[styles.row, styles.rowSoon]}>
-            <View style={[styles.iconBox, styles.iconBoxSoon]}>
-              <Ionicons name="time-outline" size={20} color={palette.texteMuet} />
-            </View>
-            <Text style={[styles.rowTitle, styles.rowTitleSoon]}>{title}</Text>
+      {UPCOMING_PARCOURS.length > 0 ? (
+        <>
+          <Text style={styles.soonTitle}>Bientôt disponibles</Text>
+          <View style={styles.list}>
+            {UPCOMING_PARCOURS.map((title) => (
+              <View key={title} style={[styles.row, styles.rowSoon]}>
+                <View style={[styles.iconBox, styles.iconBoxSoon]}>
+                  <Ionicons name="time-outline" size={20} color={palette.texteMuet} />
+                </View>
+                <Text style={[styles.rowTitle, styles.rowTitleSoon]}>{title}</Text>
+              </View>
+            ))}
           </View>
-        ))}
-      </View>
+        </>
+      ) : null}
     </ScrollView>
   );
 }

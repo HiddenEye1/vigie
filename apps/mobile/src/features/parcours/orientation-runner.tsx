@@ -5,45 +5,48 @@ import { StyleSheet, View } from 'react-native';
 import { useSeniorMode } from '@/features/family';
 import { palette } from '@/lib/theme';
 
+import { OrientationResultView } from './orientation-result';
 import { ParcoursQuestionView } from './parcours-question';
-import { ParcoursResultView } from './parcours-result';
-import type { QuestionnaireParcours } from './types';
+import type { OrientationParcours, OrientationTarget } from './types';
 import { useAskContact } from './use-ask-contact';
 import { useQuestionFlow } from './use-question-flow';
 
 /**
- * Déroulé d'un parcours-questionnaire : pose les questions une à une (flux
- * partagé), puis affiche le résultat. Rien n'est envoyé.
+ * Déroulé d'un parcours d'orientation : quelques questions d'aiguillage (flux
+ * partagé), puis un résultat qui redirige vers le bon réflexe. Les actions
+ * exécutent une navigation locale ou ouvrent le compositeur vers un proche.
  */
-export function ParcoursRunner({
+export function OrientationRunner({
   definition,
 }: {
-  readonly definition: QuestionnaireParcours;
+  readonly definition: OrientationParcours;
 }): ReactElement {
   const router = useRouter();
   const askContact = useAskContact();
   const large = useSeniorMode((state) => state.simpleMode);
   const flow = useQuestionFlow(definition.questions);
 
-  const analyze = definition.analyze ?? {
-    label: 'Analyser le message reçu',
-    route: '/verifier-texte' as const,
+  const runAction = (target: OrientationTarget): void => {
+    switch (target.kind) {
+      case 'parcours':
+        router.push(`/parcours/${target.id}`);
+        return;
+      case 'analyze':
+        router.push(target.route);
+        return;
+      case 'ask-contact':
+        askContact();
+        return;
+    }
   };
 
   if (flow.finished) {
     return (
       <View style={styles.screen}>
-        <ParcoursResultView
+        <OrientationResultView
           outcome={definition.evaluate(flow.answers)}
           large={large}
-          analyzeLabel={analyze.label}
-          onAnalyze={() => {
-            router.push(analyze.route);
-          }}
-          onAskContact={askContact}
-          onEmergency={() => {
-            router.push('/parcours/arnaque-en-direct');
-          }}
+          onAction={runAction}
           onRestart={flow.restart}
         />
       </View>

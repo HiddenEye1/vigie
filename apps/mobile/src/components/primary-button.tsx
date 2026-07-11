@@ -7,7 +7,7 @@ import { MIN_TOUCH_TARGET, palette, radius, spacing, type } from '../lib/theme';
 interface PrimaryButtonProps {
   readonly label: string;
   readonly onPress: () => void;
-  readonly icon?: keyof typeof Ionicons.glyphMap;
+  readonly icon?: keyof typeof Ionicons.glyphMap | undefined;
   readonly variant?: 'primary' | 'secondary';
   readonly disabled?: boolean;
 }

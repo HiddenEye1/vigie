@@ -12,8 +12,11 @@ export type ParcoursLevel = 'DANGER' | 'PRUDENCE' | 'OK';
 export interface ParcoursOption {
   readonly id: string;
   readonly label: string;
-  /** Points de danger apportés par ce choix (cumulés entre questions). */
-  readonly weight: number;
+  /**
+   * Points de danger apportés par ce choix (cumulés entre questions). Facultatif
+   * (0 par défaut) : les parcours d'orientation n'utilisent pas de score.
+   */
+  readonly weight?: number;
   /**
    * Si vrai, ce choix conclut à lui seul à un DANGER, quel que soit le reste
    * (ex. « on me demande de dicter le code »).
@@ -95,4 +98,38 @@ export interface EmergencyParcours extends ParcoursBase {
   readonly situations: readonly EmergencySituation[];
 }
 
-export type ParcoursDefinition = QuestionnaireParcours | EmergencyParcours;
+/** Cible d'une action recommandée par un parcours d'orientation. */
+export type OrientationTarget =
+  | { readonly kind: 'parcours'; readonly id: string }
+  | { readonly kind: 'analyze'; readonly route: '/verifier-texte' | '/verifier-lien' }
+  | { readonly kind: 'ask-contact' };
+
+export interface OrientationAction {
+  readonly label: string;
+  readonly icon?: keyof typeof Ionicons.glyphMap;
+  readonly target: OrientationTarget;
+}
+
+/** Résultat d'un aiguillage : un message rassurant + des actions ordonnées. */
+export interface OrientationOutcome {
+  readonly title: string;
+  readonly message: string;
+  /** Actions par ordre de priorité : la première est mise en avant. */
+  readonly actions: readonly OrientationAction[];
+}
+
+/**
+ * Parcours d'orientation (« Je ne sais pas si je peux faire confiance ») :
+ * quelques questions d'aiguillage, puis on redirige vers le bon réflexe. Pas de
+ * score, pas de verdict — juste rassurer et diriger.
+ */
+export interface OrientationParcours extends ParcoursBase {
+  readonly kind: 'orientation';
+  readonly questions: readonly ParcoursQuestion[];
+  readonly evaluate: (answers: ParcoursAnswers) => OrientationOutcome;
+}
+
+export type ParcoursDefinition =
+  | QuestionnaireParcours
+  | EmergencyParcours
+  | OrientationParcours;

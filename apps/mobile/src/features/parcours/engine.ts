@@ -27,7 +27,7 @@ export function scoreAnswers(
     if (option === undefined) {
       continue;
     }
-    score += option.weight;
+    score += option.weight ?? 0;
     if (option.decisive === true) {
       decisive = true;
     }
