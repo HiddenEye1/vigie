@@ -10,6 +10,7 @@ import {
   buildHelpMessage,
   firstName,
   SimpleHome,
+  useAdviceRequests,
   useSeniorMode,
   useTrustedContact,
 } from '@/features/family';
@@ -80,6 +81,7 @@ export default function HomeScreen(): ReactElement {
   const insets = useSafeAreaInsets();
   const simpleMode = useSeniorMode((state) => state.simpleMode);
   const trustedContact = useTrustedContact((state) => state.contact);
+  const recordAdvice = useAdviceRequests((state) => state.add);
   const [mode, setMode] = useState<Mode>('texte');
   const active = MODES.find((m) => m.key === mode) ?? MODES[0];
 
@@ -88,10 +90,11 @@ export default function HomeScreen(): ReactElement {
     if (!trustedContact) {
       return;
     }
+    const prenom = firstName(trustedContact.name);
     try {
-      await Linking.openURL(
-        buildContactUrl(trustedContact, buildHelpMessage(firstName(trustedContact.name))),
-      );
+      await Linking.openURL(buildContactUrl(trustedContact, buildHelpMessage(prenom)));
+      // Trace locale « demande d'aide », seulement après ouverture réussie.
+      recordAdvice({ contactFirstName: prenom, situation: 'aide' });
     } catch {
       Alert.alert(
         'Envoi impossible',

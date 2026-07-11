@@ -14,6 +14,8 @@
 export { useTrustedContact } from './contact.store';
 export type { TrustedContact, ContactChannel } from './contact.store';
 export { useSeniorMode } from './senior-mode.store';
+export { useAdviceRequests, ADVICE_REQUESTS_LIMIT } from './advice-requests.store';
+export type { AdviceRequestEntry, AdviceRequestInput, AdviceSituation } from './advice-requests.store';
 
 // Messages pré-remplis vers le proche (compositeur natif)
 export { buildContactUrl, buildHelpMessage, firstName } from './messages';
@@ -28,3 +30,4 @@ export { FamilyConsentCard } from './family-consent-card';
 export { FamilyShieldSection } from './family-shield-section';
 export { ContactOnboarding } from './contact-onboarding';
 export { FamilyShieldExplainer } from './family-shield-explainer';
+export { AdviceRequestList } from './advice-request-list';

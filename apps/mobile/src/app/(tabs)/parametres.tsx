@@ -8,7 +8,7 @@ import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { z } from 'zod';
 
-import { FamilyShieldSection } from '@/features/family';
+import { FamilyShieldSection, useAdviceRequests } from '@/features/family';
 
 import { PrimaryButton } from '../../components/primary-button';
 import { apiBaseUrl, ApiFailure, joinWaitlist } from '../../lib/api';
@@ -23,6 +23,7 @@ type WaitlistState =
 export default function SettingsScreen(): ReactElement {
   const router = useRouter();
   const clearHistory = useHistory((state) => state.clear);
+  const clearAdviceRequests = useAdviceRequests((state) => state.clear);
   const [email, setEmail] = useState('');
   const [waitlist, setWaitlist] = useState<WaitlistState>({ step: 'idle' });
 
@@ -55,6 +56,7 @@ export default function SettingsScreen(): ReactElement {
           onPress: () => {
             void (async () => {
               clearHistory();
+              clearAdviceRequests();
               await AsyncStorage.clear();
               Alert.alert(
                 'Données supprimées',

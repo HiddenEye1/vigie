@@ -1,6 +1,8 @@
 import type { AnalyzeResponse } from '@vigie/shared';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
+import { Alert, Linking } from 'react-native';
 
+import { useAdviceRequests } from './advice-requests.store';
 import { useTrustedContact } from './contact.store';
 import { AskTrustedContact } from './ask-trusted-contact';
 
@@ -33,5 +35,48 @@ describe('AskTrustedContact', () => {
     });
     const view = await render(<AskTrustedContact result={RESULT} />);
     expect(view.getByText('Envoyer à Marie pour avis')).toBeTruthy();
+  });
+});
+
+describe('AskTrustedContact — trace locale de la demande', () => {
+  afterEach(() => {
+    useTrustedContact.setState({ contact: null });
+    useAdviceRequests.setState({ entries: [] });
+    jest.restoreAllMocks();
+  });
+
+  it('enregistre une trace uniquement après ouverture réussie du compositeur', async () => {
+    useTrustedContact.setState({
+      contact: { name: 'Marie Dupont', channel: 'phone', value: '0612345678' },
+    });
+    jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
+
+    const view = await render(<AskTrustedContact result={RESULT} />);
+    await fireEvent.press(view.getByText('Envoyer à Marie pour avis'));
+
+    await waitFor(() => {
+      expect(useAdviceRequests.getState().entries).toHaveLength(1);
+    });
+    const entry = useAdviceRequests.getState().entries[0];
+    expect(entry?.contactFirstName).toBe('Marie');
+    expect(entry?.situation).toBe('message');
+    expect(entry?.verdict).toBe('ARNAQUE_PROBABLE');
+    expect(entry?.category).toBe('PHISHING_COLIS');
+  });
+
+  it('n’enregistre aucune trace si le compositeur ne peut pas s’ouvrir', async () => {
+    useTrustedContact.setState({
+      contact: { name: 'Marie Dupont', channel: 'phone', value: '0612345678' },
+    });
+    jest.spyOn(Linking, 'openURL').mockRejectedValue(new Error('aucune application'));
+    jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+
+    const view = await render(<AskTrustedContact result={RESULT} />);
+    await fireEvent.press(view.getByText('Envoyer à Marie pour avis'));
+
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalled();
+    });
+    expect(useAdviceRequests.getState().entries).toHaveLength(0);
   });
 });
