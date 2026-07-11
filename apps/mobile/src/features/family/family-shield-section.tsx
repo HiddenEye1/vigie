@@ -32,8 +32,8 @@ export function FamilyShieldSection({
       <View style={styles.header}>
         <Text style={styles.title}>Bouclier famille</Text>
         <Text style={styles.intro}>
-          Un proche de confiance, choisi par vous, à qui demander un avis en un geste — sans que
-          rien ne quitte ce téléphone.
+          Demandez l’avis d’un proche de confiance quand un message vous inquiète. Tout reste sur ce
+          téléphone.
         </Text>
       </View>
       {onExplain ? (
