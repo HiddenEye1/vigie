@@ -1,183 +1,13 @@
 import type { AIVerdict } from './provider.js';
 
 /**
- * Verdicts réalistes servis par MockProvider (MOCK_AI=true).
- * Règles par mots-clés d'abord, puis rotation déterministe sur les 4 verdicts,
- * afin que l'UI soit testable dans tous ses états sans clé API.
+ * Fixtures du MockProvider qui ne dépendent pas d'un mot-clé : analyse d'URL
+ * et rotation déterministe. Le corpus de scénarios par mot-clé vit dans
+ * `mock-scenarios.ts`.
+ *
+ * Tous les verdicts sont au format étendu (risk_level, score, senior_summary,
+ * do_not) pour que l'app affiche exactement ce qu'elle affichera en réel.
  */
-export interface MockRule {
-  readonly pattern: RegExp;
-  readonly verdict: AIVerdict;
-}
-
-export const MOCK_RULES: readonly MockRule[] = [
-  {
-    pattern: /colis|livraison|chronopost|colissimo|douane/i,
-    verdict: {
-      verdict: 'ARNAQUE_PROBABLE',
-      confidence: 0.93,
-      category: 'PHISHING_COLIS',
-      summary: 'C’est la fausse notification de colis classique, envoyée en masse par SMS.',
-      reasons: [
-        'On vous réclame des frais pour débloquer un colis, ce que les vrais transporteurs ne font pas par SMS.',
-        'Le lien ne pointe pas vers le site officiel du transporteur.',
-        'Le message joue sur l’urgence pour vous faire cliquer sans réfléchir.',
-      ],
-      actions: [
-        'Ne cliquez pas sur le lien.',
-        'Transférez le SMS au 33700 pour le signaler.',
-        'Si vous attendez vraiment un colis, vérifiez sur le site officiel du transporteur avec votre numéro de suivi.',
-      ],
-    },
-  },
-  {
-    pattern: /banque|conseiller|carte bancaire|compte bloqué|virement suspect|opposition/i,
-    verdict: {
-      verdict: 'ARNAQUE_PROBABLE',
-      confidence: 0.95,
-      category: 'FAUX_CONSEILLER_BANCAIRE',
-      summary: 'C’est le scénario classique du faux conseiller bancaire.',
-      reasons: [
-        'Votre vraie banque ne vous demande jamais vos codes ni de valider une opération par téléphone ou SMS.',
-        'Le message crée un sentiment d’urgence pour vous faire agir sans vérifier.',
-        'Les escrocs se font passer pour le service anti-fraude afin de gagner votre confiance.',
-      ],
-      actions: [
-        'Ne communiquez jamais vos codes, même à un prétendu conseiller.',
-        'Raccrochez et appelez le numéro au dos de votre carte bancaire.',
-        'Transférez le SMS au 33700 pour le signaler.',
-      ],
-    },
-  },
-  {
-    pattern: /imp[oô]ts?|amende|antai|ameli|cpam|crit'?air|france travail|caf\b/i,
-    verdict: {
-      verdict: 'SUSPECT',
-      confidence: 0.78,
-      category: 'PHISHING_ADMINISTRATION',
-      summary:
-        'Ce message imite une administration française, ce qui est très courant chez les escrocs.',
-      reasons: [
-        'Les administrations ne réclament pas de paiement par SMS avec un lien.',
-        'Le lien ne se termine pas par le vrai domaine officiel en .gouv.fr.',
-        'Le ton menaçant (amende, majoration) sert à vous faire agir vite.',
-      ],
-      actions: [
-        'Ne cliquez pas sur le lien.',
-        'Connectez-vous directement au site officiel de l’administration concernée pour vérifier.',
-        'Signalez le message sur signal-spam.fr.',
-      ],
-    },
-  },
-  {
-    pattern: /crypto|bitcoin|placement|investi|livret|rendement|trading/i,
-    verdict: {
-      verdict: 'ARNAQUE_PROBABLE',
-      confidence: 0.9,
-      category: 'INVESTISSEMENT_FRAUDULEUX',
-      summary: 'Cette promesse de gains faciles ressemble fort à un faux placement.',
-      reasons: [
-        'Un rendement élevé garanti sans risque, cela n’existe pas.',
-        'On vous presse d’investir vite pour ne pas « rater l’occasion ».',
-        'Les faux conseillers en placement sont l’une des arnaques les plus coûteuses en France.',
-      ],
-      actions: [
-        'Ne versez aucun argent.',
-        'Vérifiez si le site figure sur la liste noire de l’AMF (amf-france.org).',
-        'Parlez-en à votre banque avant tout virement.',
-      ],
-    },
-  },
-  {
-    pattern: /vinted|leboncoin|le bon coin|remboursement acheteur|paiement s[eé]curis[eé]/i,
-    verdict: {
-      verdict: 'SUSPECT',
-      confidence: 0.72,
-      category: 'ARNAQUE_PETITES_ANNONCES',
-      summary: 'Ce message ressemble aux arnaques courantes sur les sites de petites annonces.',
-      reasons: [
-        'On vous pousse à discuter ou payer en dehors de la plateforme officielle.',
-        'Les escrocs envoient de faux liens de « paiement sécurisé » qui imitent le site.',
-      ],
-      actions: [
-        'Restez toujours dans la messagerie et le paiement officiels de la plateforme.',
-        'Ne saisissez jamais vos coordonnées bancaires sur un lien reçu par SMS ou e-mail.',
-        'Signalez le profil à la plateforme.',
-      ],
-    },
-  },
-  {
-    pattern: /cpf|compte formation|droits formation/i,
-    verdict: {
-      verdict: 'ARNAQUE_PROBABLE',
-      confidence: 0.88,
-      category: 'FRAUDE_CPF_AIDES',
-      summary: 'Le démarchage au sujet du compte formation (CPF) est interdit : c’est une arnaque.',
-      reasons: [
-        'Depuis 2022, tout démarchage téléphonique ou par SMS sur le CPF est illégal.',
-        'Les escrocs cherchent à vider vos droits à la formation ou à voler vos identifiants.',
-      ],
-      actions: [
-        'Ne donnez jamais vos identifiants Mon Compte Formation.',
-        'Transférez le SMS au 33700.',
-        'Consultez vos droits uniquement sur moncompteformation.gouv.fr.',
-      ],
-    },
-  },
-  {
-    pattern: /travail à domicile|recrutement|liker des vidéos|offre d'emploi|salaire attractif/i,
-    verdict: {
-      verdict: 'ARNAQUE_PROBABLE',
-      confidence: 0.87,
-      category: 'ARNAQUE_EMPLOI',
-      summary: 'Cette offre d’emploi trop belle ressemble aux fausses offres envoyées en masse.',
-      reasons: [
-        'Un vrai employeur ne recrute pas par SMS ou WhatsApp sans entretien.',
-        'La rémunération promise est très élevée pour des tâches très simples.',
-      ],
-      actions: [
-        'Ne payez jamais pour obtenir un emploi et n’envoyez pas vos papiers d’identité.',
-        'Signalez le message au 33700.',
-      ],
-    },
-  },
-  {
-    pattern: /mon amour|ma ch[eé]rie|frais de douane.*(te|vous) rembours|militaire en mission/i,
-    verdict: {
-      verdict: 'ARNAQUE_PROBABLE',
-      confidence: 0.86,
-      category: 'ARNAQUE_SENTIMENTALE',
-      summary:
-        'Ce message ressemble à une arnaque sentimentale : une relation à distance qui finit par demander de l’argent.',
-      reasons: [
-        'Une personne jamais rencontrée physiquement demande de l’argent.',
-        'Le scénario (mission à l’étranger, frais imprévus, remboursement promis) est un grand classique.',
-      ],
-      actions: [
-        'N’envoyez jamais d’argent à une personne rencontrée uniquement en ligne.',
-        'Parlez-en à un proche de confiance avant toute décision.',
-      ],
-    },
-  },
-  {
-    pattern: /microsoft|apple|virus|ordinateur (est )?infect[eé]|support technique/i,
-    verdict: {
-      verdict: 'ARNAQUE_PROBABLE',
-      confidence: 0.91,
-      category: 'FAUX_SUPPORT_TECHNIQUE',
-      summary: 'C’est la fausse alerte au virus typique du faux support technique.',
-      reasons: [
-        'Microsoft ou Apple ne vous contactent jamais pour un virus sur votre ordinateur.',
-        'On cherche à vous faire appeler un numéro ou installer un logiciel de prise de contrôle.',
-      ],
-      actions: [
-        'N’appelez pas le numéro affiché et n’installez rien.',
-        'Fermez la fenêtre ou redémarrez l’appareil.',
-        'En cas de doute, consultez cybermalveillance.gouv.fr.',
-      ],
-    },
-  },
-];
 
 /** Fixtures dédiées à l'analyse d'URL (mode mock). */
 export const MOCK_URL_OFFICIAL: AIVerdict = {
@@ -193,6 +23,10 @@ export const MOCK_URL_OFFICIAL: AIVerdict = {
     'Vérifiez toujours que l’adresse affichée dans votre navigateur est bien la même.',
     'En cas de doute sur un paiement, contactez directement votre banque.',
   ],
+  risk_level: 'LOW',
+  score: 8,
+  senior_summary: 'Ce lien mène bien à un site officiel. Vous pouvez continuer, en restant attentif.',
+  do_not: 'Ne saisissez jamais vos identifiants sur une page ouverte depuis un message.',
 };
 
 export const MOCK_URL_YOUNG_DOMAIN: AIVerdict = {
@@ -208,6 +42,10 @@ export const MOCK_URL_YOUNG_DOMAIN: AIVerdict = {
     'N’achetez rien et ne saisissez aucune coordonnée bancaire sur ce site.',
     'Signalez l’adresse sur cybermalveillance.gouv.fr.',
   ],
+  risk_level: 'CRITICAL',
+  score: 93,
+  senior_summary: 'Ce site vient d’être créé. N’achetez rien et n’entrez pas votre carte.',
+  do_not: 'N’entrez jamais vos coordonnées bancaires sur ce site.',
 };
 
 export const MOCK_URL_NO_HTTPS: AIVerdict = {
@@ -223,6 +61,10 @@ export const MOCK_URL_NO_HTTPS: AIVerdict = {
     'Ne saisissez aucune information personnelle ou bancaire sur ce site.',
     'Cherchez le site officiel de l’organisme via votre moteur de recherche.',
   ],
+  risk_level: 'MEDIUM',
+  score: 64,
+  senior_summary: 'Cette page n’est pas sécurisée. N’y entrez aucune information.',
+  do_not: 'Ne saisissez aucune information personnelle sur une page non sécurisée.',
 };
 
 /**
@@ -240,6 +82,10 @@ export const MOCK_ROTATION: readonly [AIVerdict, AIVerdict, AIVerdict, AIVerdict
       'Il contient un lien raccourci impossible à vérifier.',
     ],
     actions: ['Ne cliquez pas sur le lien.', 'Transférez le SMS au 33700.'],
+    risk_level: 'CRITICAL',
+    score: 92,
+    senior_summary: 'Ce message a tout d’une arnaque. Ne cliquez sur rien et ne répondez pas.',
+    do_not: 'Ne cliquez sur aucun lien et ne communiquez aucune information.',
   },
   {
     verdict: 'SUSPECT',
@@ -254,6 +100,11 @@ export const MOCK_ROTATION: readonly [AIVerdict, AIVerdict, AIVerdict, AIVerdict
       'Ne répondez pas et ne cliquez sur aucun lien.',
       'Contactez l’organisme concerné par ses canaux officiels pour vérifier.',
     ],
+    risk_level: 'MEDIUM',
+    score: 63,
+    senior_summary:
+      'Ce message est douteux. Ne répondez pas et demandez à un proche si vous hésitez.',
+    do_not: 'Ne communiquez aucun code ni aucune information bancaire.',
   },
   {
     verdict: 'PLUTOT_SUR',
@@ -268,6 +119,11 @@ export const MOCK_ROTATION: readonly [AIVerdict, AIVerdict, AIVerdict, AIVerdict
       'Restez attentif : un vrai contact peut être imité.',
       'En cas de doute sur un paiement, contactez directement votre banque.',
     ],
+    risk_level: 'LOW',
+    score: 10,
+    senior_summary:
+      'Rien d’inquiétant dans ce message. Restez tout de même prudent si on vous demande de l’argent.',
+    do_not: 'Ne donnez jamais un code reçu par SMS, même si le message paraît normal.',
   },
   {
     verdict: 'INDETERMINE',
@@ -279,5 +135,10 @@ export const MOCK_ROTATION: readonly [AIVerdict, AIVerdict, AIVerdict, AIVerdict
       'Envoyez le message complet, avec le numéro ou l’adresse de l’expéditeur si possible.',
       'En cas de doute, ne cliquez sur aucun lien.',
     ],
+    risk_level: 'MEDIUM',
+    score: 50,
+    senior_summary:
+      'Je ne peux pas me prononcer. Par sécurité, ne faites rien et demandez à un proche.',
+    do_not: 'Ne transmettez aucune information personnelle ou bancaire tant que vous n’êtes pas sûr.',
   },
 ];

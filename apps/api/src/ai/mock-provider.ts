@@ -1,10 +1,10 @@
 import {
   MOCK_ROTATION,
-  MOCK_RULES,
   MOCK_URL_NO_HTTPS,
   MOCK_URL_OFFICIAL,
   MOCK_URL_YOUNG_DOMAIN,
 } from './mock-fixtures.js';
+import { MOCK_SCENARIOS } from './mock-scenarios.js';
 import type { AIProvider, AIVerdict, AnalyzeInput } from './provider.js';
 
 /** Sous ce nombre de caractères, le mock répond INDETERMINE (contenu trop court). */
@@ -49,9 +49,9 @@ export class MockProvider implements AIProvider {
     if (content.length < SHORT_CONTENT_THRESHOLD) {
       return MOCK_ROTATION[3]; // INDETERMINE
     }
-    for (const rule of MOCK_RULES) {
-      if (rule.pattern.test(content)) {
-        return rule.verdict;
+    for (const scenario of MOCK_SCENARIOS) {
+      if (scenario.pattern.test(content)) {
+        return scenario.verdict;
       }
     }
     return rotationVerdict(content);
@@ -70,9 +70,9 @@ export class MockProvider implements AIProvider {
     if (!signals.https) {
       return MOCK_URL_NO_HTTPS;
     }
-    for (const rule of MOCK_RULES) {
-      if (rule.pattern.test(url)) {
-        return rule.verdict;
+    for (const scenario of MOCK_SCENARIOS) {
+      if (scenario.pattern.test(url)) {
+        return scenario.verdict;
       }
     }
     return rotationVerdict(url);

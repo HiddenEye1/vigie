@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { UrlSignals } from '../url/url-analyzer.js';
 import { MockProvider } from './mock-provider.js';
+import { MOCK_SCENARIOS } from './mock-scenarios.js';
 import type { AIVerdict } from './provider.js';
 import { aiVerdictSchema } from './verdict-schema.js';
 
@@ -50,6 +51,39 @@ describe('MockProvider', () => {
     ],
     ['CPF', 'Vos droits CPF expirent : appelez vite ce numéro.', 'FRAUDE_CPF_AIDES'],
     ['support', 'Alerte Microsoft : votre ordinateur est infecté.', 'FAUX_SUPPORT_TECHNIQUE'],
+    // — Familles ajoutées (Phase 2, Lot 1) —
+    [
+      'faux proche',
+      'Maman c’est moi, j’ai changé de numéro, réponds sur celui-ci.',
+      'SMISHING_AUTRE',
+    ],
+    [
+      'demande de code SMS',
+      'Bonjour, pour valider l’opération, communiquez-nous le code reçu par SMS.',
+      'FAUX_CONSEILLER_BANCAIRE',
+    ],
+    [
+      'virement urgent',
+      'J’ai besoin que tu fasses un virement urgent aujourd’hui, je t’expliquerai.',
+      'SMISHING_AUTRE',
+    ],
+    [
+      'faux remboursement',
+      'Vous avez droit à un remboursement des impôts, réclamez-le maintenant.',
+      'PHISHING_ADMINISTRATION',
+    ],
+    [
+      'faux paiement',
+      'Merci de régler les frais de dossier via ce lien de paiement.',
+      'SMISHING_AUTRE',
+    ],
+    ['QR code', 'Scannez ce QR code pour payer votre stationnement.', 'AUTRE'],
+    [
+      'lien suspect',
+      'Votre facture est disponible, cliquez ici pour la consulter.',
+      'SMISHING_AUTRE',
+    ],
+    ['numéro insistant', 'Un numéro inconnu vous a appelé trois fois de suite.', 'AUTRE'],
   ])('reconnaît le scénario %s', async (_label, content, category) => {
     const verdict = await analyze(content);
     expect(verdict.category).toBe(category);
@@ -126,6 +160,56 @@ describe('MockProvider', () => {
     for (const sample of samples) {
       const verdict = await analyze(sample);
       expect(aiVerdictSchema.safeParse(verdict).success).toBe(true);
+    }
+  });
+});
+
+describe('corpus de scénarios (MOCK_SCENARIOS)', () => {
+  it('a des identifiants uniques', () => {
+    const ids = MOCK_SCENARIOS.map((scenario) => scenario.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('couvre au moins les grandes familles de fraude', () => {
+    const ids = MOCK_SCENARIOS.map((scenario) => scenario.id);
+    for (const expected of [
+      'faux-proche-urgence',
+      'demande-code-sms',
+      'virement-urgent',
+      'faux-paiement',
+      'faux-support-technique',
+      'faux-conseiller-bancaire',
+      'faux-colis',
+      'fausse-administration',
+      'faux-remboursement',
+      'qr-code-frauduleux',
+      'arnaque-emploi',
+      'arnaque-petites-annonces',
+      'investissement-frauduleux',
+      'arnaque-sentimentale',
+      'lien-suspect',
+      'numero-inconnu-insistant',
+    ]) {
+      expect(ids).toContain(expected);
+    }
+  });
+
+  it('chaque scénario expose le format étendu, borné et conforme au schéma', () => {
+    for (const { id, verdict } of MOCK_SCENARIOS) {
+      expect(verdict.risk_level, id).toBeDefined();
+      expect(typeof verdict.score, id).toBe('number');
+      expect(verdict.score ?? -1, id).toBeGreaterThanOrEqual(0);
+      expect(verdict.score ?? 101, id).toBeLessThanOrEqual(100);
+      expect((verdict.senior_summary ?? '').length, id).toBeGreaterThan(0);
+      expect((verdict.do_not ?? '').length, id).toBeGreaterThan(0);
+      expect(aiVerdictSchema.safeParse(verdict).success, id).toBe(true);
+    }
+  });
+
+  it('vouvoie l’utilisateur dans les messages destinés aux seniors', () => {
+    for (const { id, verdict } of MOCK_SCENARIOS) {
+      expect(verdict.senior_summary ?? '', id).not.toMatch(/\b(tu|ton|ta|tes)\b/i);
+      expect(verdict.do_not ?? '', id).not.toMatch(/\b(tu|ton|ta|tes)\b/i);
     }
   });
 });
