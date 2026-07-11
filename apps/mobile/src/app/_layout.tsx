@@ -92,6 +92,7 @@ export default function RootLayout(): ReactElement | null {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="family-onboarding" options={{ headerShown: false }} />
+        <Stack.Screen name="comment-fonctionne-bouclier" options={{ title: 'Bouclier famille' }} />
         <Stack.Screen name="verifier-texte" options={{ title: 'Vérifier un message' }} />
         <Stack.Screen name="verifier-lien" options={{ title: 'Vérifier un lien' }} />
         <Stack.Screen name="verifier-capture" options={{ title: 'Vérifier une capture' }} />

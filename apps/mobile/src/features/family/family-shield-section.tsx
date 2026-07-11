@@ -1,6 +1,7 @@
 import type { ReactElement } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { PrimaryButton } from '@/components/primary-button';
 import { palette, spacing, type } from '@/lib/theme';
 
 import { FamilyConsentCard } from './family-consent-card';
@@ -17,10 +18,13 @@ import { TrustedContactSection } from './trusted-contact-section';
 interface FamilyShieldSectionProps {
   /** Lance l'assistant guidé de configuration du proche (câblé par l'écran). */
   readonly onConfigureContact?: () => void;
+  /** Ouvre la fiche « Comment fonctionne le Bouclier famille ? » (câblé par l'écran). */
+  readonly onExplain?: () => void;
 }
 
 export function FamilyShieldSection({
   onConfigureContact,
+  onExplain,
 }: FamilyShieldSectionProps = {}): ReactElement {
   return (
     <View style={styles.section}>
@@ -31,6 +35,14 @@ export function FamilyShieldSection({
           rien ne quitte ce téléphone.
         </Text>
       </View>
+      {onExplain ? (
+        <PrimaryButton
+          label="Comment ça marche ?"
+          icon="help-circle"
+          variant="secondary"
+          onPress={onExplain}
+        />
+      ) : null}
       <TrustedContactSection {...(onConfigureContact ? { onConfigure: onConfigureContact } : {})} />
       <FamilyConsentCard />
       <SimpleModeSection />
