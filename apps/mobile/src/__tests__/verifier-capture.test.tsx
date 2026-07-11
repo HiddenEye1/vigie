@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react-native';
 
-import VerifyImageScreen from './verifier-capture';
+import VerifyImageScreen from '../app/verifier-capture';
 
 jest.mock('expo-router', () => ({
   useRouter: jest.fn(() => ({ replace: jest.fn(), push: jest.fn() })),

@@ -3,7 +3,7 @@ import type { AnalyzeResponse } from '@vigie/shared';
 
 import { analyzeText } from '@/lib/api';
 
-import VerifyMailScreen from './verifier-mail';
+import VerifyMailScreen from '../app/verifier-mail';
 
 const mockReplace = jest.fn();
 const mockPush = jest.fn();
