@@ -7,6 +7,7 @@ import { LighthouseLogo } from '@/components/lighthouse-logo';
 import { fonts, MIN_TOUCH_TARGET, onHeader, palette, radius, simple, spacing } from '@/lib/theme';
 
 import { BigActionButton } from './big-action-button';
+import { FamilyPresence } from './family-presence';
 
 interface SimpleHomeProps {
   /** Prénom du proche de confiance, ou `null` si aucun n'est enregistré. */
@@ -65,6 +66,8 @@ export function SimpleHome({
           <Text style={styles.title}>Un doute ?</Text>
           <Text style={styles.subtitle}>Vigie regarde le message avec vous.</Text>
         </View>
+
+        <FamilyPresence firstName={contactFirstName} />
 
         <View style={styles.actions}>
           <BigActionButton
