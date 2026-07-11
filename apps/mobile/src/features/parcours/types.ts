@@ -51,6 +51,8 @@ interface ParcoursBase {
   readonly id: string;
   /** Titre affiché (« Avant de donner un code »). */
   readonly title: string;
+  /** Titre court pour l'en-tête de navigation, si `title` y est trop long. */
+  readonly headerTitle?: string;
   /** Une phrase d'accroche rassurante. */
   readonly intro: string;
   readonly icon: keyof typeof Ionicons.glyphMap;
