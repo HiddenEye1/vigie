@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 import { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { CaptureTextPanel, getTextRecognizer } from '@/features/capture';
 import { useRequest } from '@/lib/use-request';
 
 import { ErrorView } from '../components/error-view';
@@ -37,6 +38,10 @@ export default function VerifyImageScreen(): ReactElement {
   const addToHistory = useHistory((state) => state.add);
   const [image, setImage] = useState<ImageUpload | null>(null);
   const [prepError, setPrepError] = useState<ApiErrorInfo | null>(null);
+  const [textMode, setTextMode] = useState(false);
+  // Voie « capture → texte » : proposée seulement quand un OCR est disponible.
+  // Aujourd'hui indisponible (Expo Go, pas de dépendance native) → masquée.
+  const ocrAvailable = getTextRecognizer().available;
 
   const { state, run, reset } = useRequest(
     async (chosen: ImageUpload) => {
@@ -88,6 +93,7 @@ export default function VerifyImageScreen(): ReactElement {
     reset();
     setImage(null);
     setPrepError(null);
+    setTextMode(false);
   };
 
   if (state.status === 'loading' || state.status === 'success') {
@@ -104,6 +110,10 @@ export default function VerifyImageScreen(): ReactElement {
         retryLabel="Choisir une capture"
       />
     );
+  }
+
+  if (image && textMode) {
+    return <CaptureTextPanel image={image} />;
   }
 
   if (image) {
@@ -133,6 +143,16 @@ export default function VerifyImageScreen(): ReactElement {
               void pickFromGallery();
             }}
           />
+          {ocrAvailable ? (
+            <PrimaryButton
+              label="Lire le texte de la capture"
+              icon="text"
+              variant="secondary"
+              onPress={() => {
+                setTextMode(true);
+              }}
+            />
+          ) : null}
         </View>
         <Text style={styles.privacyNote}>
           L’image est analysée puis aussitôt oubliée : elle n’est jamais conservée sur nos serveurs.
