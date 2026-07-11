@@ -1,7 +1,13 @@
 import { useCallback } from 'react';
 import { Alert, Linking } from 'react-native';
 
-import { buildContactUrl, buildHelpMessage, firstName, useTrustedContact } from '@/features/family';
+import {
+  buildContactUrl,
+  buildHelpMessage,
+  firstName,
+  useAdviceRequests,
+  useTrustedContact,
+} from '@/features/family';
 
 /**
  * « Prévenir un proche », mutualisé entre les parcours. Ouvre le compositeur
@@ -14,6 +20,7 @@ import { buildContactUrl, buildHelpMessage, firstName, useTrustedContact } from 
  */
 export function useAskContact(message?: string): () => void {
   const contact = useTrustedContact((state) => state.contact);
+  const record = useAdviceRequests((state) => state.add);
   return useCallback(() => {
     void (async () => {
       if (!contact) {
@@ -23,9 +30,12 @@ export function useAskContact(message?: string): () => void {
         );
         return;
       }
-      const body = message ?? buildHelpMessage(firstName(contact.name));
+      const prenom = firstName(contact.name);
+      const body = message ?? buildHelpMessage(prenom);
       try {
         await Linking.openURL(buildContactUrl(contact, body));
+        // Trace locale « demande d'aide », seulement après ouverture réussie.
+        record({ contactFirstName: prenom, situation: 'aide' });
       } catch {
         Alert.alert(
           'Envoi impossible',
@@ -33,5 +43,5 @@ export function useAskContact(message?: string): () => void {
         );
       }
     })();
-  }, [contact, message]);
+  }, [contact, message, record]);
 }

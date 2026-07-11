@@ -4,6 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { PrimaryButton } from '@/components/primary-button';
 import { palette, spacing, type } from '@/lib/theme';
 
+import { AdviceRequestList } from './advice-request-list';
 import { FamilyConsentCard } from './family-consent-card';
 import { SimpleModeSection } from './simple-mode-section';
 import { TrustedContactSection } from './trusted-contact-section';
@@ -44,6 +45,7 @@ export function FamilyShieldSection({
         />
       ) : null}
       <TrustedContactSection {...(onConfigureContact ? { onConfigure: onConfigureContact } : {})} />
+      <AdviceRequestList />
       <FamilyConsentCard />
       <SimpleModeSection />
     </View>
