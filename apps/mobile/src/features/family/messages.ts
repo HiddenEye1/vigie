@@ -1,8 +1,8 @@
-import type { AnalyzeResponse } from '@vigie/shared';
+import type { AnalyzeResponse, VerdictLevel } from '@vigie/shared';
 import { Platform } from 'react-native';
 import { z } from 'zod';
 
-import { CATEGORY_LABELS, VERDICT_UI } from '@/lib/verdict-ui';
+import { CATEGORY_LABELS } from '@/lib/verdict-ui';
 
 import type { ContactChannel, TrustedContact } from './contact.store';
 
@@ -32,33 +32,57 @@ export function firstName(name: string): string {
 }
 
 /**
- * Le message envoyé au proche : le VERDICT de Vigie et une question claire.
- * Ne contient JAMAIS le contenu original analysé (données potentiellement
- * personnelles ou bancaires) — uniquement ce que Vigie a produit.
+ * Ouverture du message, adaptée au niveau de verdict. Ton chaleureux et non
+ * alarmiste, même en cas d'arnaque probable : on demande de l'aide, on ne crée
+ * pas de peur. Première personne, formulations neutres en genre. `objet` vaut
+ * « un message » ou « un lien » selon le contexte.
  */
-export function buildAdviceMessage(result: AnalyzeResponse): string {
-  const ui = VERDICT_UI[result.verdict];
+const OPENING: Record<VerdictLevel, (objet: string) => string> = {
+  ARNAQUE_PROBABLE: (objet) =>
+    `J’ai reçu ${objet} et je crois que c’est une arnaque. Avant de faire quoi que ce soit, je préfère te demander ton avis.`,
+  SUSPECT: (objet) =>
+    `J’ai reçu ${objet} qui me paraît douteux. Je préfère avoir ton avis avant d’y donner suite.`,
+  INDETERMINE: (objet) =>
+    `J’ai reçu ${objet} et je ne sais pas trop quoi en penser. Ton avis m’aiderait.`,
+  PLUTOT_SUR: (objet) =>
+    `J’ai reçu ${objet}. Il a l’air normal, mais je préfère vérifier avec toi avant d’y répondre.`,
+};
+
+/**
+ * Le message envoyé au proche : salutation par prénom, ouverture adaptée au
+ * verdict, l'avis de Vigie (`summary`) et une question claire. Court, humain,
+ * compatible SMS.
+ *
+ * Confidentialité (§8) : ne contient JAMAIS le contenu original analysé, ni les
+ * raisons détaillées, ni les actions, ni le score / pourcentage de confiance —
+ * uniquement ce que Vigie a produit pour l'utilisateur (verdict, résumé,
+ * catégorie éventuelle).
+ */
+export function buildAdviceMessage(result: AnalyzeResponse, prenom: string): string {
+  const objet = result.url_analysis !== null ? 'un lien' : 'un message';
   const blocks = [
-    `J’ai reçu un message suspect. Vigie pense que c’est : ${ui.label}.`,
-    result.summary,
+    `Bonjour ${prenom},`,
+    OPENING[result.verdict](objet),
+    `Voici ce que Vigie en dit : ${result.summary}`,
   ];
   if (result.category !== 'AUCUNE') {
-    blocks.push(`Type d’arnaque possible : ${CATEGORY_LABELS[result.category]}.`);
+    blocks.push(`(Type possible : ${CATEGORY_LABELS[result.category]}.)`);
   }
   blocks.push('Qu’en penses-tu ?');
-  blocks.push('— Envoyé depuis Vigie');
+  blocks.push('— Envoyé avec Vigie');
   return blocks.join('\n\n');
 }
 
 /**
  * Message envoyé depuis l'accueil simplifié, quand le senior veut simplement
  * demander de l'aide à son proche — aucun verdict n'a encore été rendu.
+ * Salutation par prénom, ton simple et rassurant.
  */
-export function buildHelpMessage(): string {
+export function buildHelpMessage(prenom: string): string {
   return [
-    'Bonjour, j’ai reçu un message dont je ne suis pas sûr.',
-    'Peux-tu me dire ce que tu en penses ?',
-    '— Envoyé depuis Vigie',
+    `Bonjour ${prenom},`,
+    'J’ai reçu un message qui me laisse un doute. Peux-tu y jeter un œil et me dire ce que tu en penses ?',
+    '— Envoyé avec Vigie',
   ].join('\n\n');
 }
 

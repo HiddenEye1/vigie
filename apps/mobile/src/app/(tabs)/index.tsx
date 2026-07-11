@@ -89,7 +89,9 @@ export default function HomeScreen(): ReactElement {
       return;
     }
     try {
-      await Linking.openURL(buildContactUrl(trustedContact, buildHelpMessage()));
+      await Linking.openURL(
+        buildContactUrl(trustedContact, buildHelpMessage(firstName(trustedContact.name))),
+      );
     } catch {
       Alert.alert(
         'Envoi impossible',

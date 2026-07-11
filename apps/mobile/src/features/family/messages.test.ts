@@ -44,32 +44,64 @@ describe('firstName', () => {
 });
 
 describe('buildAdviceMessage', () => {
-  it('contient le verdict, le résumé, la catégorie et la question', () => {
-    const message = buildAdviceMessage(SCAM);
-    expect(message).toContain('Arnaque très probable');
+  it('salue le proche par son prénom, pose une question claire et signe', () => {
+    const message = buildAdviceMessage(SCAM, 'Marie');
+    expect(message).toContain('Bonjour Marie,');
+    expect(message).toContain('Qu’en penses-tu ?');
+    expect(message).toContain('— Envoyé avec Vigie');
+  });
+
+  it('inclut le résumé de Vigie et la catégorie quand elle est connue', () => {
+    const message = buildAdviceMessage(SCAM, 'Marie');
     expect(message).toContain('C’est la fausse notification de colis classique.');
     expect(message).toContain('Faux avis de colis');
-    expect(message).toContain('Qu’en penses-tu ?');
+  });
+
+  it('omet la catégorie quand elle vaut AUCUNE', () => {
+    const message = buildAdviceMessage({ ...SCAM, category: 'AUCUNE' }, 'Marie');
+    expect(message).not.toContain('Type possible');
+  });
+
+  it('adapte le ton au niveau de verdict, sans jamais paniquer', () => {
+    const danger = buildAdviceMessage(SCAM, 'Marie');
+    expect(danger).toContain('je crois que c’est une arnaque');
+
+    const sur = buildAdviceMessage({ ...SCAM, verdict: 'PLUTOT_SUR' }, 'Marie');
+    expect(sur).toContain('Il a l’air normal');
+    expect(sur).not.toContain('je crois que c’est une arnaque');
+  });
+
+  it('parle d’« un lien » quand l’analyse porte sur une URL, d’« un message » sinon', () => {
+    const withUrl = buildAdviceMessage(
+      {
+        ...SCAM,
+        url_analysis: {
+          final_url: 'https://exemple.fr',
+          domain_age_days: 10,
+          https: true,
+          redirects: 0,
+        },
+      },
+      'Marie',
+    );
+    expect(withUrl).toContain('un lien');
+    expect(buildAdviceMessage(SCAM, 'Marie')).toContain('un message');
   });
 
   it('n’inclut JAMAIS le contenu original, les raisons, les actions ni la confiance', () => {
-    const message = buildAdviceMessage(SCAM);
+    const message = buildAdviceMessage(SCAM, 'Marie');
     expect(message).not.toContain('Frais réclamés par SMS.');
     expect(message).not.toContain('Ne cliquez pas.');
     expect(message).not.toMatch(/0[.,]93|93\s?%/);
   });
-
-  it('omet la catégorie quand elle vaut AUCUNE', () => {
-    const message = buildAdviceMessage({ ...SCAM, category: 'AUCUNE' });
-    expect(message).not.toContain('Type d’arnaque possible');
-  });
 });
 
 describe('buildHelpMessage', () => {
-  it('demande de l’aide sans prétendre à un verdict', () => {
-    const message = buildHelpMessage();
-    expect(message).toContain('Peux-tu me dire ce que tu en penses ?');
-    expect(message).toContain('Envoyé depuis Vigie');
+  it('salue par prénom et demande de l’aide sans prétendre à un verdict', () => {
+    const message = buildHelpMessage('Marie');
+    expect(message).toContain('Bonjour Marie,');
+    expect(message).toContain('me dire ce que tu en penses ?');
+    expect(message).toContain('— Envoyé avec Vigie');
     expect(message).not.toContain('Vigie pense que');
   });
 });
