@@ -109,6 +109,9 @@ export default function HomeScreen(): ReactElement {
         onAskContact={() => {
           void askContact();
         }}
+        onAddContact={() => {
+          router.push('/family-onboarding');
+        }}
         onCapture={() => {
           router.push('/verifier-capture');
         }}
