@@ -43,7 +43,7 @@ const QUESTIONS: readonly ParcoursQuestion[] = [
       },
       {
         id: 'moi',
-        label: 'Personne — je vais moi-même sur le site officiel',
+        label: 'Personne, je vais sur le site officiel',
         weight: 0,
         icon: 'shield-checkmark-outline',
       },
@@ -63,7 +63,7 @@ const QUESTIONS: readonly ParcoursQuestion[] = [
       { id: 'carte', label: 'Saisir ma carte bancaire', weight: 3, icon: 'card-outline' },
       {
         id: 'connexion',
-        label: 'Me connecter (identifiant, mot de passe)',
+        label: 'Me connecter avec mes identifiants',
         weight: 2,
         icon: 'log-in-outline',
       },
@@ -82,7 +82,7 @@ const QUESTIONS: readonly ParcoursQuestion[] = [
     options: [
       {
         id: 'oui-conseiller',
-        label: 'Oui, un conseiller ou un support me le demande',
+        label: 'Oui, un conseiller/support le demande',
         weight: 0,
         decisive: true,
         icon: 'download-outline',

@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { ReactElement } from 'react';
+import { useState } from 'react';
+import type { LayoutChangeEvent, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { fonts, palette, spacing, type } from '@/lib/theme';
+import { fonts, palette, radius, spacing, type } from '@/lib/theme';
 
 import { ChoiceButton } from './choice-button';
 import { ProgressBar } from './progress-bar';
@@ -32,49 +34,105 @@ export function ParcoursQuestionView({
   onBack,
   large = false,
 }: ParcoursQuestionViewProps): ReactElement {
+  const [viewportHeight, setViewportHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [atBottom, setAtBottom] = useState(false);
+
+  // Repère « faire défiler » : uniquement si les réponses dépassent l'écran et
+  // qu'on n'est pas encore en bas de liste.
+  const overflows = contentHeight > viewportHeight + 8;
+  const showScrollHint = overflows && !atBottom;
+
+  const onLayout = (event: LayoutChangeEvent): void => {
+    setViewportHeight(event.nativeEvent.layout.height);
+  };
+  const onContentSizeChange = (_width: number, height: number): void => {
+    setContentHeight(height);
+  };
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>): void => {
+    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+    setAtBottom(contentOffset.y + layoutMeasurement.height >= contentSize.height - 24);
+  };
+
   return (
-    <ScrollView contentContainerStyle={styles.body} showsVerticalScrollIndicator={false}>
-      {onBack !== undefined ? (
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Revenir à la question précédente"
-          onPress={onBack}
-          hitSlop={8}
-          style={styles.back}
-        >
-          <Ionicons name="chevron-back" size={20} color={palette.texteDoux} />
-          <Text style={styles.backLabel}>Précédent</Text>
-        </Pressable>
+    <View style={styles.wrap}>
+      <ScrollView
+        testID="parcours-scroll"
+        contentContainerStyle={styles.body}
+        showsVerticalScrollIndicator={false}
+        onLayout={onLayout}
+        onContentSizeChange={onContentSizeChange}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+      >
+        {onBack !== undefined ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Revenir à la question précédente"
+            onPress={onBack}
+            hitSlop={8}
+            style={styles.back}
+          >
+            <Ionicons name="chevron-back" size={20} color={palette.texteDoux} />
+            <Text style={styles.backLabel}>Précédent</Text>
+          </Pressable>
+        ) : null}
+
+        <ProgressBar current={index + 1} total={total} />
+        <Text style={styles.progress}>{`Question ${String(index + 1)} sur ${String(total)}`}</Text>
+
+        <Text style={[styles.title, large && styles.titleLarge]}>{question.title}</Text>
+        {question.help !== undefined ? <Text style={styles.help}>{question.help}</Text> : null}
+
+        <View style={styles.options}>
+          {question.options.map((option) => (
+            <ChoiceButton
+              key={option.id}
+              label={option.label}
+              icon={option.icon}
+              large={large}
+              onPress={() => {
+                onAnswer(option.id);
+              }}
+            />
+          ))}
+        </View>
+      </ScrollView>
+
+      {showScrollHint ? (
+        <View style={styles.scrollHint} pointerEvents="none">
+          <Ionicons name="chevron-down" size={16} color={palette.surFeuSombre} />
+          <Text style={styles.scrollHintText}>Faites défiler pour voir les autres réponses</Text>
+        </View>
       ) : null}
-
-      <ProgressBar current={index + 1} total={total} />
-      <Text style={styles.progress}>{`Question ${String(index + 1)} sur ${String(total)}`}</Text>
-
-      <Text style={[styles.title, large && styles.titleLarge]}>{question.title}</Text>
-      {question.help !== undefined ? <Text style={styles.help}>{question.help}</Text> : null}
-
-      <View style={styles.options}>
-        {question.options.map((option) => (
-          <ChoiceButton
-            key={option.id}
-            label={option.label}
-            icon={option.icon}
-            large={large}
-            onPress={() => {
-              onAnswer(option.id);
-            }}
-          />
-        ))}
-      </View>
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrap: {
+    flex: 1,
+  },
   body: {
     padding: spacing.l,
     gap: spacing.m,
-    paddingBottom: spacing.xl,
+    paddingBottom: spacing.xxl,
+  },
+  scrollHint: {
+    position: 'absolute',
+    bottom: spacing.m,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.s,
+    paddingHorizontal: spacing.l,
+    borderRadius: radius.pill,
+    backgroundColor: palette.laiton,
+  },
+  scrollHintText: {
+    ...type.label,
+    color: palette.surFeuSombre,
   },
   back: {
     flexDirection: 'row',
