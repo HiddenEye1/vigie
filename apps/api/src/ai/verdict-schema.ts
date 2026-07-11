@@ -1,4 +1,4 @@
-import { scamCategorySchema, verdictLevelSchema } from '@vigie/shared';
+import { riskLevelSchema, scamCategorySchema, verdictLevelSchema } from '@vigie/shared';
 import { z } from 'zod';
 
 import type { AIVerdict } from './provider.js';
@@ -14,6 +14,21 @@ export const aiVerdictSchema = z.object({
   summary: z.string().min(1).max(400),
   reasons: z.array(z.string().min(1).max(600)).min(1).max(6),
   actions: z.array(z.string().min(1).max(600)).min(1).max(6),
+});
+
+/**
+ * Champs étendus (Phase 2) que le modèle PEUT désormais fournir directement.
+ * Validation LENIENTE et indépendante de la base : chaque champ valide est
+ * conservé, un champ absent OU invalide devient `undefined` (via `.catch`) —
+ * jamais une raison de rejeter tout le verdict. Le post-traitement reste le
+ * filet de sécurité : il dérive les champs manquants et les recalcule si un
+ * garde-fou change le verdict final.
+ */
+const extendedFieldsSchema = z.object({
+  risk_level: riskLevelSchema.optional().catch(undefined),
+  score: z.number().int().min(0).max(100).optional().catch(undefined),
+  senior_summary: z.string().trim().min(1).max(300).optional().catch(undefined),
+  do_not: z.string().trim().min(1).max(200).optional().catch(undefined),
 });
 
 /** Repli imposé par le §7 quand le modèle ne produit pas de JSON valide après retry. */
@@ -32,6 +47,11 @@ export const INDETERMINE_FALLBACK: AIVerdict = {
 /**
  * Extrait et valide le JSON d'une réponse du modèle.
  * Tolère du texte autour de l'objet JSON (prose, balises de code).
+ *
+ * La base est validée strictement (sinon retry / repli INDETERMINE). Les champs
+ * étendus sont ensuite ajoutés au cas par cas : seuls ceux qui sont valides sont
+ * conservés, ce qui évite de poser explicitement `undefined` (contrat
+ * exactOptionalPropertyTypes) et laisse le post-traitement dériver le reste.
  */
 export function parseAIVerdict(text: string): AIVerdict | null {
   const start = text.indexOf('{');
@@ -45,6 +65,17 @@ export function parseAIVerdict(text: string): AIVerdict | null {
   } catch {
     return null;
   }
-  const result = aiVerdictSchema.safeParse(candidate);
-  return result.success ? result.data : null;
+  const base = aiVerdictSchema.safeParse(candidate);
+  if (!base.success) {
+    return null;
+  }
+  const extras = extendedFieldsSchema.safeParse(candidate);
+  const e = extras.success ? extras.data : {};
+  return {
+    ...base.data,
+    ...(e.risk_level !== undefined ? { risk_level: e.risk_level } : {}),
+    ...(e.score !== undefined ? { score: e.score } : {}),
+    ...(e.senior_summary !== undefined ? { senior_summary: e.senior_summary } : {}),
+    ...(e.do_not !== undefined ? { do_not: e.do_not } : {}),
+  };
 }
