@@ -77,14 +77,22 @@ export function TrustedContactSection({ onConfigure }: TrustedContactSectionProp
   return (
     <View style={styles.card}>
       <Text style={styles.cardTitle}>Mon proche de confiance</Text>
-      <Text style={styles.cardText}>
-        Choisissez une personne en qui vous avez confiance. Depuis un résultat, vous pourrez lui
-        envoyer l’avis de Vigie en un geste, pour lui demander ce qu’elle en pense.
-      </Text>
-      <Text style={styles.privacyNote}>
-        Ce contact reste sur ce téléphone : il n’est jamais envoyé à nos serveurs. Rien ne part sans
-        que vous l’envoyiez vous-même. Vous pouvez le retirer à tout moment.
-      </Text>
+      {contact === null ? (
+        <>
+          <Text style={styles.cardText}>
+            Choisissez une personne en qui vous avez confiance. Depuis un résultat, vous pourrez lui
+            envoyer l’avis de Vigie en un geste, pour lui demander ce qu’elle en pense.
+          </Text>
+          <Text style={styles.privacyNote}>
+            Ce contact reste sur ce téléphone : il n’est jamais envoyé à nos serveurs. Rien ne part
+            sans que vous l’envoyiez vous-même. Vous pouvez le retirer à tout moment.
+          </Text>
+        </>
+      ) : (
+        <Text style={styles.cardText}>
+          Vous pouvez lui envoyer l’avis de Vigie depuis un résultat.
+        </Text>
+      )}
 
       {guidedEntry ? (
         <PrimaryButton

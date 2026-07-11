@@ -21,6 +21,22 @@ describe('TrustedContactSection', () => {
     expect(onConfigure).toHaveBeenCalledTimes(1);
   });
 
+  it('sans proche, affiche le paragraphe explicatif complet', async () => {
+    const view = await render(<TrustedContactSection onConfigure={jest.fn()} />);
+    expect(view.getByText(/Choisissez une personne/)).toBeTruthy();
+  });
+
+  it('avec un proche, affiche une explication courte (pas le long paragraphe)', async () => {
+    useTrustedContact.setState({
+      contact: { name: 'Marie', channel: 'phone', value: '0612345678' },
+    });
+    const view = await render(<TrustedContactSection />);
+    expect(
+      view.getByText('Vous pouvez lui envoyer l’avis de Vigie depuis un résultat.'),
+    ).toBeTruthy();
+    expect(view.queryByText(/Choisissez une personne/)).toBeNull();
+  });
+
   it('modifie un proche existant via l’édition inline', async () => {
     useTrustedContact.setState({
       contact: { name: 'Marie', channel: 'phone', value: '0612345678' },
