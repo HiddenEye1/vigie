@@ -55,8 +55,10 @@ const HARM_SIGNALS: readonly ContentSignal[] = [
   },
   {
     id: 'demande-identifiants',
+    // Exige un verbe de sollicitation : « votre banque ne vous DEMANDERA jamais
+    // votre mot de passe » (prévention) ne doit pas compter comme une demande.
     pattern:
-      /(donnez|communiquez|saisissez|entrez|confirmez)[^.]{0,30}(mot de passe|identifiant)|(votre|vos) (mot de passe|identifiants?|codes? d'acces|codes? d'accès)/,
+      /(donnez|communiquez|saisissez|entrez|confirmez|envoyez|tapez)[^.]{0,30}(mot de passe|identifiant|code d'acces|code d'accès)/,
   },
   {
     id: 'demande-crypto-coupon',
