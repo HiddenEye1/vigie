@@ -57,11 +57,19 @@ interface ParcoursBase {
  * Parcours-questionnaire : quelques questions, un score, un verdict. Le format
  * de base (donner un code, payer…).
  */
+/** Bouton « Analyser… » du résultat : libellé + écran d'analyse ciblé. */
+export interface ParcoursAnalyze {
+  readonly label: string;
+  readonly route: '/verifier-texte' | '/verifier-lien';
+}
+
 export interface QuestionnaireParcours extends ParcoursBase {
   readonly kind: 'questionnaire';
   readonly questions: readonly ParcoursQuestion[];
   /** Calcule le résultat à partir des réponses. Logique pure, testable. */
   readonly evaluate: (answers: ParcoursAnswers) => ParcoursOutcome;
+  /** Personnalise le bouton « Analyser… » (défaut : analyser le message). */
+  readonly analyze?: ParcoursAnalyze;
 }
 
 /** Une situation d'urgence et les actions prioritaires qui en découlent. */

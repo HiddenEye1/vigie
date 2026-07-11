@@ -49,14 +49,20 @@ export function ParcoursRunner({
     setFinished(false);
   };
 
+  const analyze = definition.analyze ?? {
+    label: 'Analyser le message reçu',
+    route: '/verifier-texte' as const,
+  };
+
   if (finished) {
     return (
       <View style={styles.screen}>
         <ParcoursResultView
           outcome={definition.evaluate(answers)}
           large={large}
+          analyzeLabel={analyze.label}
           onAnalyze={() => {
-            router.push('/verifier-texte');
+            router.push(analyze.route);
           }}
           onAskContact={askContact}
           onEmergency={() => {

@@ -14,6 +14,8 @@ interface ParcoursResultViewProps {
   readonly onAskContact: () => void;
   readonly onEmergency: () => void;
   readonly onRestart: () => void;
+  /** Libellé du bouton d'analyse (« Analyser le message reçu » / « le lien »). */
+  readonly analyzeLabel?: string;
   /** Mode senior : titre et texte agrandis. */
   readonly large?: boolean;
 }
@@ -30,6 +32,7 @@ export function ParcoursResultView({
   onAskContact,
   onEmergency,
   onRestart,
+  analyzeLabel = 'Analyser le message reçu',
   large = false,
 }: ParcoursResultViewProps): ReactElement {
   const ui = PARCOURS_LEVEL_UI[outcome.level];
@@ -67,7 +70,7 @@ export function ParcoursResultView({
       </View>
 
       <View style={styles.actions}>
-        <PrimaryButton label="Analyser le message reçu" icon="document-text" onPress={onAnalyze} />
+        <PrimaryButton label={analyzeLabel} icon="document-text" onPress={onAnalyze} />
         <PrimaryButton
           label="Demander à un proche"
           icon="people"
