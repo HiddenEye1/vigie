@@ -26,7 +26,7 @@ export default function ParcoursScreen(): ReactElement {
 
   return (
     <>
-      <Stack.Screen options={{ title: parcours.title }} />
+      <Stack.Screen options={{ title: parcours.headerTitle ?? parcours.title }} />
       {parcours.kind === 'emergency' ? (
         <EmergencyRunner definition={parcours} />
       ) : parcours.kind === 'orientation' ? (

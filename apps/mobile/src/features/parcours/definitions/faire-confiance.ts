@@ -154,6 +154,7 @@ export const faireConfiance = {
   kind: 'orientation',
   id: 'faire-confiance',
   title: 'Je ne sais pas si je peux faire confiance',
+  headerTitle: 'Faire confiance ?',
   intro:
     'Un doute, mais vous ne savez pas quoi faire ? Répondez à trois questions : Vigie vous oriente vers le bon geste.',
   icon: 'compass-outline',
