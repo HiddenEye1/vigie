@@ -6,6 +6,7 @@ import { analyzeText } from '@/lib/api';
 import VerifyMailScreen from './verifier-mail';
 
 const mockReplace = jest.fn();
+const mockPush = jest.fn();
 
 jest.mock('expo-router', () => ({ useRouter: jest.fn() }));
 jest.mock('expo-clipboard', () => ({ getStringAsync: jest.fn().mockResolvedValue('') }));
@@ -31,7 +32,7 @@ const RESULT: AnalyzeResponse = {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  useRouter.mockReturnValue({ replace: mockReplace });
+  useRouter.mockReturnValue({ replace: mockReplace, push: mockPush });
 });
 
 describe('VerifyMailScreen', () => {
@@ -60,6 +61,26 @@ describe('VerifyMailScreen', () => {
     await waitFor(() => {
       expect(mockReplace).toHaveBeenCalledWith('/verdict/req-1');
     });
+  });
+
+  it('détecte les liens du contenu et propose de les analyser', async () => {
+    const view = await render(<VerifyMailScreen />);
+    await fireEvent.changeText(
+      view.getByLabelText('Contenu du mail'),
+      'Cliquez ici : https://paypa1-secure.com/login pour confirmer.',
+    );
+    expect(view.getByText('Liens détectés dans ce mail')).toBeTruthy();
+    await fireEvent.press(view.getByText('Analyser ce lien'));
+    expect(mockPush).toHaveBeenCalledWith({
+      pathname: '/verifier-lien',
+      params: { partage: 'https://paypa1-secure.com/login' },
+    });
+  });
+
+  it('n’affiche pas la section liens quand le contenu n’en a pas', async () => {
+    const view = await render(<VerifyMailScreen />);
+    await fireEvent.changeText(view.getByLabelText('Contenu du mail'), 'Un message sans lien.');
+    expect(view.queryByText('Liens détectés dans ce mail')).toBeNull();
   });
 
   it('affiche l’erreur via ErrorView en cas d’échec', async () => {

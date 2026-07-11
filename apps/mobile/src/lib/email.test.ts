@@ -1,6 +1,6 @@
 import { ANALYZE_CONTENT_MAX_LENGTH } from '@vigie/shared';
 
-import { composeEmailForAnalysis } from './email';
+import { composeEmailForAnalysis, extractLinks, MAX_DETECTED_LINKS } from './email';
 
 describe('composeEmailForAnalysis', () => {
   it('compose « De » / « Objet » / contenu dans l’ordre', () => {
@@ -45,5 +45,36 @@ describe('composeEmailForAnalysis', () => {
   it('ne tronque pas un mail dans la limite', () => {
     const { truncated } = composeEmailForAnalysis({ body: 'court' });
     expect(truncated).toBe(false);
+  });
+});
+
+describe('extractLinks', () => {
+  it('trouve les liens http et https', () => {
+    expect(extractLinks('Voir http://a.fr et https://b.com maintenant.')).toEqual([
+      'http://a.fr',
+      'https://b.com',
+    ]);
+  });
+
+  it('déduplique sans tenir compte de la casse', () => {
+    expect(extractLinks('https://x.fr puis https://X.FR encore')).toEqual(['https://x.fr']);
+  });
+
+  it('retire la ponctuation collée en fin de lien', () => {
+    expect(extractLinks('cliquez https://banque.fr/login.')).toEqual(['https://banque.fr/login']);
+    expect(extractLinks('(https://banque.fr)')).toEqual(['https://banque.fr']);
+  });
+
+  it('ne détecte pas les domaines nus sans schéma', () => {
+    expect(extractLinks('allez sur www.banque.fr ou banque.fr')).toEqual([]);
+  });
+
+  it('renvoie une liste vide quand il n’y a aucun lien', () => {
+    expect(extractLinks('Bonjour, appelez-moi au 0612345678.')).toEqual([]);
+  });
+
+  it('plafonne le nombre de liens', () => {
+    const text = Array.from({ length: 8 }, (_, i) => `https://site${String(i)}.fr`).join(' ');
+    expect(extractLinks(text)).toHaveLength(MAX_DETECTED_LINKS);
   });
 });

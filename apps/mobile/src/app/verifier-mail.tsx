@@ -12,7 +12,7 @@ import { VerifyModeSwitcher } from '../components/verify-mode-switcher';
 import { WaitingView } from '../components/waiting-view';
 import { analyzeText, toApiError } from '../lib/api';
 import { getDeviceId } from '../lib/device-id';
-import { composeEmailForAnalysis } from '../lib/email';
+import { composeEmailForAnalysis, extractLinks } from '../lib/email';
 import { palette, radius, spacing, type } from '../lib/theme';
 import { useHistory } from '../store/history';
 
@@ -30,6 +30,7 @@ export default function VerifyMailScreen(): ReactElement {
   const [body, setBody] = useState('');
 
   const composed = composeEmailForAnalysis({ from, subject, body });
+  const links = extractLinks(body);
 
   const { state, run, reset } = useRequest(
     async () => {
@@ -136,6 +137,30 @@ export default function VerifyMailScreen(): ReactElement {
         </Text>
       ) : null}
 
+      {links.length > 0 ? (
+        <View style={styles.linksCard}>
+          <Text style={styles.linksTitle}>Liens détectés dans ce mail</Text>
+          <Text style={styles.linksNote}>
+            Un lien vous inquiète ? Analysez-le à part (adresse réelle, âge du site…).
+          </Text>
+          {links.map((link) => (
+            <View key={link} style={styles.linkRow}>
+              <Text style={styles.linkUrl} numberOfLines={1}>
+                {link}
+              </Text>
+              <PrimaryButton
+                label="Analyser ce lien"
+                icon="link"
+                variant="secondary"
+                onPress={() => {
+                  router.push({ pathname: '/verifier-lien', params: { partage: link } });
+                }}
+              />
+            </View>
+          ))}
+        </View>
+      ) : null}
+
       <View style={styles.buttons}>
         <PrimaryButton
           label="Coller le mail copié"
@@ -202,6 +227,28 @@ const styles = StyleSheet.create({
   warning: {
     ...type.bodySecondary,
     color: palette.texteFeuAmbre,
+  },
+  linksCard: {
+    backgroundColor: palette.ardoise,
+    borderWidth: 1,
+    borderColor: palette.bordureDouce,
+    borderRadius: radius.l,
+    padding: spacing.l,
+    gap: spacing.m,
+  },
+  linksTitle: {
+    ...type.sectionTitle,
+  },
+  linksNote: {
+    ...type.bodySecondary,
+    color: palette.texteMuet,
+  },
+  linkRow: {
+    gap: spacing.s,
+  },
+  linkUrl: {
+    ...type.bodySecondary,
+    color: palette.texteDoux,
   },
   buttons: {
     gap: spacing.m,
