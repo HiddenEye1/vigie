@@ -84,6 +84,21 @@ export default function SettingsScreen(): ReactElement {
         />
 
         <View style={styles.card}>
+          <Text style={styles.cardTitle}>Check-up sécurité</Text>
+          <Text style={styles.cardText}>
+            Faites le point sur votre protection, tranquillement. Rien n’est envoyé : Vigie regarde
+            seulement ce qui est déjà en place, et ce que vous pouvez renforcer.
+          </Text>
+          <PrimaryButton
+            label="Faire le point"
+            icon="shield-checkmark"
+            onPress={() => {
+              router.push('/checkup');
+            }}
+          />
+        </View>
+
+        <View style={styles.card}>
           <Text style={styles.cardTitle}>Bientôt — prévenir un proche à distance</Text>
           <Text style={styles.cardText}>
             Aujourd’hui, tout reste sur ce téléphone. Bientôt, et seulement si vous le choisissez,
