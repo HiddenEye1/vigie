@@ -1,6 +1,7 @@
 import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
 import type { ReactElement } from 'react';
+import { useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import {
@@ -26,7 +27,13 @@ export default function CheckupScreen(): ReactElement {
   const confirmed = useCheckup((state) => state.confirmed);
   const confirm = useCheckup((state) => state.confirm);
   const unconfirm = useCheckup((state) => state.unconfirm);
+  const markReviewed = useCheckup((state) => state.markReviewed);
   const large = useSeniorMode((state) => state.simpleMode);
+
+  // Dater ce passage sur le bilan, pour le rappel doux local (jamais une notification).
+  useEffect(() => {
+    markReviewed();
+  }, [markReviewed]);
 
   const { items, inPlaceCount, total, level } = deriveCheckup({ confirmed, hasContact });
 

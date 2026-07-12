@@ -37,6 +37,12 @@ describe('CheckupScreen', () => {
     expect(screen.queryByText(/score/i)).toBeNull();
   });
 
+  it('date le passage (markReviewed) au montage', async () => {
+    expect(useCheckup.getState().lastReviewedAt).toBeNull();
+    await render(<CheckupScreen />);
+    expect(useCheckup.getState().lastReviewedAt).not.toBeNull();
+  });
+
   it('compte les protections en place sans proche configuré', async () => {
     const screen = await render(<CheckupScreen />);
     expect(screen.getByText('0 protection en place sur 4')).toBeTruthy();
