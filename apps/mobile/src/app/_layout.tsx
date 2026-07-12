@@ -93,6 +93,7 @@ export default function RootLayout(): ReactElement | null {
         <Stack.Screen name="onboarding" options={{ headerShown: false, gestureEnabled: false }} />
         <Stack.Screen name="family-onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="comment-fonctionne-bouclier" options={{ title: 'Bouclier famille' }} />
+        <Stack.Screen name="checkup" options={{ title: 'Check-up sécurité' }} />
         <Stack.Screen name="verifier-texte" options={{ title: 'Vérifier un message' }} />
         <Stack.Screen name="verifier-lien" options={{ title: 'Vérifier un lien' }} />
         <Stack.Screen name="verifier-mail" options={{ title: 'Vérifier un mail' }} />
