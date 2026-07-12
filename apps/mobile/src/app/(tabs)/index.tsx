@@ -6,6 +6,12 @@ import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'r
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
+  CheckupHomeCard,
+  checkupReminderState,
+  deriveCheckup,
+  useCheckup,
+} from '@/features/checkup';
+import {
   buildContactUrl,
   buildHelpMessage,
   firstName,
@@ -92,8 +98,13 @@ export default function HomeScreen(): ReactElement {
   const simpleMode = useSeniorMode((state) => state.simpleMode);
   const trustedContact = useTrustedContact((state) => state.contact);
   const recordAdvice = useAdviceRequests((state) => state.add);
+  const checkupConfirmed = useCheckup((state) => state.confirmed);
+  const checkupLastReviewed = useCheckup((state) => state.lastReviewedAt);
   const [mode, setMode] = useState<Mode>('texte');
   const active = MODES.find((m) => m.key === mode) ?? MODES[0];
+
+  const checkup = deriveCheckup({ confirmed: checkupConfirmed, hasContact: trustedContact !== null });
+  const checkupReminder = checkupReminderState(checkupLastReviewed, new Date());
 
   /** Mode simplifié : demander directement de l'aide au proche, sans verdict. */
   const askContact = async (): Promise<void> => {
@@ -132,6 +143,9 @@ export default function HomeScreen(): ReactElement {
         }}
         onLink={() => {
           router.push('/verifier-lien');
+        }}
+        onCheckup={() => {
+          router.push('/checkup');
         }}
         onSettings={() => {
           router.push('/parametres');
@@ -222,6 +236,17 @@ export default function HomeScreen(): ReactElement {
           </Pressable>
         </View>
 
+        <View style={styles.checkup}>
+          <CheckupHomeCard
+            reminder={checkupReminder}
+            inPlaceCount={checkup.inPlaceCount}
+            total={checkup.total}
+            onPress={() => {
+              router.push('/checkup');
+            }}
+          />
+        </View>
+
         <LiveFeed />
       </ScrollView>
     </View>
@@ -283,6 +308,9 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   proactive: {
+    paddingHorizontal: spacing.l,
+  },
+  checkup: {
     paddingHorizontal: spacing.l,
   },
   proactiveCard: {

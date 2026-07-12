@@ -14,8 +14,12 @@ import type { CheckupItemId } from './checkup.items';
  */
 interface CheckupStoreState {
   confirmed: Partial<Record<CheckupItemId, boolean>>;
+  /** Date (ISO) du dernier passage sur le bilan, pour le rappel doux local. */
+  lastReviewedAt: string | null;
   confirm: (id: CheckupItemId) => void;
   unconfirm: (id: CheckupItemId) => void;
+  /** Marque un passage sur l'écran de bilan (appelé au montage de /checkup). */
+  markReviewed: () => void;
   reset: () => void;
 }
 
@@ -23,14 +27,18 @@ export const useCheckup = create<CheckupStoreState>()(
   persist(
     (set) => ({
       confirmed: {},
+      lastReviewedAt: null,
       confirm(id): void {
         set((state) => ({ confirmed: { ...state.confirmed, [id]: true } }));
       },
       unconfirm(id): void {
         set((state) => ({ confirmed: { ...state.confirmed, [id]: false } }));
       },
+      markReviewed(): void {
+        set({ lastReviewedAt: new Date().toISOString() });
+      },
       reset(): void {
-        set({ confirmed: {} });
+        set({ confirmed: {}, lastReviewedAt: null });
       },
     }),
     {

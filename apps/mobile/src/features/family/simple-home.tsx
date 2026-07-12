@@ -19,6 +19,8 @@ interface SimpleHomeProps {
   readonly onAddContact: () => void;
   readonly onCapture: () => void;
   readonly onLink: () => void;
+  /** Ouvre le Check-up sécurité (entrée discrète). */
+  readonly onCheckup: () => void;
   readonly onSettings: () => void;
 }
 
@@ -36,6 +38,7 @@ export function SimpleHome({
   onAddContact,
   onCapture,
   onLink,
+  onCheckup,
   onSettings,
 }: SimpleHomeProps): ReactElement {
   return (
@@ -121,6 +124,16 @@ export function SimpleHome({
           >
             <Ionicons name="link-outline" size={20} color={palette.texteDoux} />
             <Text style={styles.discreetLabel}>Un lien</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Vérifier ma protection"
+            accessibilityHint="Faites le point sur votre protection, tranquillement."
+            onPress={onCheckup}
+            style={styles.discreetItem}
+          >
+            <Ionicons name="shield-checkmark-outline" size={20} color={palette.texteDoux} />
+            <Text style={styles.discreetLabel}>Vérifier ma protection</Text>
           </Pressable>
         </View>
 

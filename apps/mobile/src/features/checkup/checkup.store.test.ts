@@ -5,8 +5,16 @@ describe('useCheckup (store local)', () => {
     useCheckup.getState().reset();
   });
 
-  it('démarre sans aucune confirmation', () => {
+  it('démarre sans aucune confirmation ni date de bilan', () => {
     expect(useCheckup.getState().confirmed).toEqual({});
+    expect(useCheckup.getState().lastReviewedAt).toBeNull();
+  });
+
+  it('markReviewed pose une date ISO valide', () => {
+    useCheckup.getState().markReviewed();
+    const date = useCheckup.getState().lastReviewedAt;
+    expect(date).not.toBeNull();
+    expect(Number.isNaN(Date.parse(date ?? ''))).toBe(false);
   });
 
   it('confirme un item déclaratif', () => {
@@ -27,10 +35,12 @@ describe('useCheckup (store local)', () => {
     expect(useCheckup.getState().confirmed['appel-urgent']).toBe(true);
   });
 
-  it('remet tout à zéro avec reset', () => {
+  it('remet tout à zéro avec reset (confirmations + date)', () => {
     useCheckup.getState().confirm('code-sms');
+    useCheckup.getState().markReviewed();
     useCheckup.getState().reset();
     expect(useCheckup.getState().confirmed).toEqual({});
+    expect(useCheckup.getState().lastReviewedAt).toBeNull();
   });
 
   it('persiste sous la clé locale vigie.security-checkup', () => {

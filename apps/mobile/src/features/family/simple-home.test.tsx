@@ -8,6 +8,7 @@ const handlers = {
   onAddContact: jest.fn(),
   onCapture: jest.fn(),
   onLink: jest.fn(),
+  onCheckup: jest.fn(),
   onSettings: jest.fn(),
 };
 
@@ -62,5 +63,11 @@ describe('SimpleHome', () => {
     expect(view.getByLabelText('Vérifier une capture d’écran')).toBeTruthy();
     expect(view.getByLabelText('Vérifier un lien')).toBeTruthy();
     expect(view.getByLabelText('Réglages')).toBeTruthy();
+  });
+
+  it('propose une entrée discrète « Vérifier ma protection »', async () => {
+    const view = await render(<SimpleHome contactFirstName={null} {...handlers} />);
+    await fireEvent.press(view.getByLabelText('Vérifier ma protection'));
+    expect(handlers.onCheckup).toHaveBeenCalledTimes(1);
   });
 });
