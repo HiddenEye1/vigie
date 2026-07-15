@@ -20,9 +20,11 @@ export {
 export type {
   CheckupItemDef,
   CheckupItemId,
+  CheckupItemProche,
   CheckupItemSource,
   CheckupLevel,
   CheckupLevelInfo,
+  CheckupMode,
   CheckupState,
 } from './checkup.items';
 export { deriveCheckup, deriveItemState, levelFor } from './checkup.derive';

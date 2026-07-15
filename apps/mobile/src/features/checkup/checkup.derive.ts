@@ -1,4 +1,10 @@
-import type { CheckupItemDef, CheckupItemId, CheckupLevel, CheckupState } from './checkup.items';
+import type {
+  CheckupItemDef,
+  CheckupItemId,
+  CheckupLevel,
+  CheckupMode,
+  CheckupState,
+} from './checkup.items';
 import { CHECKUP_ITEMS } from './checkup.items';
 
 /**
@@ -12,6 +18,11 @@ export interface CheckupInput {
   readonly confirmed: Partial<Record<CheckupItemId, boolean>>;
   /** Un proche de confiance est-il enregistré ? (dérivé du store famille). */
   readonly hasContact: boolean;
+  /**
+   * `moi` (défaut) : l'item auto lit le Bouclier famille. `proche` : bilan
+   * *estimé* par un aidant, où TOUS les items sont déclaratifs.
+   */
+  readonly mode?: CheckupMode;
 }
 
 export interface CheckupItemView {
@@ -28,7 +39,11 @@ export interface CheckupResult {
 }
 
 export function deriveItemState(def: CheckupItemDef, input: CheckupInput): CheckupState {
-  const done = def.source === 'auto' ? input.hasContact : input.confirmed[def.id] === true;
+  const mode = input.mode ?? 'moi';
+  // En mode « proche », même l'item auto devient déclaratif : ce téléphone n'est
+  // pas celui du senior, on ne peut donc pas le déduire du Bouclier famille.
+  const isAuto = def.source === 'auto' && mode === 'moi';
+  const done = isAuto ? input.hasContact : input.confirmed[def.id] === true;
   return done ? 'in-place' : def.pendingState;
 }
 

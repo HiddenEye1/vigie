@@ -14,10 +14,14 @@ import type { CheckupItemId } from './checkup.items';
  */
 interface CheckupStoreState {
   confirmed: Partial<Record<CheckupItemId, boolean>>;
+  /** Bilan « Pour un proche » (aidant) : estimation locale, séparée du bilan « moi ». */
+  confirmedForProche: Partial<Record<CheckupItemId, boolean>>;
   /** Date (ISO) du dernier passage sur le bilan, pour le rappel doux local. */
   lastReviewedAt: string | null;
   confirm: (id: CheckupItemId) => void;
   unconfirm: (id: CheckupItemId) => void;
+  confirmForProche: (id: CheckupItemId) => void;
+  unconfirmForProche: (id: CheckupItemId) => void;
   /** Marque un passage sur l'écran de bilan (appelé au montage de /checkup). */
   markReviewed: () => void;
   reset: () => void;
@@ -27,6 +31,7 @@ export const useCheckup = create<CheckupStoreState>()(
   persist(
     (set) => ({
       confirmed: {},
+      confirmedForProche: {},
       lastReviewedAt: null,
       confirm(id): void {
         set((state) => ({ confirmed: { ...state.confirmed, [id]: true } }));
@@ -34,11 +39,17 @@ export const useCheckup = create<CheckupStoreState>()(
       unconfirm(id): void {
         set((state) => ({ confirmed: { ...state.confirmed, [id]: false } }));
       },
+      confirmForProche(id): void {
+        set((state) => ({ confirmedForProche: { ...state.confirmedForProche, [id]: true } }));
+      },
+      unconfirmForProche(id): void {
+        set((state) => ({ confirmedForProche: { ...state.confirmedForProche, [id]: false } }));
+      },
       markReviewed(): void {
         set({ lastReviewedAt: new Date().toISOString() });
       },
       reset(): void {
-        set({ confirmed: {}, lastReviewedAt: null });
+        set({ confirmed: {}, confirmedForProche: {}, lastReviewedAt: null });
       },
     }),
     {

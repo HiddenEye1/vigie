@@ -23,6 +23,24 @@ export type CheckupItemSource = 'auto' | 'declared';
 /** État affiché d'un item. Jamais alarmant, jamais rouge. */
 export type CheckupState = 'in-place' | 'to-reinforce' | 'to-discover';
 
+/** Qui fait le bilan : soi-même, ou un aidant pour un proche (estimation). */
+export type CheckupMode = 'moi' | 'proche';
+
+/** Variante de formulation d'un item pour le mode « Pour un proche » (aidant). */
+export interface CheckupItemProche {
+  readonly title: string;
+  readonly advice: {
+    readonly inPlace: string;
+    readonly pending: string;
+  };
+  readonly confirmLabel?: string;
+  /**
+   * En mode proche, l'item auto devient déclaratif : pas de « configurer »,
+   * mais un « voir comment » possible (ex. fiche du Bouclier famille).
+   */
+  readonly learnRoute?: string;
+}
+
 export interface CheckupItemDef {
   readonly id: CheckupItemId;
   /** La question, formulée simplement. */
@@ -45,6 +63,8 @@ export interface CheckupItemDef {
   readonly confirmLabel?: string;
   /** Libellé du bouton de partage d'un rappel (ouvre la feuille système). */
   readonly shareLabel?: string;
+  /** Formulations pour le mode « Pour un proche » (aidant). */
+  readonly proche?: CheckupItemProche;
 }
 
 /**
@@ -66,6 +86,17 @@ export const CHECKUP_ITEMS: readonly CheckupItemDef[] = [
         'Un proche de confiance, c’est quelqu’un à qui demander un avis en cas de doute. Vous choisissez qui, et vous pouvez le retirer quand vous voulez.',
     },
     configureRoute: '/family-onboarding',
+    proche: {
+      title: 'Votre proche a-t-il quelqu’un à qui demander un avis en cas de doute ?',
+      advice: {
+        inPlace:
+          'Parfait. Savoir vers qui se tourner en cas de doute change tout — cela peut être vous.',
+        pending:
+          'Proposez-lui d’avoir une personne de confiance à appeler avant d’agir — cela peut être vous. La fiche explique comment la mettre en place.',
+      },
+      confirmLabel: 'C’est en place',
+      learnRoute: '/comment-fonctionne-bouclier',
+    },
   },
   {
     id: 'code-sms',
@@ -81,6 +112,16 @@ export const CHECKUP_ITEMS: readonly CheckupItemDef[] = [
     },
     learnRoute: '/parcours/donner-un-code',
     confirmLabel: 'Je sais le faire',
+    proche: {
+      title: 'Votre proche sait-il quoi faire avant de donner un code reçu par SMS ?',
+      advice: {
+        inPlace:
+          'Bon réflexe partagé. Un code reçu par SMS ne se donne jamais, même à sa banque.',
+        pending:
+          'Voyez ensemble le bon réflexe : un code reçu par SMS ne se partage jamais. « Voir comment » vous montre comment l’expliquer.',
+      },
+      confirmLabel: 'C’est acquis',
+    },
   },
   {
     id: 'appel-urgent',
@@ -96,6 +137,16 @@ export const CHECKUP_ITEMS: readonly CheckupItemDef[] = [
     },
     learnRoute: '/parcours/arnaque-en-direct',
     confirmLabel: 'Je sais réagir',
+    proche: {
+      title: 'Votre proche sait-il réagir à un appel « banque » urgent ?',
+      advice: {
+        inPlace:
+          'Bon réflexe. Face à un appel qui presse, on raccroche et on rappelle sa banque au numéro connu.',
+        pending:
+          'Un vrai conseiller ne presse jamais. « Voir comment » montre quoi faire face à un appel « banque » urgent.',
+      },
+      confirmLabel: 'C’est acquis',
+    },
   },
   {
     id: 'numeros-officiels',
@@ -110,6 +161,17 @@ export const CHECKUP_ITEMS: readonly CheckupItemDef[] = [
         'Enregistrez les vrais numéros (au dos de la carte, sur vos contrats). En cas de doute, vous rappelez le bon interlocuteur, jamais un numéro reçu par SMS.',
     },
     confirmLabel: 'C’est fait',
+    proche: {
+      title:
+        'Votre proche a-t-il les vrais numéros de sa banque et de son assurance enregistrés ?',
+      advice: {
+        inPlace:
+          'Parfait. Avec les bons numéros enregistrés, il rappelle le bon interlocuteur, jamais un faux numéro reçu par message.',
+        pending:
+          'Aidez-le à enregistrer les vrais numéros (au dos de la carte, sur les contrats), pour ne jamais rappeler un faux numéro.',
+      },
+      confirmLabel: 'C’est en place',
+    },
   },
   {
     id: 'proches-argent',
@@ -125,6 +187,15 @@ export const CHECKUP_ITEMS: readonly CheckupItemDef[] = [
     },
     shareLabel: 'Leur envoyer un rappel',
     confirmLabel: 'Mes proches le savent',
+    proche: {
+      title: 'Votre proche sait-il qu’on n’envoie jamais d’argent à un nouveau numéro ?',
+      advice: {
+        inPlace: 'Parfait. Ce réflexe le protège de l’arnaque au faux proche.',
+        pending:
+          'Rappelez-lui : on n’envoie jamais d’argent à un nouveau numéro, ni à un contact qui dit avoir « changé de numéro ». Vous pouvez lui envoyer ce rappel.',
+      },
+      confirmLabel: 'C’est acquis',
+    },
   },
 ] as const;
 

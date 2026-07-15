@@ -6,7 +6,7 @@ import { PrimaryButton } from '../../components/primary-button';
 import { fonts, palette, radius, spacing, type } from '../../lib/theme';
 
 import type { CheckupItemView } from './checkup.derive';
-import type { CheckupItemId, CheckupState } from './checkup.items';
+import type { CheckupItemId, CheckupMode, CheckupState } from './checkup.items';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -31,6 +31,8 @@ interface CheckupCardProps {
   readonly onUnconfirm: (id: CheckupItemId) => void;
   /** Partage d'un rappel via la feuille système (items avec `shareLabel`). */
   readonly onShare?: (id: CheckupItemId) => void;
+  /** Mode de bilan : « moi » (défaut) ou « proche » (formulations aidant). */
+  readonly mode?: CheckupMode;
 }
 
 /**
@@ -45,13 +47,20 @@ export function CheckupCard({
   onConfirm,
   onUnconfirm,
   onShare,
+  mode = 'moi',
 }: CheckupCardProps): ReactElement {
   const { def, state } = view;
   const badge = BADGE[state];
   const inPlace = state === 'in-place';
-  const learnRoute = def.learnRoute;
-  const configureRoute = def.configureRoute;
-  const confirmLabel = def.confirmLabel;
+
+  // Résolution selon le mode : en « proche », on prend les formulations aidant,
+  // et l'item auto devient déclaratif (pas de « configurer », mais un « voir comment »).
+  const proche = mode === 'proche' ? def.proche : undefined;
+  const title = proche?.title ?? def.title;
+  const advice = proche?.advice ?? def.advice;
+  const confirmLabel = proche?.confirmLabel ?? def.confirmLabel;
+  const learnRoute = mode === 'proche' ? (proche?.learnRoute ?? def.learnRoute) : def.learnRoute;
+  const configureRoute = mode === 'moi' ? def.configureRoute : undefined;
   const shareLabel = def.shareLabel;
   // La confirmation passe en secondaire dès qu'une action primaire existe.
   const hasPrimaryAction = learnRoute !== undefined || shareLabel !== undefined;
@@ -68,9 +77,9 @@ export function CheckupCard({
         </View>
       </View>
 
-      <Text style={[styles.title, large && styles.titleLarge]}>{def.title}</Text>
+      <Text style={[styles.title, large && styles.titleLarge]}>{title}</Text>
       <Text style={[styles.advice, large && styles.adviceLarge]}>
-        {inPlace ? def.advice.inPlace : def.advice.pending}
+        {inPlace ? advice.inPlace : advice.pending}
       </Text>
 
       {!inPlace && configureRoute !== undefined ? (
