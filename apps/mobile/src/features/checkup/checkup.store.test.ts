@@ -7,7 +7,20 @@ describe('useCheckup (store local)', () => {
 
   it('démarre sans aucune confirmation ni date de bilan', () => {
     expect(useCheckup.getState().confirmed).toEqual({});
+    expect(useCheckup.getState().confirmedForProche).toEqual({});
     expect(useCheckup.getState().lastReviewedAt).toBeNull();
+  });
+
+  it('gère un bilan « proche » indépendant du bilan « moi »', () => {
+    useCheckup.getState().confirm('code-sms');
+    useCheckup.getState().confirmForProche('appel-urgent');
+    // Chaque jeu ne voit que ses propres confirmations.
+    expect(useCheckup.getState().confirmed).toEqual({ 'code-sms': true });
+    expect(useCheckup.getState().confirmedForProche).toEqual({ 'appel-urgent': true });
+    useCheckup.getState().unconfirmForProche('appel-urgent');
+    expect(useCheckup.getState().confirmedForProche['appel-urgent']).toBe(false);
+    // Le bilan « moi » n'a pas bougé.
+    expect(useCheckup.getState().confirmed['code-sms']).toBe(true);
   });
 
   it('markReviewed pose une date ISO valide', () => {
@@ -35,11 +48,13 @@ describe('useCheckup (store local)', () => {
     expect(useCheckup.getState().confirmed['appel-urgent']).toBe(true);
   });
 
-  it('remet tout à zéro avec reset (confirmations + date)', () => {
+  it('remet tout à zéro avec reset (les deux bilans + date)', () => {
     useCheckup.getState().confirm('code-sms');
+    useCheckup.getState().confirmForProche('appel-urgent');
     useCheckup.getState().markReviewed();
     useCheckup.getState().reset();
     expect(useCheckup.getState().confirmed).toEqual({});
+    expect(useCheckup.getState().confirmedForProche).toEqual({});
     expect(useCheckup.getState().lastReviewedAt).toBeNull();
   });
 

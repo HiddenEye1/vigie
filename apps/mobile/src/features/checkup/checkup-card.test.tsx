@@ -94,4 +94,40 @@ describe('CheckupCard', () => {
     );
     expect(screen.queryByLabelText('Revenir sur cette protection')).toBeNull();
   });
+
+  it('mode « proche » : formulation aidant et « Voir comment » (pas de « Configurer »)', async () => {
+    const onNavigate = jest.fn();
+    const view = viewFor('proche', 'to-discover');
+    const screen = await render(
+      <CheckupCard
+        view={view}
+        mode="proche"
+        onNavigate={onNavigate}
+        onConfirm={noop}
+        onUnconfirm={noop}
+      />,
+    );
+    expect(screen.getByText(/Votre proche a-t-il quelqu’un/)).toBeTruthy();
+    // Pas de configuration du proche sur ce téléphone (ce n'est pas celui du senior).
+    expect(screen.queryByLabelText('Configurer mon proche')).toBeNull();
+    await fireEvent.press(screen.getByLabelText('Voir comment'));
+    expect(onNavigate).toHaveBeenCalledWith('/comment-fonctionne-bouclier');
+  });
+
+  it('mode « proche » : confirme avec le libellé aidant', async () => {
+    const onConfirm = jest.fn();
+    const view = viewFor('code-sms', 'to-reinforce');
+    const screen = await render(
+      <CheckupCard
+        view={view}
+        mode="proche"
+        onNavigate={noop}
+        onConfirm={onConfirm}
+        onUnconfirm={noop}
+      />,
+    );
+    expect(screen.getByText(/Votre proche sait-il quoi faire/)).toBeTruthy();
+    await fireEvent.press(screen.getByLabelText('C’est acquis'));
+    expect(onConfirm).toHaveBeenCalledWith('code-sms');
+  });
 });

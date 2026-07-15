@@ -28,6 +28,16 @@ describe('deriveItemState', () => {
       'to-reinforce',
     );
   });
+
+  it('en mode « proche », l’item auto devient déclaratif (ignore hasContact)', () => {
+    // Un contact existe, mais en mode proche l'item 1 ne se déduit PAS du Bouclier famille.
+    expect(deriveItemState(proche, { confirmed: {}, hasContact: true, mode: 'proche' })).toBe(
+      'to-discover',
+    );
+    expect(
+      deriveItemState(proche, { confirmed: { proche: true }, hasContact: false, mode: 'proche' }),
+    ).toBe('in-place');
+  });
 });
 
 describe('levelFor (niveaux doux)', () => {
@@ -82,5 +92,11 @@ describe('deriveCheckup', () => {
     const result = deriveCheckup({ confirmed: {}, hasContact: false });
     expect(result.inPlaceCount).toBe(0);
     expect(result.level).toBe('premiers-pas');
+  });
+
+  it('mode « proche » : un contact enregistré ne compte pas sans confirmation', () => {
+    const result = deriveCheckup({ confirmed: {}, hasContact: true, mode: 'proche' });
+    expect(result.inPlaceCount).toBe(0);
+    expect(result.total).toBe(5);
   });
 });

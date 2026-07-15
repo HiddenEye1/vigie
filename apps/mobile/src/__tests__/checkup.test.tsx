@@ -78,3 +78,36 @@ describe('CheckupScreen', () => {
     shareSpy.mockRestore();
   });
 });
+
+describe('CheckupScreen — mode « Pour un proche »', () => {
+  it('affiche les onglets en mode normal', async () => {
+    const screen = await render(<CheckupScreen />);
+    expect(screen.getByLabelText('Pour moi')).toBeTruthy();
+    expect(screen.getByLabelText('Pour un proche')).toBeTruthy();
+  });
+
+  it('masque les onglets en mode senior simplifié', async () => {
+    useSeniorMode.getState().setSimpleMode(true);
+    const screen = await render(<CheckupScreen />);
+    expect(screen.queryByLabelText('Pour un proche')).toBeNull();
+    expect(screen.getByText(/Faisons le point/)).toBeTruthy();
+  });
+
+  it('bascule vers les formulations aidant et l’intro « estimation »', async () => {
+    const screen = await render(<CheckupScreen />);
+    await fireEvent.press(screen.getByLabelText('Pour un proche'));
+    expect(screen.getByText(/Ce bilan est une estimation/)).toBeTruthy();
+    expect(screen.getByText(/Votre proche a-t-il quelqu’un/)).toBeTruthy();
+  });
+
+  it('garde des décomptes indépendants entre « moi » et « proche »', async () => {
+    useTrustedContact.getState().save({ name: 'Adam', channel: 'phone', value: '0600000000' });
+    useCheckup.getState().confirm('code-sms');
+    const screen = await render(<CheckupScreen />);
+    // « Moi » : proche configuré + code-sms = 2.
+    expect(screen.getByText('2 protections en place sur 5')).toBeTruthy();
+    // « Pour un proche » : jeu séparé, encore vide.
+    await fireEvent.press(screen.getByLabelText('Pour un proche'));
+    expect(screen.getByText('0 protection en place sur 5')).toBeTruthy();
+  });
+});
