@@ -45,6 +45,26 @@ describe('CheckupCard', () => {
     expect(onConfirm).toHaveBeenCalledWith('numeros-officiels');
   });
 
+  it('partage un rappel (bouton primaire) et garde la confirmation en secondaire', async () => {
+    const onShare = jest.fn();
+    const onConfirm = jest.fn();
+    const view = viewFor('proches-argent', 'to-reinforce');
+    const screen = await render(
+      <CheckupCard
+        view={view}
+        onNavigate={noop}
+        onConfirm={onConfirm}
+        onUnconfirm={noop}
+        onShare={onShare}
+      />,
+    );
+    await fireEvent.press(screen.getByLabelText('Leur envoyer un rappel'));
+    expect(onShare).toHaveBeenCalledWith('proches-argent');
+    // La confirmation déclarative reste disponible, sans cocher automatiquement.
+    await fireEvent.press(screen.getByLabelText('Mes proches le savent'));
+    expect(onConfirm).toHaveBeenCalledWith('proches-argent');
+  });
+
   it('propose de configurer le proche quand il est « à découvrir »', async () => {
     const onNavigate = jest.fn();
     const view = viewFor('proche', 'to-discover');

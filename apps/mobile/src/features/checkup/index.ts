@@ -29,6 +29,7 @@ export { deriveCheckup, deriveItemState, levelFor } from './checkup.derive';
 export type { CheckupInput, CheckupItemView, CheckupResult } from './checkup.derive';
 export { checkupReminderState, CHECKUP_REMINDER_DAYS } from './checkup.reminder';
 export type { CheckupReminderState } from './checkup.reminder';
+export { buildMoneyReminderMessage } from './checkup.messages';
 
 // Composants
 export { CheckupCard } from './checkup-card';

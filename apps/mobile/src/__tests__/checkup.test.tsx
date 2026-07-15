@@ -1,6 +1,7 @@
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
+import { Share } from 'react-native';
 
-import { useCheckup } from '@/features/checkup';
+import { buildMoneyReminderMessage, useCheckup } from '@/features/checkup';
 import { useSeniorMode, useTrustedContact } from '@/features/family';
 
 import CheckupScreen from '../app/checkup';
@@ -21,7 +22,7 @@ beforeEach(() => {
 });
 
 describe('CheckupScreen', () => {
-  it('affiche l’intro, le bandeau et les 4 items essentiels', async () => {
+  it('affiche l’intro, le bandeau et les 5 items essentiels', async () => {
     const screen = await render(<CheckupScreen />);
     expect(screen.getByText(/Faisons le point/)).toBeTruthy();
     expect(screen.getByText('Premiers pas')).toBeTruthy();
@@ -29,6 +30,7 @@ describe('CheckupScreen', () => {
     expect(screen.getByText(/donner un code reçu par SMS/)).toBeTruthy();
     expect(screen.getByText(/appel « banque » urgent/)).toBeTruthy();
     expect(screen.getByText(/vrais numéros de ma banque/)).toBeTruthy();
+    expect(screen.getByText(/Mes proches savent-ils/)).toBeTruthy();
   });
 
   it('n’affiche jamais de pourcentage ni le mot « score »', async () => {
@@ -45,14 +47,14 @@ describe('CheckupScreen', () => {
 
   it('compte les protections en place sans proche configuré', async () => {
     const screen = await render(<CheckupScreen />);
-    expect(screen.getByText('0 protection en place sur 4')).toBeTruthy();
+    expect(screen.getByText('0 protection en place sur 5')).toBeTruthy();
     expect(screen.getByLabelText('Configurer mon proche')).toBeTruthy();
   });
 
   it('reflète le proche configuré (item auto en place) dans le décompte', async () => {
     useTrustedContact.getState().save({ name: 'Adam', channel: 'phone', value: '0600000000' });
     const screen = await render(<CheckupScreen />);
-    expect(screen.getByText('1 protection en place sur 4')).toBeTruthy();
+    expect(screen.getByText('1 protection en place sur 5')).toBeTruthy();
     expect(screen.queryByLabelText('Configurer mon proche')).toBeNull();
   });
 
@@ -60,8 +62,19 @@ describe('CheckupScreen', () => {
     useTrustedContact.getState().save({ name: 'Adam', channel: 'phone', value: '0600000000' });
     useCheckup.getState().confirm('code-sms');
     useCheckup.getState().confirm('appel-urgent');
+    useCheckup.getState().confirm('numeros-officiels');
     const screen = await render(<CheckupScreen />);
-    expect(screen.getByText('3 protections en place sur 4')).toBeTruthy();
+    expect(screen.getByText('4 protections en place sur 5')).toBeTruthy();
     expect(screen.getByText('Bien protégé')).toBeTruthy();
+  });
+
+  it('partage le rappel générique via la feuille système, sans cocher l’item', async () => {
+    const shareSpy = jest.spyOn(Share, 'share').mockResolvedValue({ action: 'sharedAction' });
+    const screen = await render(<CheckupScreen />);
+    await fireEvent.press(screen.getByLabelText('Leur envoyer un rappel'));
+    expect(shareSpy).toHaveBeenCalledWith({ message: buildMoneyReminderMessage() });
+    // Le partage ne coche pas l'item : il reste « à renforcer ».
+    expect(useCheckup.getState().confirmed['proches-argent']).toBeUndefined();
+    shareSpy.mockRestore();
   });
 });

@@ -10,7 +10,12 @@ import type { Ionicons } from '@expo/vector-icons';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
-export type CheckupItemId = 'proche' | 'code-sms' | 'appel-urgent' | 'numeros-officiels';
+export type CheckupItemId =
+  | 'proche'
+  | 'code-sms'
+  | 'appel-urgent'
+  | 'numeros-officiels'
+  | 'proches-argent';
 
 /** D'où vient l'état d'un item : déduit automatiquement, ou déclaré par l'utilisateur. */
 export type CheckupItemSource = 'auto' | 'declared';
@@ -38,6 +43,8 @@ export interface CheckupItemDef {
   readonly configureRoute?: string;
   /** Libellé du bouton « je l'ai fait » (items déclaratifs uniquement). */
   readonly confirmLabel?: string;
+  /** Libellé du bouton de partage d'un rappel (ouvre la feuille système). */
+  readonly shareLabel?: string;
 }
 
 /**
@@ -103,6 +110,21 @@ export const CHECKUP_ITEMS: readonly CheckupItemDef[] = [
         'Enregistrez les vrais numéros (au dos de la carte, sur vos contrats). En cas de doute, vous rappelez le bon interlocuteur, jamais un numéro reçu par SMS.',
     },
     confirmLabel: 'C’est fait',
+  },
+  {
+    id: 'proches-argent',
+    title: 'Mes proches savent-ils qu’on n’envoie jamais d’argent à un nouveau numéro ?',
+    icon: 'wallet-outline',
+    source: 'declared',
+    pendingState: 'to-reinforce',
+    advice: {
+      inPlace:
+        'Parfait. Ce réflexe simple protège toute la famille contre l’arnaque au faux proche.',
+      pending:
+        'Prévenez vos proches : on n’envoie jamais d’argent à un nouveau numéro, ni à un contact qui dit avoir « changé de numéro » — même si le message semble venir d’un proche.',
+    },
+    shareLabel: 'Leur envoyer un rappel',
+    confirmLabel: 'Mes proches le savent',
   },
 ] as const;
 

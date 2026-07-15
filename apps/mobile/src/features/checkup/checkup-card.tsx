@@ -29,6 +29,8 @@ interface CheckupCardProps {
   readonly onNavigate: (route: string) => void;
   readonly onConfirm: (id: CheckupItemId) => void;
   readonly onUnconfirm: (id: CheckupItemId) => void;
+  /** Partage d'un rappel via la feuille système (items avec `shareLabel`). */
+  readonly onShare?: (id: CheckupItemId) => void;
 }
 
 /**
@@ -42,6 +44,7 @@ export function CheckupCard({
   onNavigate,
   onConfirm,
   onUnconfirm,
+  onShare,
 }: CheckupCardProps): ReactElement {
   const { def, state } = view;
   const badge = BADGE[state];
@@ -49,6 +52,9 @@ export function CheckupCard({
   const learnRoute = def.learnRoute;
   const configureRoute = def.configureRoute;
   const confirmLabel = def.confirmLabel;
+  const shareLabel = def.shareLabel;
+  // La confirmation passe en secondaire dès qu'une action primaire existe.
+  const hasPrimaryAction = learnRoute !== undefined || shareLabel !== undefined;
 
   return (
     <View style={styles.card}>
@@ -87,11 +93,21 @@ export function CheckupCard({
         />
       ) : null}
 
+      {!inPlace && shareLabel !== undefined ? (
+        <PrimaryButton
+          label={shareLabel}
+          icon="share-social"
+          onPress={() => {
+            onShare?.(def.id);
+          }}
+        />
+      ) : null}
+
       {!inPlace && confirmLabel !== undefined ? (
         <PrimaryButton
           label={confirmLabel}
           icon="checkmark"
-          variant={learnRoute !== undefined ? 'secondary' : 'primary'}
+          variant={hasPrimaryAction ? 'secondary' : 'primary'}
           onPress={() => {
             onConfirm(def.id);
           }}

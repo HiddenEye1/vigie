@@ -2,15 +2,17 @@ import type { Href } from 'expo-router';
 import { useRouter } from 'expo-router';
 import type { ReactElement } from 'react';
 import { useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 
 import {
+  buildMoneyReminderMessage,
   CheckupCard,
   CheckupIntro,
   CheckupSummary,
   deriveCheckup,
   useCheckup,
 } from '@/features/checkup';
+import type { CheckupItemId } from '@/features/checkup';
 import { useSeniorMode, useTrustedContact } from '@/features/family';
 import { palette, spacing, type } from '@/lib/theme';
 
@@ -37,6 +39,14 @@ export default function CheckupScreen(): ReactElement {
 
   const { items, inPlaceCount, total, level } = deriveCheckup({ confirmed, hasContact });
 
+  // Partage d'un rappel générique via la feuille système. N'enregistre rien et
+  // ne coche PAS l'item : Vigie ne sait pas si le message est envoyé ou lu.
+  const shareReminder = (id: CheckupItemId): void => {
+    if (id === 'proches-argent') {
+      void Share.share({ message: buildMoneyReminderMessage() });
+    }
+  };
+
   return (
     <ScrollView
       style={styles.screen}
@@ -57,6 +67,7 @@ export default function CheckupScreen(): ReactElement {
             }}
             onConfirm={confirm}
             onUnconfirm={unconfirm}
+            onShare={shareReminder}
           />
         ))}
       </View>
