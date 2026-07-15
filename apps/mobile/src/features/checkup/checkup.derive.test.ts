@@ -31,32 +31,50 @@ describe('deriveItemState', () => {
 });
 
 describe('levelFor (niveaux doux)', () => {
-  it('renvoie les bons niveaux aux bornes pour 4 items', () => {
-    expect(levelFor(0, 4)).toBe('premiers-pas');
-    expect(levelFor(1, 4)).toBe('premiers-pas');
-    expect(levelFor(2, 4)).toBe('en-bonne-voie');
-    expect(levelFor(3, 4)).toBe('bien-protege');
-    expect(levelFor(4, 4)).toBe('bouclier-complet');
+  it('renvoie les bons niveaux aux bornes pour 5 items', () => {
+    expect(levelFor(0, 5)).toBe('premiers-pas');
+    expect(levelFor(2, 5)).toBe('premiers-pas');
+    expect(levelFor(3, 5)).toBe('en-bonne-voie');
+    expect(levelFor(4, 5)).toBe('bien-protege');
+    expect(levelFor(5, 5)).toBe('bouclier-complet');
+  });
+});
+
+describe('CHECKUP_ITEMS', () => {
+  it('contient l’item « proches-argent » avec partage et confirmation', () => {
+    const item = CHECKUP_ITEMS.find((entry) => entry.id === 'proches-argent');
+    expect(item).toBeDefined();
+    expect(item?.shareLabel).toBe('Leur envoyer un rappel');
+    expect(item?.confirmLabel).toBe('Mes proches le savent');
   });
 });
 
 describe('deriveCheckup', () => {
+  it('totalise les 5 protections essentielles', () => {
+    const result = deriveCheckup({ confirmed: {}, hasContact: false });
+    expect(result.total).toBe(5);
+  });
+
   it('compte les protections en place et calcule le niveau', () => {
     const result = deriveCheckup({
       confirmed: { 'code-sms': true, 'appel-urgent': true },
       hasContact: true,
     });
-    expect(result.total).toBe(4);
     expect(result.inPlaceCount).toBe(3);
-    expect(result.level).toBe('bien-protege');
+    expect(result.level).toBe('en-bonne-voie');
   });
 
   it('tout en place → bouclier complet', () => {
     const result = deriveCheckup({
-      confirmed: { 'code-sms': true, 'appel-urgent': true, 'numeros-officiels': true },
+      confirmed: {
+        'code-sms': true,
+        'appel-urgent': true,
+        'numeros-officiels': true,
+        'proches-argent': true,
+      },
       hasContact: true,
     });
-    expect(result.inPlaceCount).toBe(4);
+    expect(result.inPlaceCount).toBe(5);
     expect(result.level).toBe('bouclier-complet');
   });
 

@@ -1,8 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { ReactElement } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { fonts, palette, radius, spacing, type } from '@/lib/theme';
+import { fonts, MIN_TOUCH_TARGET, palette, radius, spacing, type } from '@/lib/theme';
+
+interface FamilyShieldExplainerProps {
+  /** Lien discret « pour aller plus loin » vers le Check-up sécurité. */
+  readonly onCheckup?: () => void;
+}
 
 /** Les 4 étapes du fil : du doute au conseil du proche, geste par geste. */
 const STEPS = [
@@ -27,7 +32,9 @@ const PRIVACY_POINTS = [
  * automatique (VISION §3). Distingue le présent (100 % local) du futur (option
  * réseau, uniquement avec consentement explicite).
  */
-export function FamilyShieldExplainer(): ReactElement {
+export function FamilyShieldExplainer({
+  onCheckup,
+}: FamilyShieldExplainerProps = {}): ReactElement {
   return (
     <ScrollView
       style={styles.screen}
@@ -70,6 +77,21 @@ export function FamilyShieldExplainer(): ReactElement {
           vous-même.
         </Text>
       </View>
+
+      {onCheckup !== undefined ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Faire le point sur votre protection"
+          onPress={onCheckup}
+          style={({ pressed }) => [styles.checkupLink, pressed && styles.checkupLinkPressed]}
+        >
+          <Ionicons name="shield-checkmark-outline" size={20} color={palette.laiton} />
+          <Text style={styles.checkupLinkText}>
+            Pour aller plus loin : faites le point sur votre protection
+          </Text>
+          <Ionicons name="chevron-forward" size={18} color={palette.texteMuet} />
+        </Pressable>
+      ) : null}
     </ScrollView>
   );
 }
@@ -138,5 +160,25 @@ const styles = StyleSheet.create({
   paragraph: {
     ...type.body,
     color: palette.texteDoux,
+  },
+  checkupLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.m,
+    minHeight: MIN_TOUCH_TARGET,
+    paddingHorizontal: spacing.l,
+    borderRadius: radius.l,
+    backgroundColor: palette.ardoiseHaute,
+    borderWidth: 1,
+    borderColor: palette.laitonFilet,
+  },
+  checkupLinkPressed: {
+    backgroundColor: palette.ardoiseElevee,
+  },
+  checkupLinkText: {
+    flex: 1,
+    ...type.bodySecondary,
+    fontFamily: fonts.textSemiBold,
+    color: palette.texteClair,
   },
 });

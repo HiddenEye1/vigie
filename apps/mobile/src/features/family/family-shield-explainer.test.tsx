@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 
 import { FamilyShieldExplainer } from './family-shield-explainer';
 
@@ -26,5 +26,17 @@ describe('FamilyShieldExplainer', () => {
     const view = await render(<FamilyShieldExplainer />);
     expect(view.getByText('Aujourd’hui, tout reste sur ce téléphone.')).toBeTruthy();
     expect(view.getByText(/uniquement si vous l’activez/)).toBeTruthy();
+  });
+
+  it('n’affiche pas le lien Check-up sans handler', async () => {
+    const view = await render(<FamilyShieldExplainer />);
+    expect(view.queryByLabelText('Faire le point sur votre protection')).toBeNull();
+  });
+
+  it('propose un lien discret vers le Check-up quand un handler est fourni', async () => {
+    const onCheckup = jest.fn();
+    const view = await render(<FamilyShieldExplainer onCheckup={onCheckup} />);
+    await fireEvent.press(view.getByLabelText('Faire le point sur votre protection'));
+    expect(onCheckup).toHaveBeenCalledTimes(1);
   });
 });
